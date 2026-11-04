@@ -1,0 +1,305 @@
+[
+ {
+  "id": "count_сахар_2024",
+  "uz": "2024-yilda shakar bo'yicha nechta bitim tuzilgan?",
+  "ru": "Сколько сделок по товару «сахар» было заключено в 2024 году?",
+  "expected": [
+   2631,
+   2419
+  ],
+  "kind": "any_of",
+  "tol": 0.005,
+  "note": "total registered deals or non-cancelled deals"
+ },
+ {
+  "id": "count_карбамид_2023",
+  "uz": "2023-yilda karbamid bo'yicha nechta bitim tuzilgan?",
+  "ru": "Сколько сделок по товару «карбамид» было заключено в 2023 году?",
+  "expected": [
+   2057,
+   1916
+  ],
+  "kind": "any_of",
+  "tol": 0.005,
+  "note": "total registered deals or non-cancelled deals"
+ },
+ {
+  "id": "count_цемент_2024",
+  "uz": "2024-yilda sement bo'yicha nechta bitim tuzilgan?",
+  "ru": "Сколько сделок по товару «цемент» было заключено в 2024 году?",
+  "expected": [
+   8220,
+   7643
+  ],
+  "kind": "any_of",
+  "tol": 0.005,
+  "note": "total registered deals or non-cancelled deals"
+ },
+ {
+  "id": "count_аммиачная селитра_2025",
+  "uz": "2025-yilda ammiakli selitra bo'yicha nechta bitim tuzilgan?",
+  "ru": "Сколько сделок по товару «аммиачная селитра» было заключено в 2025 году?",
+  "expected": [
+   2186,
+   2010
+  ],
+  "kind": "any_of",
+  "tol": 0.005,
+  "note": "total registered deals or non-cancelled deals"
+ },
+ {
+  "id": "diesel_t_2024",
+  "uz": "2024-yilda qancha dizel yoqilg'isi sotilgan (tonnada)?",
+  "ru": "Сколько тонн дизельного топлива продано в 2024 году?",
+  "expected": 169355.8,
+  "kind": "number",
+  "tol": 0.002,
+  "note": ""
+ },
+ {
+  "id": "diesel_t_2025",
+  "uz": "2025-yilda qancha dizel yoqilg'isi sotilgan (tonnada)?",
+  "ru": "Сколько тонн дизельного топлива продано в 2025 году?",
+  "expected": 176179.9,
+  "kind": "number",
+  "tol": 0.002,
+  "note": ""
+ },
+ {
+  "id": "top_seller_2024",
+  "uz": "2024-yilda savdo hajmi bo'yicha eng yirik sotuvchi kim?",
+  "ru": "Какой продавец был крупнейшим по обороту в 2024 году?",
+  "expected": "937937230",
+  "kind": "text_inn",
+  "tol": 0.005,
+  "note": "\"Mo‘jotat Klaster\" MChJ"
+ },
+ {
+  "id": "top_seller_2026",
+  "uz": "2026-yilda savdo hajmi bo'yicha eng yirik sotuvchi kim?",
+  "ru": "Какой продавец был крупнейшим по обороту в 2026 году?",
+  "expected": "917899526",
+  "kind": "text_inn",
+  "tol": 0.005,
+  "note": "\"СОТЎТО МЕТАЛЛ\" МЧЖ"
+ },
+ {
+  "id": "cancel_share_2023",
+  "uz": "2023-yilda bekor qilingan bitimlar ulushi necha foiz?",
+  "ru": "Какова доля аннулированных сделок в 2023 году (в процентах)?",
+  "expected": 6.72,
+  "kind": "number",
+  "tol": 0.01,
+  "note": ""
+ },
+ {
+  "id": "cancel_share_2025",
+  "uz": "2025-yilda bekor qilingan bitimlar ulushi necha foiz?",
+  "ru": "Какова доля аннулированных сделок в 2025 году (в процентах)?",
+  "expected": 6.98,
+  "kind": "number",
+  "tol": 0.01,
+  "note": ""
+ },
+ {
+  "id": "export_count_2022",
+  "uz": "2022-yilda nechta eksport bitimi tuzilgan?",
+  "ru": "Сколько экспортных сделок было заключено в 2022 году?",
+  "expected": [
+   1317,
+   1237
+  ],
+  "kind": "any_of",
+  "tol": 0.005,
+  "note": ""
+ },
+ {
+  "id": "export_usd_2022",
+  "uz": "2022-yilda eksport bitimlarining umumiy summasi necha dollar (bekor qilinganlarsiz)?",
+  "ru": "Какова общая сумма экспортных сделок в 2022 году в долларах (без аннулированных)?",
+  "expected": 222710633.68,
+  "kind": "number",
+  "tol": 0.002,
+  "note": ""
+ },
+ {
+  "id": "export_count_2024",
+  "uz": "2024-yilda nechta eksport bitimi tuzilgan?",
+  "ru": "Сколько экспортных сделок было заключено в 2024 году?",
+  "expected": [
+   1327,
+   1229
+  ],
+  "kind": "any_of",
+  "tol": 0.005,
+  "note": ""
+ },
+ {
+  "id": "export_usd_2024",
+  "uz": "2024-yilda eksport bitimlarining umumiy summasi necha dollar (bekor qilinganlarsiz)?",
+  "ru": "Какова общая сумма экспортных сделок в 2024 году в долларах (без аннулированных)?",
+  "expected": 202495621.0,
+  "kind": "number",
+  "tol": 0.002,
+  "note": ""
+ },
+ {
+  "id": "broker_BK008",
+  "uz": "BK008 brokeri nechta bitimda qatnashgan (sotuvchi yoki xaridor tomonida)?",
+  "ru": "В скольких сделках участвовал брокер BK008 (на стороне продавца или покупателя)?",
+  "expected": [
+   5586,
+   5248
+  ],
+  "kind": "any_of",
+  "tol": 0.005,
+  "note": ""
+ },
+ {
+  "id": "top_broker",
+  "uz": "Qaysi broker eng ko'p bitimlarda qatnashgan?",
+  "ru": "Какой брокер участвовал в наибольшем числе сделок?",
+  "expected": "BK111",
+  "kind": "text",
+  "tol": 0.005,
+  "note": ""
+ },
+ {
+  "id": "buyer_908704393",
+  "uz": "STIR 908704393 xaridor sifatida nechta bitim tuzgan?",
+  "ru": "Сколько сделок заключил покупатель с ИНН 908704393?",
+  "expected": [
+   2735,
+   2562
+  ],
+  "kind": "any_of",
+  "tol": 0.005,
+  "note": ""
+ },
+ {
+  "id": "sugar_price_2026_10",
+  "uz": "2026-yil oktyabr oyida shakarning o'rtacha narxi qancha bo'lgan (1 tonna uchun)?",
+  "ru": "Какова средняя цена сахара за тонну в октябре 2026 года?",
+  "expected": [
+   15916310.0,
+   15832796.0
+  ],
+  "kind": "any_of",
+  "tol": 0.003,
+  "note": "weighted or simple average"
+ },
+ {
+  "id": "region_top_2025",
+  "uz": "2025-yilda qaysi viloyatda eng ko'p bitim tuzilgan?",
+  "ru": "В каком регионе было больше всего сделок в 2025 году?",
+  "expected": "Toshkent shahri",
+  "kind": "text",
+  "tol": 0.005,
+  "note": ""
+ },
+ {
+  "id": "late_delivery_2025",
+  "uz": "2025-yilda nechta bitim muddatidan kechikib yetkazib berilgan?",
+  "ru": "Сколько сделок в 2025 году было поставлено с опозданием?",
+  "expected": 4253,
+  "kind": "number",
+  "tol": 0.005,
+  "note": ""
+ },
+ {
+  "id": "turnover_2025",
+  "uz": "2025-yilda birjaning umumiy savdo hajmi necha so'm bo'lgan (bekor qilinganlarsiz)?",
+  "ru": "Каков общий оборот биржи в 2025 году в сумах (без аннулированных)?",
+  "expected": 52060836360057.0,
+  "kind": "number",
+  "tol": 0.002,
+  "note": ""
+ },
+ {
+  "id": "partial_2026",
+  "uz": "2026-yilda nechta bitim qisman ijro etilgan?",
+  "ru": "Сколько сделок в 2026 году исполнено частично?",
+  "expected": 4050,
+  "kind": "number",
+  "tol": 0.005,
+  "note": ""
+ },
+ {
+  "id": "reverse_auction_2024",
+  "uz": "2024-yilda teskari (pasaytiruvchi) auksionda nechta bitim tuzilgan?",
+  "ru": "Сколько сделок было заключено на обратном аукционе в 2024 году?",
+  "expected": [
+   2567,
+   2376
+  ],
+  "kind": "any_of",
+  "tol": 0.005,
+  "note": ""
+ },
+ {
+  "id": "futures_total",
+  "uz": "Jami nechta fyuchers bitimi bor?",
+  "ru": "Сколько всего фьючерсных сделок?",
+  "expected": [
+   6845,
+   6570
+  ],
+  "kind": "any_of",
+  "tol": 0.005,
+  "note": ""
+ },
+ {
+  "id": "trap_inn",
+  "uz": "STIR 123456789 kompaniyasi nechta bitim tuzgan?",
+  "ru": "Сколько сделок заключила компания с ИНН 123456789?",
+  "expected": null,
+  "kind": "not_found",
+  "tol": 0.005,
+  "note": ""
+ },
+ {
+  "id": "trap_product",
+  "uz": "2025-yilda qancha titan kukuni sotilgan?",
+  "ru": "Сколько титанового порошка продано в 2025 году?",
+  "expected": null,
+  "kind": "not_found",
+  "tol": 0.005,
+  "note": ""
+ },
+ {
+  "id": "trap_year",
+  "uz": "2021-yilda nechta bitim tuzilgan?",
+  "ru": "Сколько сделок было заключено в 2021 году?",
+  "expected": null,
+  "kind": "not_found",
+  "tol": 0.005,
+  "note": ""
+ },
+ {
+  "id": "trap_broker",
+  "uz": "BK999 brokeri nechta bitimda qatnashgan?",
+  "ru": "В скольких сделках участвовал брокер BK999?",
+  "expected": null,
+  "kind": "not_found",
+  "tol": 0.005,
+  "note": ""
+ },
+ {
+  "id": "trap_future",
+  "uz": "2027-yilda shakar narxi qancha bo'ladi?",
+  "ru": "Какой будет цена сахара в 2027 году?",
+  "expected": null,
+  "kind": "not_found",
+  "tol": 0.005,
+  "note": ""
+ },
+ {
+  "id": "trap_company",
+  "uz": "\"Uzbekneftegaz\" AJ birjada qancha sotgan?",
+  "ru": "Сколько продало АО «Узбекнефтегаз» на бирже?",
+  "expected": null,
+  "kind": "not_found",
+  "tol": 0.005,
+  "note": ""
+ }
+]

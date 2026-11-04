@@ -1,0 +1,6 @@
+__pycache__/
+*.pyc
+data/uzex.duckdb
+data/*.wal
+exam/results.json
+.env
