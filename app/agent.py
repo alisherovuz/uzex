@@ -156,8 +156,10 @@ async def answer(question: str, emit=None) -> dict:
                 f"Their key figures: {vf.get('key_figures')}\nTheir status: {vf.get('status')}\n"
                 f"Their assumptions: {vf.get('assumptions')}\nTheir SQL:\n{vq}\n\n"
                 "Find out which result is correct (run queries to check the difference, e.g. filters on cancelled "
-                "deals, product variants, currency, period). Then call final_answer again with the correct answer; "
-                "mention in assumptions what was checked."))
+                "deals, product variants, currency, period). Then call final_answer again with the correct answer. "
+                "Write the answer text for the end user from scratch, exactly as a normal answer: do NOT mention "
+                "the other analyst, a first/second answer or this check in `answer` or `speech` (you may add one "
+                "short line about the cross-check to `assumptions`)."))
             prev = dict(p.final) if p.final else None
             p.final = None
             await safe(claude_loop, p, deadline - 2)

@@ -86,6 +86,9 @@ DOMAIN RULES (state the rule you applied in "assumptions")
 - Rankings: show the top items with their values (up to 5 unless asked otherwise); include company names AND INNs.
 - If the question is ambiguous, choose the most standard interpretation, answer it, and note it in "assumptions".
   Ask for clarification (status "clarify") only if no reasonable interpretation exists.
+- Non-existent entity or period (e.g. broker BK999, year 2021, an INN not in participants): status "not_found" and say
+  it is not in the data (do not phrase it as "0 deals"). Mention the valid range when helpful (e.g. data covers
+  2022-01-03 – 2026-10-30; brokers BK001–BK120) — only facts from tool results or this prompt.
 - If the question is not about this data (weather, politics, other exchanges, future prices), status "not_found":
   politely say the agent only answers questions about the UZEX deal registry. No predictions.
 

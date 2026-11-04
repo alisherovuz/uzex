@@ -79,16 +79,15 @@ def check_answer(answer: str, question: str, results: dict[str, dict], key_figur
 
 
 def figures_agree(a: list[dict], b: list[dict], rel: float = 0.005) -> tuple[bool, list[str]]:
-    """Primary figures (from a) must each appear among verifier figures (b) within relative tolerance."""
-    if not a:
+    """The primary model's main figure must appear among the verifier's figures (or vice versa)."""
+    num = lambda xs: [float(x["value"]) for x in xs if isinstance(x.get("value"), (int, float))
+                      and not isinstance(x.get("value"), bool)]
+    av, bv = num(a), num(b)
+    if not av:
         return True, []
-    bv = [float(x["value"]) for x in b if isinstance(x.get("value"), (int, float))]
-    missing = []
-    for x in a[:3]:
-        v = x.get("value")
-        if not isinstance(v, (int, float)):
-            continue
-        ok = any(abs(v - w) <= max(abs(v), abs(w), 1e-9) * rel or abs(v - w) < 0.51 for w in bv)
-        if not ok:
-            missing.append(f"{x.get('label')}={v}")
-    return (not missing), missing
+    if not bv:
+        return False, [f"{a[0].get('label')}={av[0]}"]
+    close = lambda v, w: abs(v - w) <= max(abs(v), abs(w), 1e-9) * rel or abs(v - w) < 0.51
+    if any(close(av[0], w) for w in bv) or any(close(bv[0], v) for v in av):
+        return True, []
+    return False, [f"{a[0].get('label')}={av[0]}"]
