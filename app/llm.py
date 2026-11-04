@@ -83,7 +83,6 @@ _CLAUDE_TEMP_OK = True
 
 async def claude_loop(run: Run, emit: Emit | None, deadline: float, max_turns: int = 10) -> Run:
     """Run (or continue) a Claude tool loop until final_answer is accepted."""
-    global _CLAUDE_TEMP_OK
     import anthropic
     client = anthropic.AsyncAnthropic(api_key=config.ANTHROPIC_API_KEY, max_retries=2)
     system = [{"type": "text", "text": get_system(), "cache_control": {"type": "ephemeral"}}]
@@ -102,16 +101,7 @@ async def claude_loop(run: Run, emit: Emit | None, deadline: float, max_turns: i
             else:
                 last["content"] += "\n\n" + nudge
         kwargs = dict(model=run.model, max_tokens=3000, system=system, tools=TOOLS, messages=messages)
-        if _CLAUDE_TEMP_OK:
-            kwargs["temperature"] = 0
-        try:
-            resp = await asyncio.wait_for(client.messages.create(**kwargs), timeout=max(5, remaining))
-        except anthropic.BadRequestError as e:
-            if "temperature" in str(e) and kwargs.pop("temperature", None) is not None:
-                _CLAUDE_TEMP_OK = False
-                resp = await asyncio.wait_for(client.messages.create(**kwargs), timeout=max(5, deadline - time.time()))
-            else:
-                raise
+        resp = await asyncio.wait_for(client.messages.create(**kwargs), timeout=max(5, remaining))
         messages.append({"role": "assistant", "content": [b.model_dump(exclude_none=True) for b in resp.content]})
         uses = [b for b in resp.content if b.type == "tool_use"]
         if not uses:
