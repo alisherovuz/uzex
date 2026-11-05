@@ -10,7 +10,7 @@ OPENAI_API_KEY = os.getenv("OPENAI_API_KEY", "")
 CLAUDE_MODEL = os.getenv("CLAUDE_MODEL", "claude-sonnet-5-5")
 CLAUDE_EFFORT = os.getenv("CLAUDE_EFFORT", "low")  # low = fastest; empty = model default
 FAST_MODEL = os.getenv("FAST_MODEL", "claude-haiku-5-5")  # speech text + follow-ups
-OPENAI_MODEL = os.getenv("OPENAI_MODEL", "gpt-5")
+OPENAI_MODEL = os.getenv("OPENAI_MODEL", "gpt-6-astra")
 OPENAI_REASONING = os.getenv("OPENAI_REASONING", "low")  # for reasoning models; empty disables
 
 ELEVENLABS_API_KEY = os.getenv("ELEVENLABS_API_KEY", "")
@@ -30,4 +30,4 @@ PUBLIC_URL = os.getenv("PUBLIC_URL", "").rstrip("/")
 
 ANSWER_BUDGET_S = float(os.getenv("ANSWER_BUDGET_S", "75"))  # jury limit is 90 s per answer
 VERIFY_BUDGET_S = float(os.getenv("VERIFY_BUDGET_S", "70"))
-VERIFIER_CLAUDE_MODEL = os.getenv("VERIFIER_CLAUDE_MODEL", "claude-haiku-5-5")
+VERIFIER_CLAUDE_MODEL = os.getenv("VERIFIER_CLAUDE_MODEL", "claude-opus-5-5")

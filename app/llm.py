@@ -150,7 +150,7 @@ async def gpt_loop(run: Run, emit: Emit | None, deadline: float, max_turns: int 
         run.messages = [{"role": "system", "content": get_system()}, {"role": "user", "content": run.question}]
     messages = run.messages
     extra = {}
-    if config.OPENAI_REASONING and run.model.startswith(("gpt-5", "o")):
+    if config.OPENAI_REASONING and run.model.startswith(("gpt-5", "gpt-6", "o")):
         extra["reasoning_effort"] = config.OPENAI_REASONING
     for turn in range(max_turns):
         remaining = deadline - time.time()
