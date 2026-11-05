@@ -156,6 +156,58 @@ async def ask_stream(payload: dict):
                              headers={"Cache-Control": "no-cache", "X-Accel-Buffering": "no"})
 
 
+JOBS: dict = {}
+
+
+@app.post("/api/ask/start")
+async def ask_start(payload: dict):
+    """Start a question; the page polls /api/job/{id}. Polling is immune to proxy buffering of streams."""
+    q = (payload.get("question") or "").strip()[:1000]
+    if not q:
+        raise HTTPException(400, "question is required")
+    import uuid as _uuid
+    jid = _uuid.uuid4().hex[:12]
+    job = {"events": [], "done": False, "t": asyncio.get_event_loop().time()}
+    JOBS[jid] = job
+    while len(JOBS) > 500:
+        JOBS.pop(next(iter(JOBS)))
+
+    async def emit(ev):
+        job["events"].append(ev)
+
+    async def run():
+        try:
+            res = await agent.answer(q, emit)
+            job["events"].append({"type": "final", "result": res})
+            for d in (agent.EXTRAS, agent.VERIFY):
+                t = d.get(res.get("id") or "")
+                if t:
+                    try:
+                        await asyncio.wait_for(asyncio.shield(t), timeout=90)
+                    except asyncio.TimeoutError:
+                        pass
+            if res.get("id") and not any(e.get("type") == "verification" for e in job["events"]):
+                job["events"].append({"type": "verification", "id": res["id"], "verification": res.get("verification"),
+                                      "verifier_queries": res.get("verifier_queries", [])})
+        except Exception as e:  # noqa: BLE001
+            log.exception("answer failed")
+            job["events"].append({"type": "final", "result": {"status": "error", "answer": f"Error: {e}"}})
+        job["done"] = True
+
+    asyncio.create_task(run())
+    return {"job": jid}
+
+
+@app.get("/api/job/{jid}")
+async def job_poll(jid: str, since: int = 0):
+    job = JOBS.get(jid)
+    if not job:
+        raise HTTPException(404, "job not found")
+    return JSONResponse(json.loads(json.dumps({"events": job["events"][since:], "next": len(job["events"]),
+                                               "done": job["done"]}, default=str)),
+                        headers={"Cache-Control": "no-store"})
+
+
 @app.get("/api/answer/{rid}")
 async def get_answer(rid: str):
     if rid not in agent.ANSWERS:
