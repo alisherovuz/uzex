@@ -160,7 +160,7 @@ async def _native_tts(text: str, lang: str):
 
 async def tts(text: str, lang: str) -> tuple[bytes, str] | None:
     """Return (audio_bytes, mime) or None. Native voice per language; Uzbek on eleven_v3."""
-    text = (text or "").strip()[:320]
+    text = (text or "").strip()[:700]
     if not text:
         return None
     lang = "ru" if lang == "ru" else "uz"
@@ -198,8 +198,7 @@ async def tts(text: str, lang: str) -> tuple[bytes, str] | None:
                 body["language_code"] = "uz" if lang == "uz" else "ru"
             try:
                 async with httpx.AsyncClient(timeout=TIMEOUT) as c:
-                    r = await c.post(f"{EL}/v1/text-to-speech/{voice}/stream",
-                                     params={"output_format": "mp3_44100_128", "optimize_streaming_latency": "3"},
+                    r = await c.post(f"{EL}/v1/text-to-speech/{voice}", params={"output_format": "mp3_44100_128"},
                                      headers={"xi-api-key": config.ELEVENLABS_API_KEY}, json=body)
                 if r.status_code == 200:
                     out = (r.content, "audio/mpeg")
