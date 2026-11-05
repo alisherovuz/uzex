@@ -537,7 +537,7 @@ function pillsHTML(res){
 }
 function vqHTML(res){
   const v = res.verification || {};
-
+  const vq = (res.verifier_queries||[]).map(q => `<details class="sq"><summary>${esc(q.purpose)}</summary><pre class="code">${esc(q.sql)}</pre></details>`).join("");
   return vq ? `<h4>${t("hV")} · ${esc(v.verifier||"")}</h4>${vq}` : "";
 }
 function renderAnswer(res, opts){
@@ -630,7 +630,7 @@ async function ask(text, heard){
       }
     }
     if (!card){ p.done(); p.el.remove(); renderAnswer({answer:t("err")}); }
-  } catch(e){ if (!card){ p.done(); p.add("bad", t("err") + ": " + esc(e.message)); } }
+  } catch(e){ console.error(e); if (!card){ p.done(); if (!p.el.isConnected) thread.appendChild(p.el); p.add("bad", t("err") + ": " + esc(e.message)); } }
   busy = false; $("#send").disabled = false; $("#inp").focus();
 }
 $("#send").onclick = () => ask($("#inp").value);
