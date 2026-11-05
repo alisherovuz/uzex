@@ -121,6 +121,11 @@ async def init_voices():
             log.info("native TTS self-test %s: %s", lang, "OK" if ok else "FAILED (ElevenLabs fallback)")
     if not config.ELEVENLABS_API_KEY:
         return
+    for lang, vid in (("uz", config.ELEVEN_VOICE_ID_UZ), ("ru", config.ELEVEN_VOICE_ID_RU)):
+        if vid:
+            VOICE[lang] = vid
+            ok = await tts("Salom! Men Aniq Agentman." if lang == "uz" else "Здравствуйте! Я Aniq Agent.", lang)
+            log.info("custom ElevenLabs voice %s for %s: %s", vid, lang, "OK" if ok else "FAILED")
     for lang, env in (("uz", config.ELEVEN_VOICE_ID_UZ), ("ru", config.ELEVEN_VOICE_ID_RU)):
         if env:
             VOICE[lang] = env
