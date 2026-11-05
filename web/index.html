@@ -519,8 +519,15 @@ $("#briefBtn").onclick = async () => {
   const b = await (await fetch("/api/briefing?lang=" + LANG)).json();
   $("#briefText").innerHTML = md(b.text); $("#briefText").style.display = "block";
   card.classList.add("playing"); $("#playIc").innerHTML = IC.pause;
-  await speak(b.speech, LANG, () => { card.classList.remove("playing"); $("#playIc").innerHTML = IC.play; });
+  await speak(lead(b.speech), LANG, () => { card.classList.remove("playing"); $("#playIc").innerHTML = IC.play; });
 };
+function lead(s){ // short, fast-to-synthesize spoken line: first sentence of the answer
+  const t = (s||"").replace(/\*\*/g,"").replace(/\s+/g," ").trim();
+  const m = t.match(/^.*?[.!?？！。](\s|$)/);
+  let out = (m ? m[0] : t).trim();
+  if (out.length > 170) out = out.slice(0,170).replace(/\s+\S*$/,"") + ".";
+  return out;
+}
 async function speak(text, lang, onend){
   try {
     try { AUDIO.pause(); } catch(e){}
@@ -633,7 +640,7 @@ function renderAnswer(res, opts){
     a.querySelector(".bp").onclick = () => { const p = a.querySelector(".proof"); p.classList.toggle("open");
       a.querySelector(".bp span").textContent = p.classList.contains("open") ? t("hide") : t("proof");
       if (res.chart && !a._chart) a._chart = drawChart(chartId, res.chart); };
-    a.querySelector(".bl").onclick = () => speak(a._res.speech || res.answer.replace(/\*\*/g,""), L);
+    a.querySelector(".bl").onclick = () => speak(lead(a._res.answer || res.answer), L);
     a.querySelector(".bc").onclick = () => { navigator.clipboard.writeText(res.answer.replace(/\*\*/g,"") + "\n" + location.origin + "/a/" + res.id); toast(t("copied")); };
   }
   scrollEnd(); return a;
@@ -661,6 +668,7 @@ async function ask(text, heard){
           card = renderAnswer(final || {answer:t("err")});
           if (final && final.id){ LAST_CHAT_URL = "/a/" + final.id; history.replaceState({v:"chat"}, "", LAST_CHAT_URL); }
           busy = false; $("#send").disabled = false;
+          if (AUTOPLAY && final && final.answer) speak(lead(final.answer), final.language);  // speak the key line at once
         } else if (ev.type === "verification" && card){
           Object.assign(card._res, {verification: ev.verification, verifier_queries: ev.verifier_queries});
           card.querySelector(".meta").innerHTML = pillsHTML(card._res);
@@ -673,7 +681,6 @@ async function ask(text, heard){
             fu.querySelectorAll("button").forEach(b => b.onclick = () => { fu.remove(); ask(b.textContent); });
             card.after(fu);
           }
-          if (AUTOPLAY && ev.speech) speak(ev.speech, card._res.language);
         } else if (ev.type === "revised" && card){
           const open = card.querySelector(".proof.open");
           card = renderAnswer(ev.result, {replace: card});
