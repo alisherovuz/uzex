@@ -1,5 +1,6 @@
 """Orchestration: primary agent + independent verifier + reconciliation, packaged with its proof."""
 import asyncio
+import json
 import re
 import time
 import uuid
@@ -70,6 +71,24 @@ def _evidence(run: Run) -> list[dict]:
     return [dict(zip(r["columns"], row)) for row in r.get("rows", [])]
 
 
+def _coerce(v, kind):
+    """Models sometimes send nested fields as JSON strings; normalize them."""
+    if isinstance(v, str):
+        try:
+            v = json.loads(v)
+        except Exception:  # noqa: BLE001
+            return [v] if kind is list and v.strip() else None
+    return v if isinstance(v, kind) else None
+
+
+def _normalize(f: dict) -> dict:
+    f["chart"] = _coerce(f.get("chart"), dict)
+    f["key_figures"] = [k for k in (_coerce(f.get("key_figures"), list) or []) if isinstance(k, dict)]
+    for k in ("assumptions", "followups", "used_query_ids"):
+        f[k] = [str(x) for x in (_coerce(f.get(k), list) or [])]
+    return f
+
+
 def _chart(run: Run):
     ch = (run.final or {}).get("chart")
     if not ch or ch.get("query_id") not in run.queries:
@@ -95,30 +114,84 @@ def _pack_queries(run: Run) -> list[dict]:
     return out
 
 
-async def answer(question: str, emit=None) -> dict:
+VERIFY: dict[str, asyncio.Task] = {}
+EXTRAS: dict[str, asyncio.Task] = {}
+
+EXTRAS_PROMPT = """You help a voice assistant for the UZEX exchange. Given a question and the final answer, return ONLY
+JSON: {"speech": "...", "followups": ["...", "...", "..."]}.
+speech: 1–2 short sentences in the answer's language (Uzbek always in Latin script) that a native-speaker voice will
+read aloud. Write EVERY number in words, rounded (e.g. "taxminan yuz yetmish olti ming tonna", "около ста семидесяти
+шести тысяч тонн"). No digits, INNs, ids, % signs, codes like ДТ-Е-К5, brackets or markdown. In Uzbek use everyday
+Uzbek product names (dizel yoqilg'isi, shakar, bug'doy, sement, paxta, un), not Russian registry names. Never add facts
+that are not in the answer.
+followups: 3 short natural next questions in the same language that can be answered from the same deal registry."""
+
+
+async def make_extras(res: dict) -> dict:
+    import anthropic
+    lang = res.get("language", "uz")
+    try:
+        client = anthropic.AsyncAnthropic(api_key=config.ANTHROPIC_API_KEY, max_retries=1)
+        r = await asyncio.wait_for(client.messages.create(
+            model=config.FAST_MODEL, max_tokens=500, system=EXTRAS_PROMPT,
+            messages=[{"role": "user", "content": f"Language: {lang}\nQuestion: {res.get('question')}\n"
+                                                  f"Answer:\n{res.get('answer')}"}]), timeout=20)
+        txt = "".join(b.text for b in r.content if getattr(b, "type", "") == "text")
+        m = re.search(r"\{.*\}", txt, re.S)
+        data = json.loads(m.group(0)) if m else {}
+    except Exception:  # noqa: BLE001
+        data = {}
+    speech = data.get("speech") or re.sub(r"\*\*|[-•] ", "", (res.get("answer") or "").split("\n")[0])
+    res["speech"] = speech
+    res["followups"] = [str(x) for x in (data.get("followups") or [])][:3]
+    return {"speech": res["speech"], "followups": res["followups"]}
+
+
+def _pack(rid, question, lang, p: Run, v: Run, verification, t0) -> dict:
+    f = _normalize(p.final)
+    return {
+        "id": rid, "question": question, "status": f.get("status"), "language": f.get("language", lang),
+        "answer": f.get("answer", ""), "speech": f.get("speech", ""), "assumptions": f.get("assumptions", []),
+        "key_figures": f.get("key_figures", []), "verification": verification,
+        "followups": (f.get("followups") or [])[:3],
+        "numbers_check": {"ok": not p.unbacked, "unbacked": p.unbacked},
+        "queries": _pack_queries(p), "lookups": p.lookups,
+        "verifier_queries": [{"purpose": q["purpose"], "sql": q["sql"]} for q in v.queries.values()],
+        "evidence": _evidence(p), "chart": _chart(p),
+        "seconds": round(time.time() - t0, 1), "created": int(time.time()),
+    }
+
+
+async def answer(question: str, emit=None, wait_verify: bool = False) -> dict:
+    """Answer as soon as the primary model is done; the independent check finishes in the background
+    (VERIFY[rid]) and updates the stored answer (and the stream, via `emit`) when it completes."""
     question = question.strip()
     t0 = time.time()
     deadline = t0 + config.ANSWER_BUDGET_S
     lang = detect_lang(question)
     key = re.sub(r"\s+", " ", question.lower())
     if key in _CACHE and _CACHE[key] in ANSWERS:
-        res = ANSWERS[_CACHE[key]]
-        if emit:
-            await emit({"type": "step", "text": "cache"})
-        return res
+        rid = _CACHE[key]
+        if wait_verify and rid in VERIFY:
+            await VERIFY[rid]
+        return ANSWERS[rid]
 
     async def em(ev):
         if emit:
-            await emit(ev)
+            try:
+                await emit(ev)
+            except Exception:  # noqa: BLE001
+                pass
 
     primary_p, verifier_p = _providers()
     if not primary_p:
         return {"id": None, "status": "error", "language": lang,
                 "answer": "LLM API key is not configured (ANTHROPIC_API_KEY / OPENAI_API_KEY)."}
 
-    hint = (f"\n\n[Question language detected: {lang}. Today in the data = 2026-10-30.]")
+    hint = f"\n\n[Question language detected: {lang}. Today in the data = 2026-10-30.]"
     p = Run("A", question + hint, primary_p[1])
     v = Run("B", question + hint, verifier_p[1])
+    verification = {"state": "pending", "primary": primary_p[1], "verifier": verifier_p[1], "note": ""}
     await em({"type": "step", "text": "start", "primary": primary_p[1], "verifier": verifier_p[1]})
 
     async def safe(loop, run, dl):
@@ -128,89 +201,99 @@ async def answer(question: str, emit=None) -> dict:
             run.error = f"{type(e).__name__}: {str(e)[:300]}"
         return run
 
+    vdeadline = t0 + config.VERIFY_BUDGET_S
+
     async def verify():
-        await safe(_loop(verifier_p[0]), v, deadline - 18)
-        if v.final is None and verifier_p[0] == "gpt" and config.ANTHROPIC_API_KEY and deadline - time.time() > 35:
-            if v.error and ("401" in v.error or "Authentication" in v.error or "auth" in v.error.lower()):
+        await safe(_loop(verifier_p[0]), v, vdeadline)
+        if v.final is None and verifier_p[0] == "gpt" and config.ANTHROPIC_API_KEY and vdeadline - time.time() > 20:
+            if v.error and ("401" in v.error or "auth" in v.error.lower()):
                 GPT_OK["ok"] = False  # stop calling a key that is rejected
-            v.__init__("B", question + hint, config.CLAUDE_MODEL)  # independent second Claude run
-            verification["verifier"] = config.CLAUDE_MODEL
-            await safe(claude_loop, v, deadline - 18)
+            v.__init__("B", question + hint, config.VERIFIER_CLAUDE_MODEL)
+            verification["verifier"] = config.VERIFIER_CLAUDE_MODEL
+            await safe(claude_loop, v, vdeadline)
         return v
 
-    verification = {"state": "single", "primary": primary_p[1], "verifier": verifier_p[1], "note": ""}
     pt = asyncio.create_task(safe(_loop(primary_p[0]), p, deadline - 3))
     vt = asyncio.create_task(verify())
     await pt
-    if p.final is None:
-        # primary failed: fall back to the verifier's answer if it finishes
+    if p.final is None:  # primary failed: use the verifier's answer if it gets one
         await vt
-        if v.final is not None:
-            p, v = v, Run("C", question, "")
-    else:
-        await em({"type": "step", "text": "primary_done"})
-        try:
-            await asyncio.wait_for(asyncio.shield(vt), timeout=max(1, deadline - 18 - time.time()))
-        except asyncio.TimeoutError:
-            pass
-
-    if p.final is not None and v.final is not None:
-        ok, missing = figures_agree(p.final.get("key_figures", []), v.final.get("key_figures", []))
-        if p.final.get("status") != v.final.get("status") and "not_found" in (p.final.get("status"), v.final.get("status")):
-            ok = False
-        if ok:
-            verification["state"] = "verified"
-        elif primary_p[0] == "claude" and deadline - time.time() > 22:
-            await em({"type": "step", "text": "reconcile"})
-            vf = v.final
-            vq = "\n".join(f"- {q['purpose']}: {q['sql']}" for q in v.queries.values())[:4000]
-            claude_followup(p, (
-                "An independent analyst (another model) answered the same question differently.\n"
-                f"Their key figures: {vf.get('key_figures')}\nTheir status: {vf.get('status')}\n"
-                f"Their assumptions: {vf.get('assumptions')}\nTheir SQL:\n{vq}\n\n"
-                "Find out which result is correct (run queries to check the difference, e.g. filters on cancelled "
-                "deals, product variants, currency, period). Then call final_answer again with the correct answer. "
-                "Write the answer text for the end user from scratch, exactly as a normal answer: do NOT mention "
-                "the other analyst, a first/second answer or this check in `answer` or `speech` (you may add one "
-                "short line about the cross-check to `assumptions`)."))
-            prev = dict(p.final) if p.final else None
-            p.final = None
-            await safe(claude_loop, p, deadline - 2)
-            if p.final is None:
-                p.final = prev
-            ok2, _ = figures_agree(p.final.get("key_figures", []), vf.get("key_figures", []))
-            verification["state"] = "verified" if ok2 else "reconciled"
-            verification["note"] = "" if ok2 else ", ".join(missing)
-        else:
-            verification["state"] = "mismatch"
-            verification["note"] = ", ".join(missing)
-        verification["verifier_figures"] = v.final.get("key_figures", [])
-    elif not vt.done():
-        vt.cancel()
-
-    f = p.final
-    if f is None:
-        msg = {"ru": "Не удалось получить ответ за отведённое время. Попробуйте переформулировать вопрос.",
-               "uz_cyrl": "Ажратилган вақтда жавоб олинмади. Саволни бошқача беринг.",
-               "uz": "Ajratilgan vaqtda javob olinmadi. Savolni boshqacha bering."}[lang]
-        res = {"id": None, "status": "error", "language": lang, "answer": msg, "speech": msg,
-               "error": p.error or v.error}
-        return res
+        if v.final is None:
+            msg = {"ru": "Не удалось получить ответ за отведённое время. Попробуйте переформулировать вопрос.",
+                   "uz_cyrl": "Ажратилган вақтда жавоб олинмади. Саволни бошқача беринг.",
+                   "uz": "Ajratilgan vaqtda javob olinmadi. Savolni boshqacha bering."}[lang]
+            return {"id": None, "status": "error", "language": lang, "answer": msg, "speech": msg,
+                    "error": p.error or v.error}
+        p, v = v, Run("C", question, "")
+        verification["state"] = "single"
 
     rid = uuid.uuid4().hex[:10]
-    res = {
-        "id": rid, "question": question, "status": f.get("status"), "language": f.get("language", lang),
-        "answer": f.get("answer", ""), "speech": f.get("speech", ""), "assumptions": f.get("assumptions", []),
-        "key_figures": f.get("key_figures", []), "verification": verification,
-        "followups": (f.get("followups") or [])[:3],
-        "numbers_check": {"ok": not p.unbacked, "unbacked": p.unbacked},
-        "queries": _pack_queries(p), "lookups": p.lookups,
-        "verifier_queries": [{"purpose": q["purpose"], "sql": q["sql"]} for q in v.queries.values()],
-        "evidence": await asyncio.to_thread(_evidence, p), "chart": _chart(p),
-        "seconds": round(time.time() - t0, 1), "created": int(time.time()),
-    }
+    res = await asyncio.to_thread(_pack, rid, question, lang, p, v, verification, t0)
     ANSWERS[rid] = res
     _CACHE[key] = rid
     while len(ANSWERS) > 2000:
         ANSWERS.popitem(last=False)
+
+    async def finish():
+        if verification["state"] != "pending":
+            return
+        await vt
+        if v.final is None:
+            verification["state"] = "single"
+        else:
+            _normalize(v.final)
+            ok, missing = figures_agree(p.final.get("key_figures", []), v.final.get("key_figures", []))
+            if p.final.get("status") != v.final.get("status") and "not_found" in (p.final.get("status"), v.final.get("status")):
+                ok = False
+            verification["verifier_figures"] = v.final.get("key_figures", [])
+            if ok:
+                verification["state"] = "verified"
+            elif primary_p[0] == "claude":
+                await em({"type": "step", "text": "reconcile"})
+                vf = v.final
+                vq = "\n".join(f"- {q['purpose']}: {q['sql']}" for q in v.queries.values())[:4000]
+                claude_followup(p, (
+                    "An independent analyst (another model) answered the same question differently.\n"
+                    f"Their key figures: {vf.get('key_figures')}\nTheir status: {vf.get('status')}\n"
+                    f"Their assumptions: {vf.get('assumptions')}\nTheir SQL:\n{vq}\n\n"
+                    "Find out which result is correct (run queries to check the difference, e.g. filters on cancelled "
+                    "deals, product variants, currency, period). Then call final_answer again with the correct answer. "
+                    "Write the answer text for the end user from scratch, exactly as a normal answer: do NOT mention "
+                    "the other analyst, a first/second answer or this check in `answer` or `speech` (you may add one "
+                    "short line about the cross-check to `assumptions`)."))
+                prev = dict(p.final)
+                p.final = None
+                await safe(claude_loop, p, time.time() + 40)
+                if p.final is None:
+                    p.final = prev
+                ok2, _ = figures_agree(p.final.get("key_figures", []), vf.get("key_figures", []))
+                verification["state"] = "verified" if ok2 else "reconciled"
+                verification["note"] = "" if ok2 else ", ".join(missing)
+                if p.final is not prev:
+                    new = await asyncio.to_thread(_pack, rid, question, lang, p, v, verification, t0)
+                    new["seconds"] = res["seconds"]
+                    res.update(new)
+                    await em({"type": "revised", "result": res})
+            else:
+                verification["state"] = "mismatch"
+                verification["note"] = ", ".join(missing)
+        res["verifier_queries"] = [{"purpose": q["purpose"], "sql": q["sql"]} for q in v.queries.values()]
+        res["verification"] = verification
+        res["verify_seconds"] = round(time.time() - t0, 1)
+        await em({"type": "verification", "id": rid, "verification": verification,
+                  "verifier_queries": res["verifier_queries"], "verify_seconds": res["verify_seconds"]})
+
+    async def extras():
+        ex = await make_extras(res)
+        await em({"type": "extras", "id": rid, **ex})
+
+    xt = asyncio.create_task(extras())
+    EXTRAS[rid] = xt
+    xt.add_done_callback(lambda _t: EXTRAS.pop(rid, None))
+    task = asyncio.create_task(finish())
+    VERIFY[rid] = task
+    task.add_done_callback(lambda _t: VERIFY.pop(rid, None))
+    if wait_verify:
+        await task
+        await xt
     return res

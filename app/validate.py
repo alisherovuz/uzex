@@ -71,7 +71,9 @@ def check_answer(answer: str, question: str, results: dict[str, dict], key_figur
             continue
         if not _matches(n, dec, cands):
             unbacked.append(raw)
-    for kf in key_figures or []:
+    for kf in key_figures if isinstance(key_figures, list) else []:
+        if not isinstance(kf, dict):
+            continue
         v = kf.get("value")
         if isinstance(v, (int, float)) and not _matches(float(v), 2, cands) and not _matches(float(v), 0, cands):
             unbacked.append(f"key_figure {kf.get('label')}={v}")

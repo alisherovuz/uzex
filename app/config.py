@@ -8,14 +8,16 @@ WEB_DIR = ROOT / "web"
 ANTHROPIC_API_KEY = os.getenv("ANTHROPIC_API_KEY", "")
 OPENAI_API_KEY = os.getenv("OPENAI_API_KEY", "")
 CLAUDE_MODEL = os.getenv("CLAUDE_MODEL", "claude-sonnet-5-5")
+CLAUDE_EFFORT = os.getenv("CLAUDE_EFFORT", "low")  # low = fastest; empty = model default
+FAST_MODEL = os.getenv("FAST_MODEL", "claude-haiku-5-5")  # speech text + follow-ups
 OPENAI_MODEL = os.getenv("OPENAI_MODEL", "gpt-5")
 OPENAI_REASONING = os.getenv("OPENAI_REASONING", "low")  # for reasoning models; empty disables
 
 ELEVENLABS_API_KEY = os.getenv("ELEVENLABS_API_KEY", "")
 ELEVEN_STT_MODEL = os.getenv("ELEVEN_STT_MODEL", "scribe_v1")
 ELEVEN_TTS_MODEL_UZ = os.getenv("ELEVEN_TTS_MODEL_UZ", "eleven_v3")
-ELEVEN_TTS_MODEL_RU = os.getenv("ELEVEN_TTS_MODEL_RU", "eleven_multilingual_v2")
-ELEVEN_VOICE_ID = os.getenv("ELEVEN_VOICE_ID", "JBFqnCBsd6RMkjVDRZzb")  # last-resort fallback
+ELEVEN_TTS_MODEL_RU = os.getenv("ELEVEN_TTS_MODEL_RU", "eleven_flash_v2_5")  # fast, supports Russian
+ELEVEN_VOICE_ID = os.getenv("ELEVEN_VOICE_ID", "EXAVITQu4vr4xnSDxMaL")  # fallback: "Sarah", young, clear
 ELEVEN_VOICE_ID_UZ = os.getenv("ELEVEN_VOICE_ID_UZ", "")  # empty = auto-pick a native Uzbek voice from the library
 ELEVEN_VOICE_ID_RU = os.getenv("ELEVEN_VOICE_ID_RU", "")
 DEEPGRAM_API_KEY = os.getenv("DEEPGRAM_API_KEY", "")
@@ -27,3 +29,5 @@ TELEGRAM_WEBHOOK_SECRET = os.getenv("TELEGRAM_WEBHOOK_SECRET", "isbotli")
 PUBLIC_URL = os.getenv("PUBLIC_URL", "").rstrip("/")
 
 ANSWER_BUDGET_S = float(os.getenv("ANSWER_BUDGET_S", "75"))  # jury limit is 90 s per answer
+VERIFY_BUDGET_S = float(os.getenv("VERIFY_BUDGET_S", "70"))
+VERIFIER_CLAUDE_MODEL = os.getenv("VERIFIER_CLAUDE_MODEL", "claude-haiku-5-5")

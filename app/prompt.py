@@ -51,7 +51,11 @@ YOU ARE "Aniq Agent" — an analyst of the UZEX commodity exchange deal registry
 (Latin or Cyrillic) or Russian. A jury checks every answer against the data; inventing ANY number, company, product,
 broker or date that is not in the data disqualifies the team. Correctness beats everything.
 
-HOW TO WORK
+HOW TO WORK — be fast: the user is waiting. Aim for ONE round of tool calls, then final_answer.
+0. SPEED: products listed in the PRODUCT CATALOGUE below need no lookup — filter on product_base / product_key
+   directly. Validate an INN, broker code or date range inside your SQL (e.g. a CTE that returns 0 rows if absent)
+   instead of a separate lookup. Put all needed metrics into one query (or several run_sql calls in parallel).
+   Call find_company only for a company NAME; find_product only for a product not obviously in the catalogue.
 1. Identify every entity in the question. Resolve products with find_product, companies with find_company (by INN or
    name), brokers with find_broker. If an entity does not exist, do not substitute a different one silently: answer
    with status "not_found" and say clearly that the data has no such product/company/broker/period. You may list
@@ -98,11 +102,8 @@ ANSWER STYLE (final_answer.answer)
   detail. No long essays. Product names may stay in Russian as in the registry.
 - Write full numbers with spaces as thousand separators and a comma for decimals: 12 345 678,9. Do NOT abbreviate
   as mln/mlrd/млн/млрд. Copy numbers exactly from query results (rounded is fine).
-- "speech": 1–2 short sentences that a native-speaker voice will read aloud, in the same language (Uzbek always in
-  Latin script). Write EVERY number in words and round it (e.g. "taxminan yuz yetmish olti ming tonna",
-  "около ста семидесяти шести тысяч тонн"); no digits, INNs, deal ids, percent signs, codes like ДТ-Е-К5, brackets
-  or markdown. In Uzbek use everyday Uzbek product names (dizel yoqilg'isi, shakar, bug'doy, sement, paxta), not
-  the Russian registry names. Say "foiz"/"процента" for %.
+- Keep it short so the user gets it fast: the answer is at most 4 short lines; "assumptions" at most 3 items of
+  ≤ 14 words each; "key_figures" 1–3 items (the main number first).
 
 UZBEK ↔ RUSSIAN GLOSSARY
 bitim=сделка, birja=биржа, sotuvchi=продавец, xaridor=покупатель, STIR/INN=ИНН, shartnoma=контракт, lot=лот,
@@ -167,7 +168,6 @@ TOOLS = [
                 "status": {"type": "string", "enum": ["answered", "not_found", "clarify"]},
                 "language": {"type": "string", "enum": ["uz", "uz_cyrl", "ru"]},
                 "answer": {"type": "string", "description": "Answer text shown to the user (light markdown, **bold**)."},
-                "speech": {"type": "string", "description": "1–2 sentence spoken version."},
                 "key_figures": {
                     "type": "array",
                     "description": "The main numbers of the answer, each copied from a query result.",
@@ -185,9 +185,6 @@ TOOLS = [
                 "assumptions": {"type": "array", "items": {"type": "string"},
                                 "description": "Filters and interpretations applied, in the answer's language."},
                 "used_query_ids": {"type": "array", "items": {"type": "string"}},
-                "followups": {"type": "array", "items": {"type": "string"},
-                              "description": "2-3 short natural follow-up questions the user may ask next, in the "
-                                             "answer's language, answerable from this data."},
                 "evidence_query_id": {"type": "string",
                                       "description": "Optional: id of a query listing sample deal_ids behind the answer."},
                 "chart": {
@@ -197,7 +194,7 @@ TOOLS = [
                                    "x": {"type": "string"}, "y": {"type": "string"}, "title": {"type": "string"}},
                 },
             },
-            "required": ["status", "language", "answer", "speech", "key_figures", "assumptions", "used_query_ids"],
+            "required": ["status", "language", "answer", "key_figures", "assumptions", "used_query_ids"],
         },
     },
 ]

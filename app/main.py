@@ -26,11 +26,29 @@ async def startup():
     if config.OPENAI_API_KEY:
         asyncio.create_task(_check_openai())
     asyncio.create_task(voice.init_voices())
+    if config.ANTHROPIC_API_KEY:
+        asyncio.create_task(_keep_warm())
     if config.TELEGRAM_BOT_TOKEN and config.PUBLIC_URL:
         asyncio.create_task(tg.set_webhook())
     log.info("ready: claude=%s openai=%s eleven=%s deepgram=%s telegram=%s", bool(config.ANTHROPIC_API_KEY),
              bool(config.OPENAI_API_KEY), bool(config.ELEVENLABS_API_KEY), bool(config.DEEPGRAM_API_KEY),
              bool(config.TELEGRAM_BOT_TOKEN))
+
+
+async def _keep_warm():
+    """Keep the model's prompt cache warm (it expires after ~5 min) so the first question is not slower."""
+    import anthropic
+    from .prompt import TOOLS
+    client = anthropic.AsyncAnthropic(api_key=config.ANTHROPIC_API_KEY, max_retries=1)
+    system = [{"type": "text", "text": get_system(), "cache_control": {"type": "ephemeral"}}]
+    while True:
+        for model in {config.CLAUDE_MODEL, config.VERIFIER_CLAUDE_MODEL}:
+            try:
+                await client.messages.create(model=model, max_tokens=1, system=system, tools=TOOLS,
+                                             messages=[{"role": "user", "content": "ping"}])
+            except Exception as e:  # noqa: BLE001
+                log.warning("keep-warm %s: %s", model, str(e)[:120])
+        await asyncio.sleep(240)
 
 
 async def _check_openai():
@@ -83,7 +101,7 @@ async def ask(payload: dict):
     q = (payload.get("question") or "").strip()
     if not q:
         raise HTTPException(400, "question is required")
-    return await agent.answer(q[:1000])
+    return await agent.answer(q[:1000], wait_verify=payload.get("wait_verify", True))
 
 
 @app.post("/api/ask/stream")
@@ -100,9 +118,25 @@ async def ask_stream(payload: dict):
         try:
             res = await agent.answer(q, emit)
             await queue.put({"type": "final", "result": res})
+            x = agent.EXTRAS.get(res.get("id") or "")
+            t = agent.VERIFY.get(res.get("id") or "")
+            if x:
+                try:
+                    await asyncio.wait_for(asyncio.shield(x), timeout=30)
+                except asyncio.TimeoutError:
+                    pass
+            if t:
+                try:
+                    await asyncio.wait_for(asyncio.shield(t), timeout=90)
+                except asyncio.TimeoutError:
+                    pass
+            elif res.get("id"):
+                await queue.put({"type": "verification", "id": res["id"], "verification": res.get("verification"),
+                                 "verifier_queries": res.get("verifier_queries", [])})
         except Exception as e:  # noqa: BLE001
             log.exception("answer failed")
             await queue.put({"type": "final", "result": {"status": "error", "answer": f"Error: {e}"}})
+        await queue.put({"type": "done"})
 
     task = asyncio.create_task(worker())
 
@@ -114,7 +148,7 @@ async def ask_stream(payload: dict):
                 yield json.dumps({"type": "ping"}) + "\n"
                 continue
             yield json.dumps(ev, ensure_ascii=False, default=str) + "\n"
-            if ev.get("type") == "final":
+            if ev.get("type") == "done":
                 break
         await task
 

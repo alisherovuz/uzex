@@ -42,6 +42,19 @@ button:focus{outline:none}button:focus-visible{outline:2px solid var(--em2);outl
 .seg button{border:0;background:none;padding:7px 16px;border-radius:999px;font-size:14px;font-weight:600;color:var(--ink2);transition:all .2s}
 .seg button.on{background:#fff;color:var(--ink);box-shadow:0 1px 3px rgba(0,0,0,.12)}
 .seg.small button{padding:6px 12px;font-size:13px}
+.langdd{position:relative}
+.lbtn{display:flex;align-items:center;gap:6px;border:1px solid var(--line);background:#fff;border-radius:999px;padding:4px 10px 4px 4px;box-shadow:0 1px 2px rgba(0,0,0,.04);transition:box-shadow .2s}
+.lbtn:hover{box-shadow:0 2px 8px rgba(0,0,0,.08)}
+.flag{width:28px;height:28px;border-radius:50%;overflow:hidden;display:block;box-shadow:inset 0 0 0 1px rgba(0,0,0,.08);flex:none}
+.flag svg{width:100%;height:100%;display:block}
+.chev{width:15px;height:15px;color:var(--mute);transition:transform .2s}
+.langdd.open .chev{transform:rotate(180deg)}
+.lmenu{position:absolute;right:0;top:calc(100% + 8px);background:#fff;border-radius:16px;box-shadow:var(--shadow2);border:1px solid var(--line);padding:6px;min-width:168px;opacity:0;transform:translateY(-6px) scale(.98);pointer-events:none;transition:all .18s;z-index:40}
+.langdd.open .lmenu{opacity:1;transform:none;pointer-events:auto}
+.lmenu button{display:flex;align-items:center;gap:10px;width:100%;border:0;background:none;padding:8px 10px;border-radius:10px;font-size:15px;font-weight:600;text-align:left}
+.lmenu button:hover{background:var(--soft)}
+.lmenu button .flag{width:26px;height:26px}
+
 .nav .mid{margin:0 auto}
 /* ---------- layout */
 .view{display:none}
@@ -238,7 +251,10 @@ footer img{width:22px;vertical-align:middle;margin-right:6px;opacity:.9}
 <nav class="nav">
   <div class="brand" id="brand"><img src="/static/logo.svg" alt="Aniq Agent"><b>aniq<em>agent</em></b><span>UZEX</span></div>
   <div class="mid seg" id="tabs"><button data-v="ask" class="on" data-i="tAsk">So'rash</button><button data-v="market" data-i="tMarket">Bozor</button></div>
-  <div class="seg small" id="langs"><button data-l="uz" class="on">UZ</button><button data-l="ru">RU</button></div>
+  <div class="langdd" id="langdd">
+    <button class="lbtn" id="langBtn" aria-label="Til / Язык"><span class="flag" id="flagCur"></span><svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg></button>
+    <div class="lmenu" id="langMenu"></div>
+  </div>
 </nav>
 
 <!-- ============ ASK VIEW -->
@@ -333,7 +349,7 @@ const I18N = {
   topH:"Yetakchi tovarlar",topS:"mlrd so'm · bosing — tahlil qiling",regH:"Hududlar",regS:"mlrd so'm · sotuvchi ombori joylashuvi",
   kAmt:"Savdo hajmi",kAmtU:"mlrd so'm",kAmtS:"bekor qilinganlarsiz",kDeals:"Bitimlar",kDealsS:"2022–2026",kCancel:"Bekor qilingan",kCancelS:"ta bitim to'lanmagan",kPart:"Ishtirokchilar",kPartS:"sotuvchi · xaridor",
   you:"Siz",heard:"Ovozli savol",thinking:"Hisoblanmoqda",proof:"Isbotni ko'rish",hide:"Isbotni yopish",listen:"Tinglash",copy:"Nusxa",copied:"Nusxalandi",
-  vOk:"2 model tasdiqladi",vRec:"Qayta tekshirildi",vBad:"Modellar farq qildi",vSingle:"Bazadan hisoblandi",gOk:"Barcha raqamlar SQL natijasidan",gBad:"Tekshirilmagan raqam bor",notFound:"Ma'lumotlarda yo'q",
+  vOk:"2 model tasdiqladi",vRec:"Qayta tekshirildi",vBad:"Modellar farq qildi",vSingle:"Bazadan hisoblandi",vPend:"Mustaqil tekshiruv…",gOk:"Barcha raqamlar SQL natijasidan",gBad:"Tekshirilmagan raqam bor",notFound:"Ma'lumotlarda yo'q",
   hAssume:"Qanday hisoblandi",hKf:"Asosiy raqamlar",hEv:"Namuna bitimlar — tekshirish mumkin",hQ:"SQL so'rovlar",hV:"Mustaqil tekshiruv so'rovlari",hChart:"Grafik",csv:"CSV yuklab olish",rows:"qator",
   st_start:"Savol tahlil qilinmoqda",st_find_product:"Tovar",st_find_company:"Kompaniya",st_find_broker:"Broker",st_found:"topildi",st_none:"topilmadi",st_guard:"Tekshirilmagan raqam rad etildi, qayta hisoblanmoqda",st_primary:"Javob tayyor — mustaqil tekshiruv",st_reconcile:"Natijalar solishtirilmoqda",
   micNo:"Mikrofonga ruxsat berilmadi",voiceErr:"Ovozni tanib bo'lmadi — qaytadan gapiring",listening:"Tinglayapman… to'xtatish uchun yana bosing",rec:"Tinglayapman",err:"Xatolik yuz berdi",sec:"s",
@@ -352,7 +368,7 @@ const I18N = {
   topH:"Лидирующие товары",topS:"млрд сум · нажмите для анализа",regH:"Регионы",regS:"млрд сум · по складу продавца",
   kAmt:"Оборот",kAmtU:"млрд сум",kAmtS:"без аннулированных",kDeals:"Сделки",kDealsS:"2022–2026",kCancel:"Аннулировано",kCancelS:"сделок не оплачено",kPart:"Участники",kPartS:"продавцы · покупатели",
   you:"Вы",heard:"Голосовой вопрос",thinking:"Считаю",proof:"Показать доказательство",hide:"Скрыть доказательство",listen:"Прослушать",copy:"Копировать",copied:"Скопировано",
-  vOk:"Подтверждено 2 моделями",vRec:"Перепроверено",vBad:"Модели разошлись",vSingle:"Рассчитано по базе",gOk:"Все числа из результатов SQL",gBad:"Есть непроверенное число",notFound:"Нет в данных",
+  vOk:"Подтверждено 2 моделями",vRec:"Перепроверено",vBad:"Модели разошлись",vSingle:"Рассчитано по базе",vPend:"Независимая проверка…",gOk:"Все числа из результатов SQL",gBad:"Есть непроверенное число",notFound:"Нет в данных",
   hAssume:"Как посчитано",hKf:"Ключевые числа",hEv:"Примеры сделок — можно проверить",hQ:"SQL-запросы",hV:"Запросы независимой проверки",hChart:"График",csv:"Скачать CSV",rows:"строк",
   st_start:"Разбираю вопрос",st_find_product:"Товар",st_find_company:"Компания",st_find_broker:"Брокер",st_found:"найдено",st_none:"не найдено",st_guard:"Непроверенное число отклонено, пересчитываю",st_primary:"Ответ готов — независимая проверка",st_reconcile:"Сверяю результаты",
   micNo:"Нет доступа к микрофону",voiceErr:"Не удалось распознать — повторите",listening:"Слушаю… нажмите ещё раз, чтобы остановить",rec:"Слушаю",err:"Произошла ошибка",sec:"с",
@@ -386,13 +402,26 @@ function applyLang(){
   document.documentElement.lang = LANG;
   document.querySelectorAll("[data-i]").forEach(el => { const v = t(el.dataset.i); if (typeof v === "string") el.innerHTML = v; });
   document.querySelectorAll("[data-ip]").forEach(el => el.placeholder = innerWidth < 600 ? (LANG==="ru" ? "Спросите о сделках…" : "Savolingizni yozing…") : t(el.dataset.ip));
-  document.querySelectorAll("#langs button").forEach(b => b.classList.toggle("on", b.dataset.l === LANG));
+  renderLang();
   $("#chips").innerHTML = t("ex").map(q => `<button>${esc(q)}</button>`).join("");
   $("#chips").querySelectorAll("button").forEach(b => b.onclick = () => ask(b.textContent));
   $("#briefText").style.display = "none";
   if (OVERVIEW) renderDash();
 }
-document.querySelectorAll("#langs button").forEach(b => b.onclick = () => { LANG = b.dataset.l; localStorage.setItem("aniq_lang", LANG); applyLang(); });
+const FLAGS = {
+  uz:`<svg viewBox="0 0 30 30"><rect width="30" height="10" fill="#0099b5"/><rect y="10" width="30" height="10" fill="#fff"/><rect y="20" width="30" height="10" fill="#1eb53a"/><rect y="9.4" width="30" height="1.2" fill="#ce1126"/><rect y="19.4" width="30" height="1.2" fill="#ce1126"/><circle cx="8.6" cy="5" r="3.2" fill="#fff"/><circle cx="9.9" cy="5" r="2.8" fill="#0099b5"/><g fill="#fff"><circle cx="13.2" cy="3.2" r=".55"/><circle cx="15.2" cy="3.2" r=".55"/><circle cx="17.2" cy="3.2" r=".55"/><circle cx="15.2" cy="5.2" r=".55"/><circle cx="17.2" cy="5.2" r=".55"/><circle cx="13.2" cy="5.2" r=".55"/><circle cx="17.2" cy="7.2" r=".55"/><circle cx="15.2" cy="7.2" r=".55"/></g></svg>`,
+  ru:`<svg viewBox="0 0 30 30"><rect width="30" height="10" fill="#fff"/><rect y="10" width="30" height="10" fill="#0039a6"/><rect y="20" width="30" height="10" fill="#d52b1e"/></svg>`
+};
+const LNAME = {uz:"O'zbekcha", ru:"Русский"};
+function renderLang(){
+  $("#flagCur").innerHTML = FLAGS[LANG];
+  const other = LANG === "uz" ? "ru" : "uz";
+  $("#langMenu").innerHTML = `<button data-l="${other}"><span class="flag">${FLAGS[other]}</span>${LNAME[other]}</button>`;
+  $("#langMenu button").onclick = e => { e.stopPropagation(); LANG = other; localStorage.setItem("aniq_lang", LANG); $("#langdd").classList.remove("open"); applyLang(); };
+}
+$("#langBtn").onclick = e => { e.stopPropagation(); $("#langdd").classList.toggle("open"); };
+document.addEventListener("click", () => $("#langdd").classList.remove("open"));
+
 
 // ----- dashboard
 async function loadDash(){ try { OVERVIEW = await (await fetch("/api/overview")).json(); renderDash(); } catch(e) {} }
@@ -494,25 +523,35 @@ function table(cols, rows){
   return `<div class="tbl"><table><thead><tr>${cols.map(c=>`<th>${esc(c)}</th>`).join("")}</tr></thead><tbody>${
     rows.map(r=>`<tr>${r.map((v,ci)=> typeof v==="number" ? `<td class="n">${/(^|_)(id|inn|year|code)$|^№$/i.test(cols[ci]) ? v : fmt(v, Number.isInteger(v)?0:2)}</td>` : `<td>${esc(Array.isArray(v)? v.join(", ") : v)}</td>`).join("")}</tr>`).join("")}</tbody></table></div>`;
 }
-function renderAnswer(res){
+function pillsHTML(res){
+  const v = res.verification || {}, nc = res.numbers_check || {}, pills = [];
+  if (res.status === "not_found") pills.push(`<span class="pill warn">${IC.search}${t("notFound")}</span>`);
+  if (res.status === "answered" || (res.status === "not_found" && v.state === "pending")){
+    pills.push({verified:`<span class="pill ok">${IC.check}${t("vOk")}</span>`, reconciled:`<span class="pill ok">${IC.check}${t("vRec")}</span>`,
+      mismatch:`<span class="pill bad" title="${esc(v.note)}">${IC.alert}${t("vBad")}</span>`, single:`<span class="pill">${IC.db}${t("vSingle")}</span>`,
+      pending:`<span class="pill"><span class="spin" style="width:13px;height:13px;border-width:2px"></span>${t("vPend")}</span>`}[v.state] || "");
+  }
+  if (res.status === "answered") pills.push(nc.ok ? `<span class="pill ok">${IC.shield}${t("gOk")}</span>` : `<span class="pill warn">${IC.alert}${t("gBad")}</span>`);
+  if (res.seconds != null) pills.push(`<span class="pill">${IC.clock}${String(res.seconds).replace(".",",")} ${t("sec")}</span>`);
+  return pills.join("");
+}
+function vqHTML(res){
+  const v = res.verification || {};
+
+  return vq ? `<h4>${t("hV")} · ${esc(v.verifier||"")}</h4>${vq}` : "";
+}
+function renderAnswer(res, opts){
   const L = res.language === "ru" ? "ru" : "uz";
   const a = document.createElement("div"); a.className = "card ans";
-  const v = res.verification || {}, nc = res.numbers_check || {};
-  const pills = [];
-  if (res.status === "not_found") pills.push(`<span class="pill warn">${IC.search}${t("notFound")}</span>`);
-  if (res.status === "answered"){
-    pills.push({verified:`<span class="pill ok">${IC.check}${t("vOk")}</span>`, reconciled:`<span class="pill ok">${IC.check}${t("vRec")}</span>`,
-      mismatch:`<span class="pill bad" title="${esc(v.note)}">${IC.alert}${t("vBad")}</span>`, single:`<span class="pill">${IC.db}${t("vSingle")}</span>`}[v.state] || "");
-    pills.push(nc.ok ? `<span class="pill ok">${IC.shield}${t("gOk")}</span>` : `<span class="pill warn">${IC.alert}${t("gBad")}</span>`);
-  }
-  if (res.seconds != null) pills.push(`<span class="pill">${IC.clock}${String(res.seconds).replace(".",",")} ${t("sec")}</span>`);
+  const v = res.verification || {};
+  const pills = [pillsHTML(res)];
   const kf = (res.key_figures||[]).map(k => `<div class="kf"><div class="v">${fmt(k.value, Number.isInteger(k.value)?0:2)} <span style="font-size:13px;color:var(--mute);font-weight:600">${esc(k.unit||"")}</span></div><div class="l">${esc(k.label)}</div></div>`).join("");
   const ev = res.evidence || [];
   const evT = ev.length ? table(t("cols"), ev.map(o => [o.deal_id, o.deal_date, o.product_raw, fmt(o.volume)+" "+(o.unit||""), fmt(o.amount)+" "+(o.currency==="USD"?"$":"so'm"), o.status, (o.seller||"")+" · "+o.seller_inn, (o.buyer||"")+" · "+o.buyer_inn])) : "";
   const qs = (res.queries||[]).map(q => `<details class="sq"><summary><span class="tag">${esc(q.id)}</span>${esc(q.purpose)}<span class="m">${q.error ? "error" : (q.row_count+" "+t("rows")+" · "+(q.ms??"?")+" ms")}</span></summary>
       <pre class="code">${esc(q.sql)}</pre><div class="sqbody">${q.error ? `<span style="color:var(--red)">${esc(q.error)}</span>` : table(q.columns, q.rows)}
       ${res.id && !q.error ? `<a class="dl" href="/api/answer/${res.id}/${q.id}.csv">↓ ${t("csv")}</a>`:""}</div></details>`).join("");
-  const vq = (res.verifier_queries||[]).map(q => `<details class="sq"><summary>${esc(q.purpose)}</summary><pre class="code">${esc(q.sql)}</pre></details>`).join("");
+
   const chartId = "c" + Math.random().toString(36).slice(2);
   const k0 = (res.status === "answered" && (res.key_figures||[])[0]) || null;
   const stat = k0 ? `<div class="stat"><div class="n">${fmt(k0.value, Number.isInteger(k0.value)?0:(Math.abs(k0.value)>=1000?1:2))}<small>${esc(k0.unit||"")}</small></div><div class="l">${esc(k0.label)}</div></div>` : "";
@@ -524,10 +563,11 @@ function renderAnswer(res){
       ${res.chart ? `<h4>${t("hChart")}</h4><div class="tbl" style="padding:14px;max-height:none"><canvas id="${chartId}" height="120"></canvas></div>`:""}
       ${evT ? `<h4>${t("hEv")}</h4>${evT}`:""}
       ${qs ? `<h4>${t("hQ")}</h4>${qs}`:""}
-      ${vq ? `<h4>${t("hV")} · ${esc(v.verifier||"")}</h4>${vq}`:""}
+      <div class="vqs">${vqHTML(res)}</div>
     </div>` : ""}`;
-  thread.appendChild(a);
-  if ((res.followups||[]).length){
+  a._res = res;
+  if (opts && opts.replace){ opts.replace.replaceWith(a); } else thread.appendChild(a);
+  if (!(opts && opts.replace) && (res.followups||[]).length){
     const fu = document.createElement("div"); fu.className = "fu";
     fu.innerHTML = res.followups.map(q => `<button>${esc(q)}</button>`).join("");
     fu.querySelectorAll("button").forEach(b => b.onclick = () => { fu.remove(); ask(b.textContent); });
@@ -537,7 +577,7 @@ function renderAnswer(res){
     a.querySelector(".bp").onclick = () => { const p = a.querySelector(".proof"); p.classList.toggle("open");
       a.querySelector(".bp span").textContent = p.classList.contains("open") ? t("hide") : t("proof");
       if (res.chart && !a._chart) a._chart = drawChart(chartId, res.chart); };
-    a.querySelector(".bl").onclick = () => speak(res.speech || res.answer, L);
+    a.querySelector(".bl").onclick = () => speak(a._res.speech || res.answer.replace(/\*\*/g,""), L);
     a.querySelector(".bc").onclick = () => { navigator.clipboard.writeText(res.answer.replace(/\*\*/g,"") + "\n" + location.origin + "/a/" + res.id); toast(t("copied")); };
   }
   scrollEnd(); return a;
@@ -554,6 +594,7 @@ async function ask(text, heard){
   busy = true; $("#send").disabled = true; $("#inp").value = ""; autosize();
   addQ(text, heard);
   const p = progress();
+  let card = null;
   try {
     const r = await fetch("/api/ask/stream", {method:"POST", headers:{"Content-Type":"application/json"}, body:JSON.stringify({question:text})});
     const reader = r.body.getReader(); const dec = new TextDecoder(); let buf = "", final = null;
@@ -563,14 +604,33 @@ async function ask(text, heard){
       let i; while ((i = buf.indexOf("\n")) >= 0){
         const line = buf.slice(0,i).trim(); buf = buf.slice(i+1); if (!line) continue;
         const ev = JSON.parse(line);
-        if (ev.type === "final") final = ev.result; else onEvent(p, ev);
+        if (ev.type === "final"){
+          final = ev.result; p.done(); p.el.remove();
+          card = renderAnswer(final || {answer:t("err")});
+          if (final && final.id) history.replaceState(null, "", "/a/" + final.id);
+          busy = false; $("#send").disabled = false;
+        } else if (ev.type === "verification" && card){
+          Object.assign(card._res, {verification: ev.verification, verifier_queries: ev.verifier_queries});
+          card.querySelector(".meta").innerHTML = pillsHTML(card._res);
+          const vq = card.querySelector(".vqs"); if (vq) vq.innerHTML = vqHTML(card._res);
+        } else if (ev.type === "extras" && card){
+          card._res.speech = ev.speech; card._res.followups = ev.followups;
+          if ((ev.followups||[]).length && !card._fu){
+            const fu = document.createElement("div"); fu.className = "fu"; card._fu = fu;
+            fu.innerHTML = ev.followups.map(q => `<button>${esc(q)}</button>`).join("");
+            fu.querySelectorAll("button").forEach(b => b.onclick = () => { fu.remove(); ask(b.textContent); });
+            card.after(fu);
+          }
+          if (heard && ev.speech) speak(ev.speech, card._res.language);
+        } else if (ev.type === "revised" && card){
+          const open = card.querySelector(".proof.open");
+          card = renderAnswer(ev.result, {replace: card});
+          if (open) card.querySelector(".bp").click();
+        } else if (!card) onEvent(p, ev);
       }
     }
-    p.done(); p.el.remove();
-    renderAnswer(final || {answer:t("err")});
-    if (final && final.id) history.replaceState(null, "", "/a/" + final.id);
-    if (heard && final && final.speech) speak(final.speech, final.language);
-  } catch(e){ p.done(); p.add("bad", t("err") + ": " + esc(e.message)); }
+    if (!card){ p.done(); p.el.remove(); renderAnswer({answer:t("err")}); }
+  } catch(e){ if (!card){ p.done(); p.add("bad", t("err") + ": " + esc(e.message)); } }
   busy = false; $("#send").disabled = false; $("#inp").focus();
 }
 $("#send").onclick = () => ask($("#inp").value);

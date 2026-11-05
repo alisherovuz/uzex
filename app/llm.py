@@ -79,6 +79,7 @@ def _dump(obj) -> str:
 
 # ------------------------------------------------------------------ Claude
 _CLAUDE_TEMP_OK = True
+_EFFORT_OK: dict = {}
 
 
 async def claude_loop(run: Run, emit: Emit | None, deadline: float, max_turns: int = 10) -> Run:
@@ -101,7 +102,17 @@ async def claude_loop(run: Run, emit: Emit | None, deadline: float, max_turns: i
             else:
                 last["content"] += "\n\n" + nudge
         kwargs = dict(model=run.model, max_tokens=3000, system=system, tools=TOOLS, messages=messages)
-        resp = await asyncio.wait_for(client.messages.create(**kwargs), timeout=max(5, remaining))
+        if config.CLAUDE_EFFORT and _EFFORT_OK.get(run.model, True):
+            kwargs["extra_body"] = {"output_config": {"effort": config.CLAUDE_EFFORT}}
+        try:
+            resp = await asyncio.wait_for(client.messages.create(**kwargs), timeout=max(5, remaining))
+        except anthropic.BadRequestError as e:
+            if "extra_body" in kwargs and ("effort" in str(e) or "output_config" in str(e)):
+                _EFFORT_OK[run.model] = False
+                kwargs.pop("extra_body")
+                resp = await asyncio.wait_for(client.messages.create(**kwargs), timeout=max(5, deadline - time.time()))
+            else:
+                raise
         messages.append({"role": "assistant", "content": [b.model_dump(exclude_none=True) for b in resp.content]})
         uses = [b for b in resp.content if b.type == "tool_use"]
         if not uses:

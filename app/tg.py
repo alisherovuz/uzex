@@ -61,6 +61,7 @@ def format_answer(res: dict) -> str:
         "reconciled": "🟡 Natija qayta tekshirildi" if not ru else "🟡 Результат перепроверен",
         "mismatch": "⚠️ Modellar natijasi farq qildi — ehtiyot bo'ling" if not ru else "⚠️ Результаты моделей расходятся",
         "single": "☑️ Ma'lumotlar bazasidan hisoblandi" if not ru else "☑️ Рассчитано по базе данных",
+        "pending": "⏳ Mustaqil tekshiruv davom etmoqda…" if not ru else "⏳ Идёт независимая проверка…",
     }.get(v)
     if res.get("status") == "answered" and badge:
         parts.append(badge)
@@ -101,8 +102,26 @@ async def answer_and_reply(chat_id: int, question: str, reply_to: int | None, sp
     finally:
         stop.set()
         await typing
-    await call("sendMessage", json={"chat_id": chat_id, "text": format_answer(res), "parse_mode": "HTML",
-                                    "reply_to_message_id": reply_to, "disable_web_page_preview": True})
+    sent = await call("sendMessage", json={"chat_id": chat_id, "text": format_answer(res), "parse_mode": "HTML",
+                                           "reply_to_message_id": reply_to, "disable_web_page_preview": True})
+    task = agent.VERIFY.get(res.get("id") or "")
+    if task:
+        async def update():
+            try:
+                await asyncio.wait_for(asyncio.shield(task), timeout=90)
+            except Exception:  # noqa: BLE001
+                pass
+            mid = (sent.get("result") or {}).get("message_id")
+            if mid:
+                await call("editMessageText", json={"chat_id": chat_id, "message_id": mid, "text": format_answer(res),
+                                                    "parse_mode": "HTML", "disable_web_page_preview": True})
+        asyncio.create_task(update())
+    x = agent.EXTRAS.get(res.get("id") or "")
+    if speak and x:
+        try:
+            await asyncio.wait_for(asyncio.shield(x), timeout=25)
+        except Exception:  # noqa: BLE001
+            pass
     if speak and res.get("speech"):
         audio = await voice.tts(res["speech"], "ru" if res.get("language") == "ru" else "uz")
         if audio:
