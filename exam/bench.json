@@ -1,0 +1,1769 @@
+[
+ {
+  "id": "cnt_0",
+  "lang": "uz",
+  "q": "2024-yilda karbamid bo'yicha nechta bitim tuzilgan?",
+  "tol": 0.005,
+  "nums_any": [
+   2426.0,
+   2278.0
+  ]
+ },
+ {
+  "id": "cnt_1",
+  "lang": "ru",
+  "q": "Сколько сделок по товару «мазут» заключено в 2026 году?",
+  "tol": 0.005,
+  "nums_any": [
+   1004.0,
+   936.0
+  ]
+ },
+ {
+  "id": "cnt_2",
+  "lang": "uz",
+  "q": "2023-yilda karbamid bo'yicha nechta bitim tuzilgan?",
+  "tol": 0.005,
+  "nums_any": [
+   2057.0,
+   1916.0
+  ]
+ },
+ {
+  "id": "cnt_3",
+  "lang": "ru",
+  "q": "Сколько сделок по товару «рис» заключено в 2026 году?",
+  "tol": 0.005,
+  "nums_any": [
+   825.0,
+   783.0
+  ]
+ },
+ {
+  "id": "cnt_4",
+  "lang": "uz",
+  "q": "2026-yilda suyultirilgan gaz bo'yicha nechta bitim tuzilgan?",
+  "tol": 0.005,
+  "nums_any": [
+   3442.0,
+   3199.0
+  ]
+ },
+ {
+  "id": "cnt_5",
+  "lang": "ru",
+  "q": "Сколько сделок по товару «мука» заключено в 2023 году?",
+  "tol": 0.005,
+  "nums_any": [
+   5979.0,
+   5567.0
+  ]
+ },
+ {
+  "id": "cnt_6",
+  "lang": "uz",
+  "q": "2026-yilda shakar bo'yicha nechta bitim tuzilgan?",
+  "tol": 0.005,
+  "nums_any": [
+   2723.0,
+   2540.0
+  ]
+ },
+ {
+  "id": "cnt_7",
+  "lang": "ru",
+  "q": "Сколько сделок по товару «пшеница» заключено в 2022 году?",
+  "tol": 0.005,
+  "nums_any": [
+   6379.0,
+   5984.0
+  ]
+ },
+ {
+  "id": "cnt_8",
+  "lang": "uz",
+  "q": "2022-yilda bitum bo'yicha nechta bitim tuzilgan?",
+  "tol": 0.005,
+  "nums_any": [
+   1113.0,
+   1034.0
+  ]
+ },
+ {
+  "id": "cnt_9",
+  "lang": "ru",
+  "q": "Сколько сделок по товару «мука» заключено в 2022 году?",
+  "tol": 0.005,
+  "nums_any": [
+   5333.0,
+   4961.0
+  ]
+ },
+ {
+  "id": "cnt_10",
+  "lang": "uz",
+  "q": "2024-yilda suyultirilgan gaz bo'yicha nechta bitim tuzilgan?",
+  "tol": 0.005,
+  "nums_any": [
+   3402.0,
+   3174.0
+  ]
+ },
+ {
+  "id": "cnt_11",
+  "lang": "ru",
+  "q": "Сколько сделок по товару «полиэтилен» заключено в 2025 году?",
+  "tol": 0.005,
+  "nums_any": [
+   4532.0,
+   4205.0
+  ]
+ },
+ {
+  "id": "cnt_12",
+  "lang": "uz",
+  "q": "2024-yilda mis katod bo'yicha nechta bitim tuzilgan?",
+  "tol": 0.005,
+  "nums_any": [
+   997.0,
+   930.0
+  ]
+ },
+ {
+  "id": "cnt_13",
+  "lang": "ru",
+  "q": "Сколько сделок по товару «полипропилен» заключено в 2025 году?",
+  "tol": 0.005,
+  "nums_any": [
+   2218.0,
+   2061.0
+  ]
+ },
+ {
+  "id": "cnt_14",
+  "lang": "uz",
+  "q": "2022-yilda mazut bo'yicha nechta bitim tuzilgan?",
+  "tol": 0.005,
+  "nums_any": [
+   781.0,
+   724.0
+  ]
+ },
+ {
+  "id": "cnt_15",
+  "lang": "ru",
+  "q": "Сколько сделок по товару «арматура» заключено в 2022 году?",
+  "tol": 0.005,
+  "nums_any": [
+   2133.0,
+   2007.0
+  ]
+ },
+ {
+  "id": "cnt_16",
+  "lang": "uz",
+  "q": "2024-yilda bitum bo'yicha nechta bitim tuzilgan?",
+  "tol": 0.005,
+  "nums_any": [
+   1373.0,
+   1265.0
+  ]
+ },
+ {
+  "id": "cnt_17",
+  "lang": "ru",
+  "q": "Сколько сделок по товару «мука» заключено в 2023 году?",
+  "tol": 0.005,
+  "nums_any": [
+   5979.0,
+   5567.0
+  ]
+ },
+ {
+  "id": "cnt_18",
+  "lang": "uz",
+  "q": "2022-yilda bitum bo'yicha nechta bitim tuzilgan?",
+  "tol": 0.005,
+  "nums_any": [
+   1113.0,
+   1034.0
+  ]
+ },
+ {
+  "id": "cnt_19",
+  "lang": "ru",
+  "q": "Сколько сделок по товару «полипропилен» заключено в 2024 году?",
+  "tol": 0.005,
+  "nums_any": [
+   2049.0,
+   1911.0
+  ]
+ },
+ {
+  "id": "ton_0",
+  "lang": "uz",
+  "q": "2025-yilda qancha tonna suyultirilgan gaz sotilgan (bekor qilinganlarsiz)?",
+  "tol": 0.004,
+  "nums_any": [
+   81459.0,
+   81459.0
+  ]
+ },
+ {
+  "id": "ton_1",
+  "lang": "ru",
+  "q": "Сколько тонн товара «пшеница» продано в 2025 году (без аннулированных)?",
+  "tol": 0.004,
+  "nums_any": [
+   2191361.0,
+   2191361.0
+  ]
+ },
+ {
+  "id": "ton_2",
+  "lang": "uz",
+  "q": "2022-yilda qancha tonna mazut sotilgan (bekor qilinganlarsiz)?",
+  "tol": 0.004,
+  "nums_any": [
+   35410.0,
+   35410.0
+  ]
+ },
+ {
+  "id": "ton_3",
+  "lang": "ru",
+  "q": "Сколько тонн товара «мука» продано в 2026 году (без аннулированных)?",
+  "tol": 0.004,
+  "nums_any": [
+   104815.9,
+   104816.0
+  ]
+ },
+ {
+  "id": "ton_4",
+  "lang": "uz",
+  "q": "2025-yilda qancha tonna mazut sotilgan (bekor qilinganlarsiz)?",
+  "tol": 0.004,
+  "nums_any": [
+   50208.0,
+   50208.0
+  ]
+ },
+ {
+  "id": "ton_5",
+  "lang": "ru",
+  "q": "Сколько тонн товара «медный катод» продано в 2025 году (без аннулированных)?",
+  "tol": 0.004,
+  "nums_any": [
+   23274.0,
+   23274.0
+  ]
+ },
+ {
+  "id": "ton_6",
+  "lang": "uz",
+  "q": "2026-yilda qancha tonna mazut sotilgan (bekor qilinganlarsiz)?",
+  "tol": 0.004,
+  "nums_any": [
+   47149.0,
+   47149.0
+  ]
+ },
+ {
+  "id": "ton_7",
+  "lang": "ru",
+  "q": "Сколько тонн товара «сахар» продано в 2026 году (без аннулированных)?",
+  "tol": 0.004,
+  "nums_any": [
+   97835.0,
+   97835.0
+  ]
+ },
+ {
+  "id": "ton_8",
+  "lang": "uz",
+  "q": "2023-yilda qancha tonna paxta (xom ashyo) sotilgan (bekor qilinganlarsiz)?",
+  "tol": 0.004,
+  "nums_any": [
+   1494007.0,
+   1494007.0
+  ]
+ },
+ {
+  "id": "ton_9",
+  "lang": "ru",
+  "q": "Сколько тонн товара «цемент» продано в 2026 году (без аннулированных)?",
+  "tol": 0.004,
+  "nums_any": [
+   1277077.0,
+   1277077.0
+  ]
+ },
+ {
+  "id": "ton_10",
+  "lang": "uz",
+  "q": "2026-yilda qancha tonna karbamid sotilgan (bekor qilinganlarsiz)?",
+  "tol": 0.004,
+  "nums_any": [
+   149419.0,
+   149419.0
+  ]
+ },
+ {
+  "id": "ton_11",
+  "lang": "ru",
+  "q": "Сколько тонн товара «мука» продано в 2025 году (без аннулированных)?",
+  "tol": 0.004,
+  "nums_any": [
+   117631.0,
+   117631.0
+  ]
+ },
+ {
+  "id": "ton_12",
+  "lang": "uz",
+  "q": "2025-yilda qancha tonna ammiakli selitra sotilgan (bekor qilinganlarsiz)?",
+  "tol": 0.004,
+  "nums_any": [
+   166388.0,
+   166388.0
+  ]
+ },
+ {
+  "id": "ton_13",
+  "lang": "ru",
+  "q": "Сколько тонн товара «хлопок-сырец» продано в 2022 году (без аннулированных)?",
+  "tol": 0.004,
+  "nums_any": [
+   1343772.3,
+   1343772.0
+  ]
+ },
+ {
+  "id": "ton_14",
+  "lang": "uz",
+  "q": "2025-yilda qancha tonna suyultirilgan gaz sotilgan (bekor qilinganlarsiz)?",
+  "tol": 0.004,
+  "nums_any": [
+   81459.0,
+   81459.0
+  ]
+ },
+ {
+  "id": "ton_15",
+  "lang": "ru",
+  "q": "Сколько тонн товара «медный катод» продано в 2026 году (без аннулированных)?",
+  "tol": 0.004,
+  "nums_any": [
+   23517.0,
+   23517.0
+  ]
+ },
+ {
+  "id": "ton_16",
+  "lang": "uz",
+  "q": "2024-yilda qancha tonna guruch sotilgan (bekor qilinganlarsiz)?",
+  "tol": 0.004,
+  "nums_any": [
+   19017.0,
+   19017.0
+  ]
+ },
+ {
+  "id": "ton_17",
+  "lang": "ru",
+  "q": "Сколько тонн товара «мазут» продано в 2025 году (без аннулированных)?",
+  "tol": 0.004,
+  "nums_any": [
+   50208.0,
+   50208.0
+  ]
+ },
+ {
+  "id": "ton_18",
+  "lang": "uz",
+  "q": "2023-yilda qancha tonna un sotilgan (bekor qilinganlarsiz)?",
+  "tol": 0.004,
+  "nums_any": [
+   96239.0,
+   96239.0
+  ]
+ },
+ {
+  "id": "ton_19",
+  "lang": "ru",
+  "q": "Сколько тонн товара «битум» продано в 2024 году (без аннулированных)?",
+  "tol": 0.004,
+  "nums_any": [
+   39580.0,
+   39580.0
+  ]
+ },
+ {
+  "id": "uzs_0",
+  "lang": "uz",
+  "q": "2022-yilda shakar savdosi so'mda qancha bo'lgan (bekor qilinganlarsiz)?",
+  "tol": 0.004,
+  "nums_any": [
+   709591111979.0
+  ]
+ },
+ {
+  "id": "uzs_1",
+  "lang": "ru",
+  "q": "Каков оборот по товару «аммиачная селитра» в 2026 году в сумах (без аннулированных)?",
+  "tol": 0.004,
+  "nums_any": [
+   799512014762.0
+  ]
+ },
+ {
+  "id": "uzs_2",
+  "lang": "uz",
+  "q": "2026-yilda un savdosi so'mda qancha bo'lgan (bekor qilinganlarsiz)?",
+  "tol": 0.004,
+  "nums_any": [
+   611714912253.0
+  ]
+ },
+ {
+  "id": "uzs_3",
+  "lang": "ru",
+  "q": "Каков оборот по товару «сжиженный газ» в 2024 году в сумах (без аннулированных)?",
+  "tol": 0.004,
+  "nums_any": [
+   520416364824.0
+  ]
+ },
+ {
+  "id": "uzs_4",
+  "lang": "uz",
+  "q": "2024-yilda polietilen savdosi so'mda qancha bo'lgan (bekor qilinganlarsiz)?",
+  "tol": 0.004,
+  "nums_any": [
+   1800811514876.0
+  ]
+ },
+ {
+  "id": "uzs_5",
+  "lang": "ru",
+  "q": "Каков оборот по товару «сжиженный газ» в 2025 году в сумах (без аннулированных)?",
+  "tol": 0.004,
+  "nums_any": [
+   595953775683.0
+  ]
+ },
+ {
+  "id": "uzs_6",
+  "lang": "uz",
+  "q": "2025-yilda mazut savdosi so'mda qancha bo'lgan (bekor qilinganlarsiz)?",
+  "tol": 0.004,
+  "nums_any": [
+   257968300873.0
+  ]
+ },
+ {
+  "id": "uzs_7",
+  "lang": "ru",
+  "q": "Каков оборот по товару «рис» в 2026 году в сумах (без аннулированных)?",
+  "tol": 0.004,
+  "nums_any": [
+   478597590959.0
+  ]
+ },
+ {
+  "id": "uzs_8",
+  "lang": "uz",
+  "q": "2024-yilda sement savdosi so'mda qancha bo'lgan (bekor qilinganlarsiz)?",
+  "tol": 0.004,
+  "nums_any": [
+   1091975301500.0
+  ]
+ },
+ {
+  "id": "uzs_9",
+  "lang": "ru",
+  "q": "Каков оборот по товару «арматура» в 2025 году в сумах (без аннулированных)?",
+  "tol": 0.004,
+  "nums_any": [
+   1063215682118.0
+  ]
+ },
+ {
+  "id": "uzs_10",
+  "lang": "uz",
+  "q": "2025-yilda karbamid savdosi so'mda qancha bo'lgan (bekor qilinganlarsiz)?",
+  "tol": 0.004,
+  "nums_any": [
+   842190753120.0
+  ]
+ },
+ {
+  "id": "uzs_11",
+  "lang": "ru",
+  "q": "Каков оборот по товару «мазут» в 2024 году в сумах (без аннулированных)?",
+  "tol": 0.004,
+  "nums_any": [
+   224973399236.0
+  ]
+ },
+ {
+  "id": "uzs_12",
+  "lang": "uz",
+  "q": "2023-yilda un savdosi so'mda qancha bo'lgan (bekor qilinganlarsiz)?",
+  "tol": 0.004,
+  "nums_any": [
+   425906326574.0
+  ]
+ },
+ {
+  "id": "uzs_13",
+  "lang": "ru",
+  "q": "Каков оборот по товару «рис» в 2025 году в сумах (без аннулированных)?",
+  "tol": 0.004,
+  "nums_any": [
+   427270380050.0
+  ]
+ },
+ {
+  "id": "uzs_14",
+  "lang": "uz",
+  "q": "2024-yilda bug'doy savdosi so'mda qancha bo'lgan (bekor qilinganlarsiz)?",
+  "tol": 0.004,
+  "nums_any": [
+   8129749174135.0
+  ]
+ },
+ {
+  "id": "uzs_15",
+  "lang": "ru",
+  "q": "Каков оборот по товару «сжиженный газ» в 2024 году в сумах (без аннулированных)?",
+  "tol": 0.004,
+  "nums_any": [
+   520416364824.0
+  ]
+ },
+ {
+  "id": "uzs_16",
+  "lang": "uz",
+  "q": "2023-yilda karbamid savdosi so'mda qancha bo'lgan (bekor qilinganlarsiz)?",
+  "tol": 0.004,
+  "nums_any": [
+   583332212881.0
+  ]
+ },
+ {
+  "id": "uzs_17",
+  "lang": "ru",
+  "q": "Каков оборот по товару «рис» в 2023 году в сумах (без аннулированных)?",
+  "tol": 0.004,
+  "nums_any": [
+   296304934404.0
+  ]
+ },
+ {
+  "id": "uzs_18",
+  "lang": "uz",
+  "q": "2022-yilda un savdosi so'mda qancha bo'lgan (bekor qilinganlarsiz)?",
+  "tol": 0.004,
+  "nums_any": [
+   344405132402.0
+  ]
+ },
+ {
+  "id": "uzs_19",
+  "lang": "ru",
+  "q": "Каков оборот по товару «пшеница» в 2022 году в сумах (без аннулированных)?",
+  "tol": 0.004,
+  "nums_any": [
+   5603480070612.0
+  ]
+ },
+ {
+  "id": "price_0",
+  "lang": "uz",
+  "q": "2026-yil sentyabr oyida suyultirilgan gazning 1 tonnasi o'rtacha (tortilgan) necha so'm turgan?",
+  "tol": 0.004,
+  "nums_any": [
+   8444060.0
+  ]
+ },
+ {
+  "id": "price_1",
+  "lang": "ru",
+  "q": "Какова средневзвешенная цена тонны товара «пшеница» в апреле 2026 года?",
+  "tol": 0.004,
+  "nums_any": [
+   4703057.0
+  ]
+ },
+ {
+  "id": "price_2",
+  "lang": "uz",
+  "q": "2024-yil oktyabr oyida paxta (xom ashyo)ning 1 tonnasi o'rtacha (tortilgan) necha so'm turgan?",
+  "tol": 0.004,
+  "nums_any": [
+   7710003.0
+  ]
+ },
+ {
+  "id": "price_3",
+  "lang": "ru",
+  "q": "Какова средневзвешенная цена тонны товара «цемент» в мае 2026 года?",
+  "tol": 0.004,
+  "nums_any": [
+   1007751.0
+  ]
+ },
+ {
+  "id": "price_4",
+  "lang": "uz",
+  "q": "2024-yil yanvar oyida polipropilenning 1 tonnasi o'rtacha (tortilgan) necha so'm turgan?",
+  "tol": 0.004,
+  "nums_any": [
+   15396514.0
+  ]
+ },
+ {
+  "id": "price_5",
+  "lang": "ru",
+  "q": "Какова средневзвешенная цена тонны товара «арматура» в октябре 2026 года?",
+  "tol": 0.004,
+  "nums_any": [
+   12294539.0
+  ]
+ },
+ {
+  "id": "price_6",
+  "lang": "uz",
+  "q": "2026-yil mart oyida mazutning 1 tonnasi o'rtacha (tortilgan) necha so'm turgan?",
+  "tol": 0.004,
+  "nums_any": [
+   5142059.0
+  ]
+ },
+ {
+  "id": "price_7",
+  "lang": "ru",
+  "q": "Какова средневзвешенная цена тонны товара «хлопок-сырец» в октябре 2025 года?",
+  "tol": 0.004,
+  "nums_any": [
+   9318668.0
+  ]
+ },
+ {
+  "id": "price_8",
+  "lang": "uz",
+  "q": "2026-yil sentyabr oyida ammiakli selitraning 1 tonnasi o'rtacha (tortilgan) necha so'm turgan?",
+  "tol": 0.004,
+  "nums_any": [
+   5168521.0
+  ]
+ },
+ {
+  "id": "price_9",
+  "lang": "ru",
+  "q": "Какова средневзвешенная цена тонны товара «битум» в июле 2024 года?",
+  "tol": 0.004,
+  "nums_any": [
+   5243335.0
+  ]
+ },
+ {
+  "id": "price_10",
+  "lang": "uz",
+  "q": "2024-yil oktyabr oyida dizel yoqilg'isining 1 tonnasi o'rtacha (tortilgan) necha so'm turgan?",
+  "tol": 0.004,
+  "nums_any": [
+   12949381.0
+  ]
+ },
+ {
+  "id": "price_11",
+  "lang": "ru",
+  "q": "Какова средневзвешенная цена тонны товара «битум» в июле 2026 года?",
+  "tol": 0.004,
+  "nums_any": [
+   5888828.0
+  ]
+ },
+ {
+  "id": "price_12",
+  "lang": "uz",
+  "q": "2024-yil sentyabr oyida guruchning 1 tonnasi o'rtacha (tortilgan) necha so'm turgan?",
+  "tol": 0.004,
+  "nums_any": [
+   19283796.0
+  ]
+ },
+ {
+  "id": "price_13",
+  "lang": "ru",
+  "q": "Какова средневзвешенная цена тонны товара «полиэтилен» в январе 2025 года?",
+  "tol": 0.004,
+  "nums_any": [
+   19991323.0
+  ]
+ },
+ {
+  "id": "price_14",
+  "lang": "uz",
+  "q": "2025-yil fevral oyida karbamidning 1 tonnasi o'rtacha (tortilgan) necha so'm turgan?",
+  "tol": 0.004,
+  "nums_any": [
+   4904329.0
+  ]
+ },
+ {
+  "id": "topsel_0",
+  "lang": "uz",
+  "q": "2024-yilda sement bo'yicha savdo hajmi eng katta sotuvchi kim?",
+  "tol": 0.005,
+  "texts_any": [
+   "984713635"
+  ]
+ },
+ {
+  "id": "topsel_1",
+  "lang": "ru",
+  "q": "Какой продавец лидировал по обороту товара «полипропилен» в 2022 году?",
+  "tol": 0.005,
+  "texts_any": [
+   "950480486"
+  ]
+ },
+ {
+  "id": "topsel_2",
+  "lang": "uz",
+  "q": "2026-yilda shakar bo'yicha savdo hajmi eng katta sotuvchi kim?",
+  "tol": 0.005,
+  "texts_any": [
+   "940532604"
+  ]
+ },
+ {
+  "id": "topsel_3",
+  "lang": "ru",
+  "q": "Какой продавец лидировал по обороту товара «сжиженный газ» в 2024 году?",
+  "tol": 0.005,
+  "texts_any": [
+   "999926292"
+  ]
+ },
+ {
+  "id": "topsel_4",
+  "lang": "uz",
+  "q": "2025-yilda bitum bo'yicha savdo hajmi eng katta sotuvchi kim?",
+  "tol": 0.005,
+  "texts_any": [
+   "978921152"
+  ]
+ },
+ {
+  "id": "topsel_5",
+  "lang": "ru",
+  "q": "Какой продавец лидировал по обороту товара «арматура» в 2022 году?",
+  "tol": 0.005,
+  "texts_any": [
+   "913438723"
+  ]
+ },
+ {
+  "id": "topsel_6",
+  "lang": "uz",
+  "q": "2025-yilda suyultirilgan gaz bo'yicha savdo hajmi eng katta sotuvchi kim?",
+  "tol": 0.005,
+  "texts_any": [
+   "999926292"
+  ]
+ },
+ {
+  "id": "topsel_7",
+  "lang": "ru",
+  "q": "Какой продавец лидировал по обороту товара «дизельное топливо» в 2023 году?",
+  "tol": 0.005,
+  "texts_any": [
+   "969242385"
+  ]
+ },
+ {
+  "id": "topsel_8",
+  "lang": "uz",
+  "q": "2023-yilda mazut bo'yicha savdo hajmi eng katta sotuvchi kim?",
+  "tol": 0.005,
+  "texts_any": [
+   "999202516"
+  ]
+ },
+ {
+  "id": "topsel_9",
+  "lang": "ru",
+  "q": "Какой продавец лидировал по обороту товара «рис» в 2026 году?",
+  "tol": 0.005,
+  "texts_any": [
+   "948230255"
+  ]
+ },
+ {
+  "id": "topsel_10",
+  "lang": "uz",
+  "q": "2025-yilda armatura bo'yicha savdo hajmi eng katta sotuvchi kim?",
+  "tol": 0.005,
+  "texts_any": [
+   "946144252"
+  ]
+ },
+ {
+  "id": "topsel_11",
+  "lang": "ru",
+  "q": "Какой продавец лидировал по обороту товара «хлопок-сырец» в 2022 году?",
+  "tol": 0.005,
+  "texts_any": [
+   "925910430"
+  ]
+ },
+ {
+  "id": "topsel_12",
+  "lang": "uz",
+  "q": "2022-yilda g'isht bo'yicha savdo hajmi eng katta sotuvchi kim?",
+  "tol": 0.005,
+  "texts_any": [
+   "959670471"
+  ]
+ },
+ {
+  "id": "topsel_13",
+  "lang": "ru",
+  "q": "Какой продавец лидировал по обороту товара «полиэтилен» в 2023 году?",
+  "tol": 0.005,
+  "texts_any": [
+   "938382259"
+  ]
+ },
+ {
+  "id": "topsel_14",
+  "lang": "uz",
+  "q": "2026-yilda sement bo'yicha savdo hajmi eng katta sotuvchi kim?",
+  "tol": 0.005,
+  "texts_any": [
+   "992007009"
+  ]
+ },
+ {
+  "id": "canc_0",
+  "lang": "uz",
+  "q": "2022-yilda Qoraqalpog‘iston Respublikasida bekor qilingan bitimlar ulushi necha foiz?",
+  "tol": 0.01,
+  "nums_any": [
+   7.3,
+   7.3
+  ]
+ },
+ {
+  "id": "canc_1",
+  "lang": "ru",
+  "q": "Какая доля сделок была аннулирована в Сурхандарьинской области в 2023 году (в %)?",
+  "tol": 0.01,
+  "nums_any": [
+   6.48,
+   6.5
+  ]
+ },
+ {
+  "id": "canc_2",
+  "lang": "uz",
+  "q": "2022-yilda Surxondaryo viloyatida bekor qilingan bitimlar ulushi necha foiz?",
+  "tol": 0.01,
+  "nums_any": [
+   6.87,
+   6.9
+  ]
+ },
+ {
+  "id": "canc_3",
+  "lang": "ru",
+  "q": "Какая доля сделок была аннулирована в Джизакской области в 2026 году (в %)?",
+  "tol": 0.01,
+  "nums_any": [
+   5.89,
+   5.9
+  ]
+ },
+ {
+  "id": "canc_4",
+  "lang": "uz",
+  "q": "2026-yilda Qashqadaryo viloyatida bekor qilingan bitimlar ulushi necha foiz?",
+  "tol": 0.01,
+  "nums_any": [
+   6.82,
+   6.8
+  ]
+ },
+ {
+  "id": "canc_5",
+  "lang": "ru",
+  "q": "Какая доля сделок была аннулирована в Джизакской области в 2023 году (в %)?",
+  "tol": 0.01,
+  "nums_any": [
+   6.83,
+   6.8
+  ]
+ },
+ {
+  "id": "canc_6",
+  "lang": "uz",
+  "q": "2023-yilda Toshkent shahrida bekor qilingan bitimlar ulushi necha foiz?",
+  "tol": 0.01,
+  "nums_any": [
+   6.41,
+   6.4
+  ]
+ },
+ {
+  "id": "canc_7",
+  "lang": "ru",
+  "q": "Какая доля сделок была аннулирована в Самаркандской области в 2024 году (в %)?",
+  "tol": 0.01,
+  "nums_any": [
+   6.85,
+   6.8
+  ]
+ },
+ {
+  "id": "canc_8",
+  "lang": "uz",
+  "q": "2026-yilda Samarqand viloyatida bekor qilingan bitimlar ulushi necha foiz?",
+  "tol": 0.01,
+  "nums_any": [
+   6.34,
+   6.3
+  ]
+ },
+ {
+  "id": "canc_9",
+  "lang": "ru",
+  "q": "Какая доля сделок была аннулирована в Самаркандской области в 2022 году (в %)?",
+  "tol": 0.01,
+  "nums_any": [
+   6.8,
+   6.8
+  ]
+ },
+ {
+  "id": "canc_10",
+  "lang": "uz",
+  "q": "2024-yilda Samarqand viloyatida bekor qilingan bitimlar ulushi necha foiz?",
+  "tol": 0.01,
+  "nums_any": [
+   6.85,
+   6.8
+  ]
+ },
+ {
+  "id": "canc_11",
+  "lang": "ru",
+  "q": "Какая доля сделок была аннулирована в Джизакской области в 2024 году (в %)?",
+  "tol": 0.01,
+  "nums_any": [
+   6.64,
+   6.6
+  ]
+ },
+ {
+  "id": "canc_12",
+  "lang": "uz",
+  "q": "2024-yilda Jizzax viloyatida bekor qilingan bitimlar ulushi necha foiz?",
+  "tol": 0.01,
+  "nums_any": [
+   6.64,
+   6.6
+  ]
+ },
+ {
+  "id": "canc_13",
+  "lang": "ru",
+  "q": "Какая доля сделок была аннулирована в Сурхандарьинской области в 2025 году (в %)?",
+  "tol": 0.01,
+  "nums_any": [
+   6.89,
+   6.9
+  ]
+ },
+ {
+  "id": "canc_14",
+  "lang": "uz",
+  "q": "2025-yilda Xorazm viloyatida bekor qilingan bitimlar ulushi necha foiz?",
+  "tol": 0.01,
+  "nums_any": [
+   6.8,
+   6.8
+  ]
+ },
+ {
+  "id": "brk_0",
+  "lang": "uz",
+  "q": "2025-yilda BK037 brokeri nechta bitimda qatnashgan?",
+  "tol": 0.005,
+  "nums_any": [
+   1009.0,
+   926.0
+  ]
+ },
+ {
+  "id": "brk_1",
+  "lang": "ru",
+  "q": "В скольких сделках участвовал брокер BK023 в 2024 году?",
+  "tol": 0.005,
+  "nums_any": [
+   1372.0,
+   1277.0
+  ]
+ },
+ {
+  "id": "brk_2",
+  "lang": "uz",
+  "q": "2025-yilda BK067 brokeri nechta bitimda qatnashgan?",
+  "tol": 0.005,
+  "nums_any": [
+   2628.0,
+   2455.0
+  ]
+ },
+ {
+  "id": "brk_3",
+  "lang": "ru",
+  "q": "В скольких сделках участвовал брокер BK057 в 2022 году?",
+  "tol": 0.005,
+  "nums_any": [
+   830.0,
+   772.0
+  ]
+ },
+ {
+  "id": "brk_4",
+  "lang": "uz",
+  "q": "2026-yilda BK068 brokeri nechta bitimda qatnashgan?",
+  "tol": 0.005,
+  "nums_any": [
+   1541.0,
+   1451.0
+  ]
+ },
+ {
+  "id": "brk_5",
+  "lang": "ru",
+  "q": "В скольких сделках участвовал брокер BK102 в 2024 году?",
+  "tol": 0.005,
+  "nums_any": [
+   4513.0,
+   4184.0
+  ]
+ },
+ {
+  "id": "brk_6",
+  "lang": "uz",
+  "q": "2022-yilda BK105 brokeri nechta bitimda qatnashgan?",
+  "tol": 0.005,
+  "nums_any": [
+   1836.0,
+   1703.0
+  ]
+ },
+ {
+  "id": "brk_7",
+  "lang": "ru",
+  "q": "В скольких сделках участвовал брокер BK109 в 2023 году?",
+  "tol": 0.005,
+  "nums_any": [
+   827.0,
+   787.0
+  ]
+ },
+ {
+  "id": "brk_8",
+  "lang": "uz",
+  "q": "2022-yilda BK030 brokeri nechta bitimda qatnashgan?",
+  "tol": 0.005,
+  "nums_any": [
+   2245.0,
+   2107.0
+  ]
+ },
+ {
+  "id": "brk_9",
+  "lang": "ru",
+  "q": "В скольких сделках участвовал брокер BK012 в 2025 году?",
+  "tol": 0.005,
+  "nums_any": [
+   2415.0,
+   2277.0
+  ]
+ },
+ {
+  "id": "brk_10",
+  "lang": "uz",
+  "q": "2024-yilda BK083 brokeri nechta bitimda qatnashgan?",
+  "tol": 0.005,
+  "nums_any": [
+   681.0,
+   627.0
+  ]
+ },
+ {
+  "id": "brk_11",
+  "lang": "ru",
+  "q": "В скольких сделках участвовал брокер BK053 в 2026 году?",
+  "tol": 0.005,
+  "nums_any": [
+   2848.0,
+   2648.0
+  ]
+ },
+ {
+  "id": "brk_12",
+  "lang": "uz",
+  "q": "2023-yilda BK101 brokeri nechta bitimda qatnashgan?",
+  "tol": 0.005,
+  "nums_any": [
+   4200.0,
+   3917.0
+  ]
+ },
+ {
+  "id": "brk_13",
+  "lang": "ru",
+  "q": "В скольких сделках участвовал брокер BK004 в 2024 году?",
+  "tol": 0.005,
+  "nums_any": [
+   665.0,
+   611.0
+  ]
+ },
+ {
+  "id": "brk_14",
+  "lang": "uz",
+  "q": "2023-yilda BK109 brokeri nechta bitimda qatnashgan?",
+  "tol": 0.005,
+  "nums_any": [
+   827.0,
+   787.0
+  ]
+ },
+ {
+  "id": "buy_0",
+  "lang": "uz",
+  "q": "STIR 937709220 xaridor sifatida nechta bitim tuzgan?",
+  "tol": 0.005,
+  "nums_any": [
+   34.0,
+   32.0
+  ]
+ },
+ {
+  "id": "buy_1",
+  "lang": "ru",
+  "q": "Сколько сделок заключил покупатель с ИНН 982747838?",
+  "tol": 0.005,
+  "nums_any": [
+   24.0,
+   23.0
+  ]
+ },
+ {
+  "id": "buy_2",
+  "lang": "uz",
+  "q": "STIR 995767289 xaridor sifatida nechta bitim tuzgan?",
+  "tol": 0.005,
+  "nums_any": [
+   21.0,
+   21.0
+  ]
+ },
+ {
+  "id": "buy_3",
+  "lang": "ru",
+  "q": "Сколько сделок заключил покупатель с ИНН 952183927?",
+  "tol": 0.005,
+  "nums_any": [
+   24.0,
+   23.0
+  ]
+ },
+ {
+  "id": "buy_4",
+  "lang": "uz",
+  "q": "STIR 903958754 xaridor sifatida nechta bitim tuzgan?",
+  "tol": 0.005,
+  "nums_any": [
+   18.0,
+   16.0
+  ]
+ },
+ {
+  "id": "buy_5",
+  "lang": "ru",
+  "q": "Сколько сделок заключил покупатель с ИНН 901695777?",
+  "tol": 0.005,
+  "nums_any": [
+   25.0,
+   25.0
+  ]
+ },
+ {
+  "id": "buy_6",
+  "lang": "uz",
+  "q": "STIR 905639342 xaridor sifatida nechta bitim tuzgan?",
+  "tol": 0.005,
+  "nums_any": [
+   49.0,
+   44.0
+  ]
+ },
+ {
+  "id": "buy_7",
+  "lang": "ru",
+  "q": "Сколько сделок заключил покупатель с ИНН 901173343?",
+  "tol": 0.005,
+  "nums_any": [
+   83.0,
+   76.0
+  ]
+ },
+ {
+  "id": "buy_8",
+  "lang": "uz",
+  "q": "STIR 968649890 xaridor sifatida nechta bitim tuzgan?",
+  "tol": 0.005,
+  "nums_any": [
+   22.0,
+   21.0
+  ]
+ },
+ {
+  "id": "buy_9",
+  "lang": "ru",
+  "q": "Сколько сделок заключил покупатель с ИНН 922185925?",
+  "tol": 0.005,
+  "nums_any": [
+   20.0,
+   20.0
+  ]
+ },
+ {
+  "id": "buy_10",
+  "lang": "uz",
+  "q": "STIR 980379668 xaridor sifatida nechta bitim tuzgan?",
+  "tol": 0.005,
+  "nums_any": [
+   41.0,
+   40.0
+  ]
+ },
+ {
+  "id": "buy_11",
+  "lang": "ru",
+  "q": "Сколько сделок заключил покупатель с ИНН 930453834?",
+  "tol": 0.005,
+  "nums_any": [
+   24.0,
+   20.0
+  ]
+ },
+ {
+  "id": "buy_12",
+  "lang": "uz",
+  "q": "STIR 945535682 xaridor sifatida nechta bitim tuzgan?",
+  "tol": 0.005,
+  "nums_any": [
+   19.0,
+   19.0
+  ]
+ },
+ {
+  "id": "buy_13",
+  "lang": "ru",
+  "q": "Сколько сделок заключил покупатель с ИНН 954626896?",
+  "tol": 0.005,
+  "nums_any": [
+   24.0,
+   23.0
+  ]
+ },
+ {
+  "id": "buy_14",
+  "lang": "uz",
+  "q": "STIR 981237421 xaridor sifatida nechta bitim tuzgan?",
+  "tol": 0.005,
+  "nums_any": [
+   20.0,
+   18.0
+  ]
+ },
+ {
+  "id": "exp_0",
+  "lang": "uz",
+  "q": "2023-yilda paxta ipi (pryaja) eksporti necha dollar bo'lgan?",
+  "tol": 0.004,
+  "nums_any": [
+   49880021.23,
+   49880021.0
+  ]
+ },
+ {
+  "id": "exp_1",
+  "lang": "ru",
+  "q": "На какую сумму в долларах экспортирован товар «хлопчатобумажная пряжа» в 2026 году?",
+  "tol": 0.004,
+  "nums_any": [
+   61989664.51,
+   61989665.0
+  ]
+ },
+ {
+  "id": "exp_2",
+  "lang": "uz",
+  "q": "2026-yilda mis katod eksporti necha dollar bo'lgan?",
+  "tol": 0.004,
+  "nums_any": [
+   171514722.85,
+   171514723.0
+  ]
+ },
+ {
+  "id": "exp_3",
+  "lang": "ru",
+  "q": "На какую сумму в долларах экспортирован товар «хлопчатобумажная пряжа» в 2022 году?",
+  "tol": 0.004,
+  "nums_any": [
+   40830527.35,
+   40830527.0
+  ]
+ },
+ {
+  "id": "exp_4",
+  "lang": "uz",
+  "q": "2022-yilda paxta ipi (pryaja) eksporti necha dollar bo'lgan?",
+  "tol": 0.004,
+  "nums_any": [
+   40830527.35,
+   40830527.0
+  ]
+ },
+ {
+  "id": "exp_5",
+  "lang": "ru",
+  "q": "На какую сумму в долларах экспортирован товар «медный катод» в 2023 году?",
+  "tol": 0.004,
+  "nums_any": [
+   143528860.52,
+   143528861.0
+  ]
+ },
+ {
+  "id": "exp_6",
+  "lang": "uz",
+  "q": "2022-yilda paxta ipi (pryaja) eksporti necha dollar bo'lgan?",
+  "tol": 0.004,
+  "nums_any": [
+   40830527.35,
+   40830527.0
+  ]
+ },
+ {
+  "id": "exp_7",
+  "lang": "ru",
+  "q": "На какую сумму в долларах экспортирован товар «медный катод» в 2023 году?",
+  "tol": 0.004,
+  "nums_any": [
+   143528860.52,
+   143528861.0
+  ]
+ },
+ {
+  "id": "exp_8",
+  "lang": "uz",
+  "q": "2026-yilda paxta ipi (pryaja) eksporti necha dollar bo'lgan?",
+  "tol": 0.004,
+  "nums_any": [
+   61989664.51,
+   61989665.0
+  ]
+ },
+ {
+  "id": "exp_9",
+  "lang": "ru",
+  "q": "На какую сумму в долларах экспортирован товар «медный катод» в 2024 году?",
+  "tol": 0.004,
+  "nums_any": [
+   146301398.0,
+   146301398.0
+  ]
+ },
+ {
+  "id": "reg_0",
+  "lang": "uz",
+  "q": "2024-yilda bitum eng ko'p qaysi hududdan sotilgan (bitimlar soni bo'yicha)?",
+  "tol": 0.005,
+  "texts_any": [
+   "toshk",
+   "toshk",
+   "городе"
+  ]
+ },
+ {
+  "id": "reg_1",
+  "lang": "ru",
+  "q": "Из какого региона больше всего сделок по товару «дизельное топливо» в 2024 году?",
+  "tol": 0.005,
+  "texts_any": [
+   "toshk",
+   "toshk",
+   "городе"
+  ]
+ },
+ {
+  "id": "reg_2",
+  "lang": "uz",
+  "q": "2022-yilda mis katod eng ko'p qaysi hududdan sotilgan (bitimlar soni bo'yicha)?",
+  "tol": 0.005,
+  "texts_any": [
+   "surxo",
+   "surxo",
+   "сурхан"
+  ]
+ },
+ {
+  "id": "reg_3",
+  "lang": "ru",
+  "q": "Из какого региона больше всего сделок по товару «сахар» в 2025 году?",
+  "tol": 0.005,
+  "texts_any": [
+   "naman",
+   "naman",
+   "наманг"
+  ]
+ },
+ {
+  "id": "reg_4",
+  "lang": "uz",
+  "q": "2025-yilda mis katod eng ko'p qaysi hududdan sotilgan (bitimlar soni bo'yicha)?",
+  "tol": 0.005,
+  "texts_any": [
+   "sirda",
+   "sirda",
+   "сырдар"
+  ]
+ },
+ {
+  "id": "reg_5",
+  "lang": "ru",
+  "q": "Из какого региона больше всего сделок по товару «сахар» в 2022 году?",
+  "tol": 0.005,
+  "texts_any": [
+   "toshk",
+   "toshk",
+   "городе"
+  ]
+ },
+ {
+  "id": "reg_6",
+  "lang": "uz",
+  "q": "2023-yilda karbamid eng ko'p qaysi hududdan sotilgan (bitimlar soni bo'yicha)?",
+  "tol": 0.005,
+  "texts_any": [
+   "toshk",
+   "toshk",
+   "городе"
+  ]
+ },
+ {
+  "id": "reg_7",
+  "lang": "ru",
+  "q": "Из какого региона больше всего сделок по товару «сахар» в 2024 году?",
+  "tol": 0.005,
+  "texts_any": [
+   "naman",
+   "naman",
+   "наманг"
+  ]
+ },
+ {
+  "id": "reg_8",
+  "lang": "uz",
+  "q": "2022-yilda karbamid eng ko'p qaysi hududdan sotilgan (bitimlar soni bo'yicha)?",
+  "tol": 0.005,
+  "texts_any": [
+   "qashq",
+   "qashq",
+   "кашкад"
+  ]
+ },
+ {
+  "id": "reg_9",
+  "lang": "ru",
+  "q": "Из какого региона больше всего сделок по товару «полипропилен» в 2024 году?",
+  "tol": 0.005,
+  "texts_any": [
+   "toshk",
+   "toshk",
+   "городе"
+  ]
+ },
+ {
+  "id": "reg_10",
+  "lang": "uz",
+  "q": "2026-yilda un eng ko'p qaysi hududdan sotilgan (bitimlar soni bo'yicha)?",
+  "tol": 0.005,
+  "texts_any": [
+   "farg'",
+   "farg‘",
+   "ферган"
+  ]
+ },
+ {
+  "id": "reg_11",
+  "lang": "ru",
+  "q": "Из какого региона больше всего сделок по товару «цемент» в 2025 году?",
+  "tol": 0.005,
+  "texts_any": [
+   "toshk",
+   "toshk",
+   "городе"
+  ]
+ },
+ {
+  "id": "reg_12",
+  "lang": "uz",
+  "q": "2026-yilda armatura eng ko'p qaysi hududdan sotilgan (bitimlar soni bo'yicha)?",
+  "tol": 0.005,
+  "texts_any": [
+   "sirda",
+   "sirda",
+   "сырдар"
+  ]
+ },
+ {
+  "id": "reg_13",
+  "lang": "ru",
+  "q": "Из какого региона больше всего сделок по товару «полиэтилен» в 2026 году?",
+  "tol": 0.005,
+  "texts_any": [
+   "xoraz",
+   "xoraz",
+   "хорезм"
+  ]
+ },
+ {
+  "id": "reg_14",
+  "lang": "uz",
+  "q": "2025-yilda un eng ko'p qaysi hududdan sotilgan (bitimlar soni bo'yicha)?",
+  "tol": 0.005,
+  "texts_any": [
+   "naman",
+   "naman",
+   "наманг"
+  ]
+ },
+ {
+  "id": "late_0",
+  "lang": "uz",
+  "q": "2025-yilda karbamid bo'yicha nechta bitim kechikib yetkazilgan?",
+  "tol": 0.005,
+  "nums_any": [
+   106.0
+  ]
+ },
+ {
+  "id": "late_1",
+  "lang": "ru",
+  "q": "Сколько сделок по товару «полипропилен» в 2025 году были поставлены с опозданием?",
+  "tol": 0.005,
+  "nums_any": [
+   73.0
+  ]
+ },
+ {
+  "id": "late_2",
+  "lang": "uz",
+  "q": "2024-yilda mis katod bo'yicha nechta bitim kechikib yetkazilgan?",
+  "tol": 0.005,
+  "nums_any": [
+   43.0
+  ]
+ },
+ {
+  "id": "late_3",
+  "lang": "ru",
+  "q": "Сколько сделок по товару «битум» в 2024 году были поставлены с опозданием?",
+  "tol": 0.005,
+  "nums_any": [
+   38.0
+  ]
+ },
+ {
+  "id": "late_4",
+  "lang": "uz",
+  "q": "2025-yilda sement bo'yicha nechta bitim kechikib yetkazilgan?",
+  "tol": 0.005,
+  "nums_any": [
+   317.0
+  ]
+ },
+ {
+  "id": "late_5",
+  "lang": "ru",
+  "q": "Сколько сделок по товару «рис» в 2023 году были поставлены с опозданием?",
+  "tol": 0.005,
+  "nums_any": [
+   23.0
+  ]
+ },
+ {
+  "id": "late_6",
+  "lang": "uz",
+  "q": "2025-yilda bitum bo'yicha nechta bitim kechikib yetkazilgan?",
+  "tol": 0.005,
+  "nums_any": [
+   55.0
+  ]
+ },
+ {
+  "id": "late_7",
+  "lang": "ru",
+  "q": "Сколько сделок по товару «арматура» в 2024 году были поставлены с опозданием?",
+  "tol": 0.005,
+  "nums_any": [
+   99.0
+  ]
+ },
+ {
+  "id": "late_8",
+  "lang": "uz",
+  "q": "2024-yilda karbamid bo'yicha nechta bitim kechikib yetkazilgan?",
+  "tol": 0.005,
+  "nums_any": [
+   94.0
+  ]
+ },
+ {
+  "id": "late_9",
+  "lang": "ru",
+  "q": "Сколько сделок по товару «рис» в 2024 году были поставлены с опозданием?",
+  "tol": 0.005,
+  "nums_any": [
+   27.0
+  ]
+ },
+ {
+  "id": "trap_0",
+  "lang": "uz",
+  "q": "STIR 978598717 kompaniyasi nechta bitim tuzgan?",
+  "tol": 0.005,
+  "not_found": true
+ },
+ {
+  "id": "trap_1",
+  "lang": "ru",
+  "q": "Сколько сделок у компании с ИНН 902720605?",
+  "tol": 0.005,
+  "not_found": true
+ },
+ {
+  "id": "trap_2",
+  "lang": "uz",
+  "q": "STIR 972767058 kompaniyasi nechta bitim tuzgan?",
+  "tol": 0.005,
+  "not_found": true
+ },
+ {
+  "id": "trap_3",
+  "lang": "ru",
+  "q": "Сколько сделок у компании с ИНН 945967403?",
+  "tol": 0.005,
+  "not_found": true
+ },
+ {
+  "id": "trap_4",
+  "lang": "uz",
+  "q": "STIR 926501061 kompaniyasi nechta bitim tuzgan?",
+  "tol": 0.005,
+  "not_found": true
+ },
+ {
+  "id": "trap_5",
+  "lang": "ru",
+  "q": "Сколько сделок у компании с ИНН 975277736?",
+  "tol": 0.005,
+  "not_found": true
+ },
+ {
+  "id": "trap_6",
+  "lang": "uz",
+  "q": "2019-yilda nechta bitim tuzilgan?",
+  "tol": 0.005,
+  "not_found": true
+ },
+ {
+  "id": "trap_7",
+  "lang": "ru",
+  "q": "Сколько будет стоить сахар в январе 2027 года?",
+  "tol": 0.005,
+  "not_found": true
+ },
+ {
+  "id": "trap_8",
+  "lang": "uz",
+  "q": "Birjada qancha kofe sotilgan?",
+  "tol": 0.005,
+  "not_found": true
+ },
+ {
+  "id": "trap_9",
+  "lang": "ru",
+  "q": "Сколько сырой нефти продано на бирже?",
+  "tol": 0.005,
+  "not_found": true
+ },
+ {
+  "id": "trap_10",
+  "lang": "uz",
+  "q": "BK150 brokeri qancha bitim qilgan?",
+  "tol": 0.005,
+  "not_found": true
+ },
+ {
+  "id": "trap_11",
+  "lang": "ru",
+  "q": "Какой сейчас курс биткоина?",
+  "tol": 0.005,
+  "not_found": true
+ },
+ {
+  "id": "trap_12",
+  "lang": "uz",
+  "q": "2026-yil noyabrda nechta bitim bo'ldi?",
+  "tol": 0.005,
+  "not_found": true
+ },
+ {
+  "id": "trap_13",
+  "lang": "ru",
+  "q": "Сколько продано титана?",
+  "tol": 0.005,
+  "not_found": true
+ },
+ {
+  "id": "trap_14",
+  "lang": "uz",
+  "q": "UZEX direktori kim?",
+  "tol": 0.005,
+  "not_found": true
+ },
+ {
+  "id": "trap_15",
+  "lang": "ru",
+  "q": "Вырастет ли завтра цена цемента?",
+  "tol": 0.005,
+  "not_found": true
+ }
+]

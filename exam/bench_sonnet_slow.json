@@ -1,0 +1,570 @@
+{
+ "summary": {
+  "config": "sonnet",
+  "model": "claude-sonnet-5-5",
+  "fast": false,
+  "n": 16,
+  "correct": 16,
+  "accuracy": 100.0,
+  "avg_s": 6.61,
+  "p50_s": 6.63,
+  "p90_s": 8.87,
+  "max_s": 9.29,
+  "errors": 0,
+  "wall_min": 0.9
+ },
+ "results": [
+  {
+   "id": "bench_trap_14",
+   "ok": true,
+   "sec": 2.54,
+   "err": null,
+   "q": "UZEX direktori kim?",
+   "final": {
+    "status": "not_found",
+    "language": "uz",
+    "answer": "Birja direktori haqidagi ma'lumot bitimlar reestrida yo'q. Men faqat UZEX bitimlari reestri bo'yicha savollarga javob bera olaman (bitimlar, mahsulotlar, kompaniyalar, brokerlar, narxlar, hajmlar).",
+    "key_figures": [],
+    "assumptions": [
+     "Savol ma'lumotlar bazasiga tegishli emas: rahbariyat ma'lumoti yo'q."
+    ],
+    "used_query_ids": []
+   },
+   "unbacked": 0,
+   "rejections": 0
+  },
+  {
+   "id": "bench_uzs_10",
+   "ok": true,
+   "sec": 5.43,
+   "err": null,
+   "q": "2025-yilda karbamid savdosi so'mda qancha bo'lgan (bekor qilinganlarsiz)?",
+   "final": {
+    "status": "answered",
+    "language": "uz",
+    "answer": "2025-yilda karbamid savdosi (bekor qilinmaganlar) **842 190 753 120 so'm** bo'lgan.\n- Jami 2 565 ta bitim tuzilgan, shundan 165 tasi bekor qilingan; amalga oshgan — 2 400 ta.\n- Mahsulot: karbamid | marka Б, barcha bitimlar so'mda.",
+    "key_figures": [
+     {
+      "label": "Karbamid savdosi 2025",
+      "value": 842190753120,
+      "unit": "so'm",
+      "query_id": "A1"
+     }
+    ],
+    "assumptions": [
+     "Bekor qilingan bitimlar summadan chiqarildi",
+     "Davr: 2025-01-01 – 2025-12-31",
+     "Summa amount_uzs bo'yicha"
+    ],
+    "used_query_ids": [
+     "A1"
+    ],
+    "evidence_query_id": "A1"
+   },
+   "unbacked": 0,
+   "rejections": 0
+  },
+  {
+   "id": "bench_canc_2",
+   "ok": true,
+   "sec": 5.5,
+   "err": null,
+   "q": "2022-yilda Surxondaryo viloyatida bekor qilingan bitimlar ulushi necha foiz?",
+   "final": {
+    "status": "answered",
+    "language": "uz",
+    "answer": "2022-yilda Surxondaryo viloyatida bekor qilingan bitimlar ulushi **6,87%**.\n- Jami 4 632 ta bitim tuzilgan, shundan 318 tasi bekor qilingan; amalga oshgan (bekor qilinmagan) — 4 314 ta.",
+    "key_figures": [
+     {
+      "label": "Bekor qilingan ulush",
+      "value": 6.87,
+      "unit": "%",
+      "query_id": "A1"
+     },
+     {
+      "label": "Bekor qilingan bitimlar",
+      "value": 318,
+      "query_id": "A1"
+     },
+     {
+      "label": "Jami bitimlar",
+      "value": 4632,
+      "query_id": "A1"
+     }
+    ],
+    "assumptions": [
+     "Viloyat — sotuvchi ombori hududi (deals.region)",
+     "Davr: 2022-01-01 – 2022-12-31, deal_date yili bo'yicha",
+     "Ulush = bekor qilingan / jami bitimlar soni"
+    ],
+    "used_query_ids": [
+     "A1"
+    ],
+    "evidence_query_id": "A1"
+   },
+   "unbacked": 0,
+   "rejections": 0
+  },
+  {
+   "id": "bench_uzs_9",
+   "ok": true,
+   "sec": 5.51,
+   "err": null,
+   "q": "Каков оборот по товару «арматура» в 2025 году в сумах (без аннулированных)?",
+   "final": {
+    "status": "answered",
+    "language": "ru",
+    "answer": "Оборот по товару «арматура» в 2025 году составил **1 063 215 682 118 сум** (без аннулированных).\n- Сделок в реестре: 2 944, из них аннулировано 214; состоялось 2 730.\n- Включены все варианты: А500С ø10мм, ø12мм, ø16мм. Все сделки в UZS.",
+    "key_figures": [
+     {
+      "label": "Оборот 2025, сум",
+      "value": 1063215682118,
+      "query_id": "A1",
+      "unit": "сум"
+     }
+    ],
+    "assumptions": [
+     "Период: 2025-01-01 – 2025-12-31 по дате сделки",
+     "Аннулированные сделки исключены из суммы",
+     "Товар «арматура» = все варианты product_base"
+    ],
+    "used_query_ids": [
+     "A1"
+    ],
+    "evidence_query_id": "A1"
+   },
+   "unbacked": 0,
+   "rejections": 0
+  },
+  {
+   "id": "bench_canc_3",
+   "ok": true,
+   "sec": 5.57,
+   "err": null,
+   "q": "Какая доля сделок была аннулирована в Джизакской области в 2026 году (в %)?",
+   "final": {
+    "status": "answered",
+    "language": "ru",
+    "answer": "В Джизакской области в 2026 году аннулировано **5,89 %** сделок.\n- Всего сделок: 3 651, из них аннулировано 215; не аннулировано — 3 436.",
+    "key_figures": [
+     {
+      "label": "Доля аннулированных",
+      "value": 5.89,
+      "unit": "%",
+      "query_id": "A1"
+     },
+     {
+      "label": "Аннулировано",
+      "value": 215,
+      "query_id": "A1"
+     },
+     {
+      "label": "Всего сделок",
+      "value": 3651,
+      "query_id": "A1"
+     }
+    ],
+    "assumptions": [
+     "Регион сделки — регион склада продавца: Jizzax viloyati",
+     "Период: 2026-01-01 – 2026-10-30 (по deal_date)",
+     "Доля = аннулированные / все сделки реестра"
+    ],
+    "used_query_ids": [
+     "A1"
+    ],
+    "evidence_query_id": "A1"
+   },
+   "unbacked": 0,
+   "rejections": 0
+  },
+  {
+   "id": "bench_late_6",
+   "ok": true,
+   "sec": 5.73,
+   "err": null,
+   "q": "2025-yilda bitum bo'yicha nechta bitim kechikib yetkazilgan?",
+   "final": {
+    "status": "answered",
+    "language": "uz",
+    "answer": "2025-yilda bitum bo'yicha **55 ta** bitim kechikib yetkazilgan (yetkazish muddati kechikishi > 0 kun).\n- 2025-yilda bitumga jami 1 477 ta bitim tuzilgan, shundan 104 tasi bekor qilingan; amalga oshgan — 1 373 ta.\n- Misol bitim raqamlari: 452863, 439752, 426029, 389967, 409958.",
+    "key_figures": [
+     {
+      "label": "Kechikib yetkazilgan bitumlar",
+      "value": 55,
+      "query_id": "A1",
+      "unit": "ta"
+     }
+    ],
+    "assumptions": [
+     "Bitumning barcha markalari (BNД60/90, 70/100, 90/130) kiritilgan",
+     "Bekor qilingan bitimlar hisobga olinmagan",
+     "Kechikish: delivery_delay_days > 0; yil deal_date bo'yicha"
+    ],
+    "used_query_ids": [
+     "A1"
+    ],
+    "evidence_query_id": "A1"
+   },
+   "unbacked": 0,
+   "rejections": 0
+  },
+  {
+   "id": "bench_ton_16",
+   "ok": true,
+   "sec": 6.14,
+   "err": null,
+   "q": "2024-yilda qancha tonna guruch sotilgan (bekor qilinganlarsiz)?",
+   "final": {
+    "status": "answered",
+    "language": "uz",
+    "answer": "2024-yilda bekor qilinmagan bitimlar bo'yicha jami **19 017 tonna** guruch sotilgan (759 ta bitim).\n- Guruch, oliy nav: 9 827 tonna (397 ta bitim)\n- Guruch, 1-nav: 9 190 tonna (362 ta bitim)",
+    "key_figures": [
+     {
+      "label": "Guruch hajmi 2024",
+      "value": 19017,
+      "unit": "tonna",
+      "query_id": "A1"
+     }
+    ],
+    "assumptions": [
+     "Davr: 2024-01-01 – 2024-12-31, bekor qilingan bitimlar chiqarildi",
+     "Barcha guruch navlari (product_base = рис) kiritildi"
+    ],
+    "used_query_ids": [
+     "A1"
+    ],
+    "evidence_query_id": "A1"
+   },
+   "unbacked": 0,
+   "rejections": 0
+  },
+  {
+   "id": "bench_brk_12",
+   "ok": true,
+   "sec": 6.22,
+   "err": null,
+   "q": "2023-yilda BK101 brokeri nechta bitimda qatnashgan?",
+   "final": {
+    "status": "answered",
+    "language": "uz",
+    "answer": "2023-yilda BK101 brokeri **4 200 ta** bitimda qatnashgan, shundan 283 tasi bekor qilingan; amalga oshgan (bekor qilinmagan) — **3 917 ta**.\n- Sotuvchi tomonda: 2 665 ta, xaridor tomonda: 1 577 ta.\n- 42 ta bitimda broker ikkala tomonda ham bo'lgan (bir marta sanalgan).",
+    "key_figures": [
+     {
+      "label": "BK101 bitimlari, 2023",
+      "value": 4200,
+      "query_id": "A1"
+     },
+     {
+      "label": "Bekor qilinmagan",
+      "value": 3917,
+      "query_id": "A1"
+     },
+     {
+      "label": "Bekor qilingan",
+      "value": 283,
+      "query_id": "A1"
+     }
+    ],
+    "assumptions": [
+     "2023-yil: deal_date bo'yicha 2023-01-01 – 2023-12-31",
+     "Sotuvchi yoki xaridor broker sifatida qatnashgan bitimlar, har biri bir marta sanalgan"
+    ],
+    "used_query_ids": [
+     "A1"
+    ],
+    "evidence_query_id": "A1"
+   },
+   "unbacked": 0,
+   "rejections": 0
+  },
+  {
+   "id": "bench_price_7",
+   "ok": true,
+   "sec": 6.63,
+   "err": null,
+   "q": "Какова средневзвешенная цена тонны товара «хлопок-сырец» в октябре 2025 года?",
+   "final": {
+    "status": "answered",
+    "language": "ru",
+    "answer": "Средневзвешенная цена тонны хлопка-сырца в октябре 2025 года — **9 318 668,39 сум за тонну**.\n- Диапазон цены по сделкам: от 7 641 630 до 11 176 860 сум/тонна.\n- Объём: 560 567,32 тонны.\n- Сделок заключено 9 852, из них аннулировано 613; учтено 9 239.",
+    "key_figures": [
+     {
+      "label": "Средневзвешенная цена",
+      "value": 9318668.39,
+      "query_id": "A1",
+      "unit": "сум/тонна"
+     }
+    ],
+    "assumptions": [
+     "Все сорта и классы хлопка-сырец; период 2025-10-01 – 2025-10-31",
+     "Аннулированные сделки исключены; кг переведены в тонны",
+     "Цена = сумма в сумах / объём в тоннах"
+    ],
+    "used_query_ids": [
+     "A1"
+    ],
+    "evidence_query_id": "A1"
+   },
+   "unbacked": 0,
+   "rejections": 0
+  },
+  {
+   "id": "hard._sugar_chg",
+   "ok": true,
+   "sec": 7.0,
+   "err": null,
+   "q": "2026-yil oktyabrda shakarning o'rtacha narxi sentyabrga nisbatan necha foizga o'zgargan?",
+   "final": {
+    "status": "answered",
+    "language": "uz",
+    "answer": "Shakarning (сахар белый) o'rtacha narxi 2026-yil oktyabrda sentyabrga nisbatan **1,3 %** ga oshgan.\n- Sentyabr: 15 712 404,93 so'm/tonna (253 ta bekor qilinmagan bitim).\n- Oktyabr: 15 916 310,43 so'm/tonna (284 ta bekor qilinmagan bitim).",
+    "key_figures": [
+     {
+      "label": "Narx o'zgarishi",
+      "value": 1.3,
+      "unit": "%",
+      "query_id": "A1"
+     },
+     {
+      "label": "Oktyabr o'rtacha narx",
+      "value": 15916310.43,
+      "unit": "so'm/tonna",
+      "query_id": "A1"
+     }
+    ],
+    "assumptions": [
+     "Bekor qilingan bitimlar chiqarilgan",
+     "Weighted average: summa/hajm, so'm per tonna",
+     "Oylar: 2026-09 va 2026-10"
+    ],
+    "used_query_ids": [
+     "A1"
+    ],
+    "evidence_query_id": "A1"
+   },
+   "unbacked": 0,
+   "rejections": 0
+  },
+  {
+   "id": "hard._both_roles",
+   "ok": true,
+   "sec": 7.19,
+   "err": null,
+   "q": "Сколько компаний выступали на бирже и продавцом, и покупателем?",
+   "final": {
+    "status": "answered",
+    "language": "ru",
+    "answer": "**0 компаний** не выступали одновременно и продавцом, и покупателем: множества ИНН продавцов и покупателей не пересекаются.\n- Уникальных продавцов: 392; уникальных покупателей: 13 997.\n- Результат тот же, если исключить аннулированные сделки: 0.",
+    "key_figures": [
+     {
+      "label": "Компаний в обеих ролях",
+      "value": 0,
+      "query_id": "A1"
+     },
+     {
+      "label": "Уникальных продавцов",
+      "value": 392,
+      "query_id": "A1"
+     },
+     {
+      "label": "Уникальных покупателей",
+      "value": 13997,
+      "query_id": "A1"
+     }
+    ],
+    "assumptions": [
+     "Сопоставление по ИНН в seller_inn и buyer_inn за весь период",
+     "Проверено со всеми сделками и без аннулированных"
+    ],
+    "used_query_ids": [
+     "A1"
+    ]
+   },
+   "unbacked": 0,
+   "rejections": 0
+  },
+  {
+   "id": "bench_reg_5",
+   "ok": true,
+   "sec": 7.63,
+   "err": null,
+   "q": "Из какого региона больше всего сделок по товару «сахар» в 2022 году?",
+   "final": {
+    "status": "answered",
+    "language": "ru",
+    "answer": "Больше всего сделок по сахару в 2022 году — из региона **Toshkent shahri**: **2 137** сделок.\n- Из них аннулировано 152, состоявшихся (не аннулированных) — 1 985.\n- Запрос вернул только этот регион.",
+    "key_figures": [
+     {
+      "label": "Сделок по сахару, Toshkent shahri, 2022",
+      "value": 2137,
+      "query_id": "A1",
+      "unit": "сделок"
+     }
+    ],
+    "assumptions": [
+     "Товар: сахар белый; период 2022-01-01 – 2022-12-31",
+     "Регион сделки — регион склада продавца",
+     "Считаны все сделки, включая аннулированные; их число указано отдельно"
+    ],
+    "used_query_ids": [
+     "A1"
+    ],
+    "evidence_query_id": "A1"
+   },
+   "unbacked": 0,
+   "rejections": 0
+  },
+  {
+   "id": "hard._buyers_2026",
+   "ok": true,
+   "sec": 7.68,
+   "err": null,
+   "q": "Сколько уникальных покупателей совершили сделки в 2026 году?",
+   "final": {
+    "status": "answered",
+    "language": "ru",
+    "answer": "В 2026 году сделки совершили **12 878** уникальных покупателей.\n- Всего сделок: 99 306, из них аннулировано 6 266.\n- Если считать только неаннулированные сделки, уникальных покупателей **12 733**.",
+    "key_figures": [
+     {
+      "label": "Уникальные покупатели (все сделки)",
+      "value": 12878,
+      "query_id": "A1"
+     },
+     {
+      "label": "Без аннулированных",
+      "value": 12733,
+      "query_id": "A1"
+     }
+    ],
+    "assumptions": [
+     "Период: 2026 год до даты снимка данных",
+     "Покупатель = уникальный buyer_inn",
+     "Основной ответ включает аннулированные сделки; вариант без них указан"
+    ],
+    "used_query_ids": [
+     "A1"
+    ],
+    "evidence_query_id": "A1"
+   },
+   "unbacked": 0,
+   "rejections": 1
+  },
+  {
+   "id": "bench_exp_8",
+   "ok": true,
+   "sec": 8.76,
+   "err": null,
+   "q": "2026-yilda paxta ipi (pryaja) eksporti necha dollar bo'lgan?",
+   "final": {
+    "status": "answered",
+    "language": "uz",
+    "answer": "2026-yilda paxta ipi (pryaja) eksporti **61 989 664,51 dollar** bo'lgan.\n- So'mdagi ekvivalenti: 805 572 285 473 so'm.\n- Hajm: 15 200 tonna.\n- 692 ta bitim tuzilgan, shundan 56 tasi bekor qilingan; amalga oshgan — 636 ta.",
+    "key_figures": [
+     {
+      "label": "Eksport summasi",
+      "value": 61989664.51,
+      "unit": "USD",
+      "query_id": "A1"
+     },
+     {
+      "label": "So'mdagi ekvivalent",
+      "value": 805572285473,
+      "unit": "UZS",
+      "query_id": "A1"
+     },
+     {
+      "label": "Amalga oshgan bitimlar",
+      "value": 636,
+      "query_id": "A1"
+     }
+    ],
+    "assumptions": [
+     "Mahsulot: пряжа хлопчатобумажная (NE20/1 va NE24/1), eksport shartnomalari",
+     "Bekor qilingan bitimlar summadan chiqarildi",
+     "Davr: 2026-yil boshidan ma'lumotlar oxirigacha (snapshot sanasi)"
+    ],
+    "used_query_ids": [
+     "A1"
+    ],
+    "evidence_query_id": "A1"
+   },
+   "unbacked": 0,
+   "rejections": 1
+  },
+  {
+   "id": "hard._copper_usd_2025",
+   "ok": true,
+   "sec": 8.87,
+   "err": null,
+   "q": "На какую сумму в долларах экспортирован медный катод в 2025 году?",
+   "final": {
+    "status": "answered",
+    "language": "ru",
+    "answer": "Медный катод в 2025 году экспортирован на **136 296 573,79 долл. США** (эквивалент — 1 694 302 586 514,05 сум).\n- Заключено 590 экспортных сделок, из них аннулировано 50; состоявшихся — 540.\n- Марка М0К: 83 535 695,15 долл.; марка М00К: 52 760 878,64 долл.",
+    "key_figures": [
+     {
+      "label": "Экспорт катода медного 2025",
+      "value": 136296573.79,
+      "unit": "USD",
+      "query_id": "A2"
+     },
+     {
+      "label": "Эквивалент в UZS",
+      "value": 1694302586514.05,
+      "unit": "UZS",
+      "query_id": "A2"
+     }
+    ],
+    "assumptions": [
+     "Экспортные сделки (contract_type='Экспортный'), deal_date в 2025 году",
+     "Аннулированные сделки исключены из суммы",
+     "Включены обе марки: М0К и М00К"
+    ],
+    "used_query_ids": [
+     "A1",
+     "A2"
+    ],
+    "evidence_query_id": "A2"
+   },
+   "unbacked": 0,
+   "rejections": 0
+  },
+  {
+   "id": "std_diesel_t_2024_uz",
+   "ok": true,
+   "sec": 9.29,
+   "err": null,
+   "q": "2024-yilda qancha dizel yoqilg'isi sotilgan (tonnada)?",
+   "final": {
+    "status": "answered",
+    "language": "uz",
+    "answer": "2024-yilda **169 355,79 tonna** dizel yoqilg'isi sotilgan (bekor qilinmagan bitimlar bo'yicha).\n- 6 037 ta bitim tuzilgan, shundan 433 tasi bekor qilingan; amalga oshgan — 5 604 ta.\n- ДТ-Е-К5: 71 983,05 t; ДТ-З-К5: 97 372,74 t.\n- Summa: 2 081 509 050 779 so'm.\nBu yilda ДТ-Л-К5 bo'yicha bitim topilmadi.",
+    "key_figures": [
+     {
+      "label": "Dizel hajmi 2024",
+      "value": 169355.79,
+      "unit": "tonna",
+      "query_id": "A1"
+     },
+     {
+      "label": "Amalga oshgan bitimlar",
+      "value": 5604,
+      "unit": "ta",
+      "query_id": "A1"
+     }
+    ],
+    "assumptions": [
+     "Bekor qilingan bitimlar hajmdan chiqarildi",
+     "Kilogrammlar tonnaga o'tkazilgan",
+     "2024-01-01 – 2024-12-31, barcha dizel markalari"
+    ],
+    "used_query_ids": [
+     "A1"
+    ],
+    "evidence_query_id": "A1"
+   },
+   "unbacked": 0,
+   "rejections": 0
+  }
+ ]
+}

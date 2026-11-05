@@ -30,8 +30,8 @@ def _providers():
     has_c, has_o = bool(config.ANTHROPIC_API_KEY), bool(config.OPENAI_API_KEY) and GPT_OK["ok"]
     if has_c and has_o:
         return ("claude", config.CLAUDE_MODEL), ("gpt", config.OPENAI_MODEL)
-    if has_c:
-        return ("claude", config.CLAUDE_MODEL), ("claude", config.CLAUDE_MODEL)
+    if has_c:  # independent check: a different Claude model verifies
+        return ("claude", config.CLAUDE_MODEL), ("claude", config.VERIFIER_CLAUDE_MODEL)
     if has_o:
         return ("gpt", config.OPENAI_MODEL), ("gpt", config.OPENAI_MODEL)
     return None, None

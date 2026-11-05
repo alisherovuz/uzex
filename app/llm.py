@@ -35,6 +35,7 @@ class Run:
         self.n = 0
         self.messages: list = []
         self.error: str | None = None
+        self.fast: bool | None = None
 
     async def exec_tool(self, name: str, args: dict, emit: Emit | None) -> dict:
         if name == "run_sql":
@@ -80,6 +81,7 @@ def _dump(obj) -> str:
 # ------------------------------------------------------------------ Claude
 _CLAUDE_TEMP_OK = True
 _EFFORT_OK: dict = {}
+_FAST_OK: dict = {"claude-sonnet-5-5": False, "claude-haiku-5-5": False}  # fast mode is Opus-only
 
 
 async def claude_loop(run: Run, emit: Emit | None, deadline: float, max_turns: int = 10) -> Run:
@@ -104,10 +106,16 @@ async def claude_loop(run: Run, emit: Emit | None, deadline: float, max_turns: i
         kwargs = dict(model=run.model, max_tokens=3000, system=system, tools=TOOLS, messages=messages)
         if config.CLAUDE_EFFORT and _EFFORT_OK.get(run.model, True):
             kwargs["extra_body"] = {"output_config": {"effort": config.CLAUDE_EFFORT}}
+        fast = run.fast if run.fast is not None else bool(config.CLAUDE_FAST)
+        if fast and _FAST_OK.get(run.model, True):
+            kwargs.setdefault("extra_body", {})["speed"] = "fast"
         try:
             resp = await asyncio.wait_for(client.messages.create(**kwargs), timeout=max(5, remaining))
         except anthropic.BadRequestError as e:
-            if "extra_body" in kwargs and ("effort" in str(e) or "output_config" in str(e)):
+            if "speed" in str(e) and kwargs.get("extra_body", {}).pop("speed", None):
+                _FAST_OK[run.model] = False
+                resp = await asyncio.wait_for(client.messages.create(**kwargs), timeout=max(5, deadline - time.time()))
+            elif "extra_body" in kwargs and ("effort" in str(e) or "output_config" in str(e)):
                 _EFFORT_OK[run.model] = False
                 kwargs.pop("extra_body")
                 resp = await asyncio.wait_for(client.messages.create(**kwargs), timeout=max(5, deadline - time.time()))
