@@ -147,56 +147,71 @@ def claude_followup(run: Run, text: str) -> None:
         last["content"] += "\n\n" + text
 
 
-# ------------------------------------------------------------------ GPT
-def _openai_tools():
-    return [{"type": "function", "function": {"name": t["name"], "description": t["description"],
-                                              "parameters": t["input_schema"]}} for t in TOOLS]
+# ------------------------------------------------------------------ GPT (Responses API)
+def _openai_resp_tools():
+    # Responses API uses a flat function-tool shape (name/description/parameters at top level).
+    return [{"type": "function", "name": t["name"], "description": t["description"],
+             "parameters": t["input_schema"]} for t in TOOLS]
+
+
+_REASON_OK: dict = {}  # per-model: does it accept a reasoning param on the Responses API
 
 
 async def gpt_loop(run: Run, emit: Emit | None, deadline: float, max_turns: int = 10) -> Run:
+    """Run an OpenAI tool loop on the Responses API (GPT-5/6 reasoning models need it for tools)."""
     import openai
     client = openai.AsyncOpenAI(api_key=config.OPENAI_API_KEY, max_retries=2)
-    if not run.messages:
-        run.messages = [{"role": "system", "content": get_system()}, {"role": "user", "content": run.question}]
-    messages = run.messages
-    extra = {}
-    if config.OPENAI_REASONING and run.model.startswith(("gpt-5", "gpt-6", "o")):
-        extra["reasoning_effort"] = config.OPENAI_REASONING
+    reasoning = None
+    if _REASON_OK.get(run.model, True) and run.model.startswith(("gpt-5", "gpt-6", "o")):
+        eff = (config.OPENAI_REASONING or "").strip()
+        reasoning = {"effort": "minimal" if eff in ("", "none") else eff}
     tier = run.tier if run.tier is not None else (config.OPENAI_TIER or "")
-    if tier and _TIER_OK.get(run.model, True):
-        extra["service_tier"] = tier
+    svc = tier if (tier and _TIER_OK.get(run.model, True)) else None
+    tools = _openai_resp_tools()
+    prev_id: str | None = None
+    pending: list = [{"role": "user", "content": run.question}]
     for turn in range(max_turns):
         remaining = deadline - time.time()
         if remaining < 4:
             break
         if turn == max_turns - 1 or remaining < 15:
-            messages.append({"role": "user", "content": "Time is almost up: call final_answer now."})
+            pending.append({"role": "user", "content": "Time is almost up: call final_answer now."})
+        kwargs: dict = {"model": run.model, "tools": tools, "input": pending}
+        if prev_id:
+            kwargs["previous_response_id"] = prev_id
+        else:
+            kwargs["instructions"] = get_system()
+        if reasoning:
+            kwargs["reasoning"] = reasoning
+        if svc:
+            kwargs["service_tier"] = svc
         try:
-            resp = await asyncio.wait_for(client.chat.completions.create(
-                model=run.model, messages=messages, tools=_openai_tools(), **extra), timeout=max(5, remaining))
+            resp = await asyncio.wait_for(client.responses.create(**kwargs), timeout=max(5, remaining))
         except openai.BadRequestError as e:
-            if "service_tier" in str(e) and extra.pop("service_tier", None):
+            m = str(e)
+            if svc and "service_tier" in m:
                 _TIER_OK[run.model] = False  # this key/model can't use the requested tier
+                svc = None
                 continue
-            if extra and "reasoning" in str(e):
-                extra = {}
+            if reasoning and ("reasoning" in m or "effort" in m):
+                _REASON_OK[run.model] = False
+                reasoning = None
                 continue
             raise
-        msg = resp.choices[0].message
-        messages.append(msg.model_dump(exclude_none=True))
-        if not msg.tool_calls:
-            messages.append({"role": "user", "content": "Use the tools; finish by calling final_answer."})
+        prev_id = resp.id
+        calls = [it for it in (resp.output or []) if getattr(it, "type", None) == "function_call"]
+        if not calls:
+            pending = [{"role": "user", "content": "Use the tools; finish by calling final_answer."}]
             continue
         args = []
-        for c in msg.tool_calls:
+        for c in calls:
             try:
-                args.append(json.loads(c.function.arguments or "{}"))
+                args.append(json.loads(c.arguments or "{}"))
             except json.JSONDecodeError:
                 args.append({})
-        results = await asyncio.gather(*[run.exec_tool(c.function.name, a, emit)
-                                         for c, a in zip(msg.tool_calls, args)])
-        for c, r in zip(msg.tool_calls, results):
-            messages.append({"role": "tool", "tool_call_id": c.id, "content": _dump(r)})
+        results = await asyncio.gather(*[run.exec_tool(c.name, a, emit) for c, a in zip(calls, args)])
+        pending = [{"type": "function_call_output", "call_id": c.call_id, "output": _dump(r)}
+                   for c, r in zip(calls, results)]
         if run.final is not None:
             break
     return run
