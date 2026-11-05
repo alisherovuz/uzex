@@ -69,6 +69,7 @@ async def _stt(audio: bytes, mime: str, lang: str = "auto") -> dict:
 VOICE = {"uz": None, "ru": None}       # active voice ids
 VOICE_INFO = {"uz": None, "ru": None}  # name/accent of the chosen voice
 _TTS_CACHE: dict = {}
+_BAD: set = set()
 EL = "https://api.elevenlabs.io"
 
 
@@ -182,10 +183,13 @@ async def tts(text: str, lang: str) -> tuple[bytes, str] | None:
     if out is None and config.ELEVENLABS_API_KEY:
         voice = VOICE.get(lang) or config.ELEVEN_VOICE_ID
         model = config.ELEVEN_TTS_MODEL_RU if lang == "ru" else config.ELEVEN_TTS_MODEL_UZ
-        attempts = [(model, True), (model, False), ("eleven_v3", False), ("eleven_multilingual_v2", False)]
+        if lang == "uz":  # ElevenLabs models reject language_code "uz": the cloned voice carries the language
+            attempts = [(model, False), ("eleven_v4", False), ("eleven_v3", False), ("eleven_multilingual_v2", False)]
+        else:
+            attempts = [(model, True), (model, False), ("eleven_v3", False), ("eleven_multilingual_v2", False)]
         seen = set()
         for m, with_lang in attempts:
-            if (m, with_lang) in seen:
+            if (m, with_lang) in seen or (m, with_lang) in _BAD:
                 continue
             seen.add((m, with_lang))
             body = {"text": text, "model_id": m,
@@ -200,6 +204,8 @@ async def tts(text: str, lang: str) -> tuple[bytes, str] | None:
                     out = (r.content, "audio/mpeg")
                     break
                 log.warning("tts %s lang=%s failed %s: %s", m, with_lang, r.status_code, r.text[:160])
+                if r.status_code in (400, 404, 422):
+                    _BAD.add((m, with_lang))  # unsupported model/option: never retry it
             except Exception as e:  # noqa: BLE001
                 log.warning("tts error: %s", e)
     if out:

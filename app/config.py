@@ -15,7 +15,7 @@ OPENAI_REASONING = os.getenv("OPENAI_REASONING", "low")  # for reasoning models;
 
 ELEVENLABS_API_KEY = os.getenv("ELEVENLABS_API_KEY", "")
 ELEVEN_STT_MODEL = os.getenv("ELEVEN_STT_MODEL", "scribe_v1")
-ELEVEN_TTS_MODEL_UZ = os.getenv("ELEVEN_TTS_MODEL_UZ", "eleven_v3")
+ELEVEN_TTS_MODEL_UZ = os.getenv("ELEVEN_TTS_MODEL_UZ", "eleven_v4")  # falls back to eleven_v3
 ELEVEN_TTS_MODEL_RU = os.getenv("ELEVEN_TTS_MODEL_RU", "eleven_flash_v2_5")  # fast, supports Russian
 ELEVEN_VOICE_ID = os.getenv("ELEVEN_VOICE_ID", "EXAVITQu4vr4xnSDxMaL")  # fallback: "Sarah", young, clear
 ELEVEN_VOICE_ID_UZ = os.getenv("ELEVEN_VOICE_ID_UZ", "")  # empty = auto-pick a native Uzbek voice from the library
