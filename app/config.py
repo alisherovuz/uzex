@@ -22,7 +22,10 @@ ELEVEN_VOICE_ID_UZ = os.getenv("ELEVEN_VOICE_ID_UZ", "")  # empty = auto-pick a 
 ELEVEN_VOICE_ID_RU = os.getenv("ELEVEN_VOICE_ID_RU", "")
 DEEPGRAM_API_KEY = os.getenv("DEEPGRAM_API_KEY", "")
 DEEPGRAM_STT_MODEL = os.getenv("DEEPGRAM_STT_MODEL", "nova-3")
-DEEPGRAM_TTS_MODEL_RU = os.getenv("DEEPGRAM_TTS_MODEL_RU", "")  # empty = use ElevenLabs for Russian speech
+DEEPGRAM_TTS_MODEL_RU = os.getenv("DEEPGRAM_TTS_MODEL_RU", "")
+TTS_PROVIDER = os.getenv("TTS_PROVIDER", "native")  # native = Microsoft neural voices (uz-UZ, ru-RU); eleven = ElevenLabs
+NATIVE_VOICE_UZ = os.getenv("NATIVE_VOICE_UZ", "uz-UZ-MadinaNeural")
+NATIVE_VOICE_RU = os.getenv("NATIVE_VOICE_RU", "ru-RU-SvetlanaNeural")  # empty = use ElevenLabs for Russian speech
 
 TELEGRAM_BOT_TOKEN = os.getenv("TELEGRAM_BOT_TOKEN", "")
 TELEGRAM_WEBHOOK_SECRET = os.getenv("TELEGRAM_WEBHOOK_SECRET", "isbotli")

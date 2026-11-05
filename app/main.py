@@ -73,6 +73,11 @@ async def favicon():
     return FileResponse(config.WEB_DIR / "static" / "logo.svg", media_type="image/svg+xml")
 
 
+@app.get("/c")
+async def chat_page():
+    return FileResponse(config.WEB_DIR / "index.html", headers={"Cache-Control": "no-cache"})
+
+
 @app.get("/a/{rid}")
 async def answer_page(rid: str):
     return FileResponse(config.WEB_DIR / "index.html", headers={"Cache-Control": "no-cache"})

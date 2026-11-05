@@ -136,8 +136,16 @@ button:focus{outline:none}button:focus-visible{outline:2px solid var(--em2);outl
 .risk .r{margin-left:auto;font-weight:700;color:var(--red);font-variant-numeric:tabular-nums}
 .risk:hover .n{color:var(--em)}
 /* ---------- thread */
-#thread{max-width:820px;margin:0 auto;padding:34px 28px 190px;display:none}
-body.chatting #thread{display:block}
+#chatwrap{display:none;max-width:820px;margin:0 auto;padding:0 28px}
+body.chatting #chatwrap{display:block}
+#thread{padding:10px 0 190px}
+.chatbar{position:sticky;top:64px;z-index:15;display:flex;justify-content:space-between;align-items:center;padding:14px 0 10px;background:linear-gradient(180deg,var(--bg) 70%,rgba(251,251,253,0))}
+.chatbar button{border:0;background:none;display:inline-flex;align-items:center;gap:4px;font-size:15px;font-weight:600;color:var(--ink2);padding:8px 10px 8px 4px;border-radius:10px}
+.chatbar button:hover{background:var(--soft);color:var(--ink)}
+.chatbar button svg{width:20px;height:20px}
+.chatbar #newq{color:var(--em);padding:8px 12px}
+.resume{display:none;margin:16px auto 0;border:0;background:var(--ink);color:#fff;border-radius:999px;padding:10px 18px;font-size:14.5px;font-weight:600}
+body.hasthread .resume{display:inline-flex}
 body.chatting #home{display:none}
 body.chatting .dock{display:block}
 .dock{display:none;position:fixed;left:0;right:0;bottom:0;padding:18px 28px calc(18px + env(safe-area-inset-bottom));background:linear-gradient(180deg,rgba(251,251,253,0),var(--bg) 38%);z-index:20}
@@ -231,7 +239,7 @@ footer img{width:22px;vertical-align:middle;margin-right:6px;opacity:.9}
   .nav{padding:0 16px;gap:10px}
   .brand span{display:none}
   .wrap{padding:0 16px}
-  #thread{padding:20px 14px 180px}
+  #chatwrap{padding:0 14px}
   .dock{padding:14px 12px calc(12px + env(safe-area-inset-bottom))}
   .ans{padding:20px 18px 4px}.acts{margin:12px -18px 0;padding:6px 8px}.proof{margin:0 -18px;padding:4px 18px 20px}
   .trust{gap:14px;flex-direction:column;align-items:center}
@@ -265,6 +273,7 @@ footer img{width:22px;vertical-align:middle;margin-right:6px;opacity:.9}
       <h1 data-i="h1">Savol bering.<br><span>Aniq javob oling.</span></h1>
       <p class="lead" data-i="lead">500 000 ta birja bitimi bo'yicha o'zbek yoki rus tilida so'rang — yozib yoki ovoz bilan. Har bir raqam bazadan hisoblanadi va isboti bilan ko'rsatiladi.</p>
       <div id="slotHero"></div>
+      <button class="resume" id="resume" data-i="resume">Suhbatni davom ettirish →</button>
       <div class="chips" id="chips"></div>
       <div class="trust">
         <div><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l7 3v6c0 4.5-3 7.5-7 9-4-1.5-7-4.5-7-9V6z"/><path d="M9 12l2 2 4-4"/></svg><span data-i="tr1">Raqamlarni o'ylab topmaydi</span></div>
@@ -292,8 +301,11 @@ footer img{width:22px;vertical-align:middle;margin-right:6px;opacity:.9}
     <footer><img src="/static/logo.svg" alt=""><span data-i="foot">Aniq Agent · Ma'lumotlar: UZEX ochiq reyestri formatidagi 500 000 bitim (2022–2026). Bekor qilingan bitimlar savdo hajmiga kiritilmaydi.</span></footer>
   </div>
 
-  <div id="thread"></div>
-  <div class="dock"><button class="newq" id="newq" data-i="newq">＋ Yangi suhbat</button><div id="slotDock"></div></div>
+  <div id="chatwrap">
+    <div class="chatbar"><button id="backHome"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg><span data-i="home">Bosh sahifa</span></button><button id="newq" data-i="newq">＋ Yangi suhbat</button></div>
+    <div id="thread"></div>
+  </div>
+  <div class="dock"><div id="slotDock"></div></div>
 
   <div class="composer" id="composer">
     <textarea id="inp" rows="1" data-ip="ph" placeholder="Masalan: 2025-yilda qancha dizel sotilgan?"></textarea>
@@ -344,7 +356,7 @@ const I18N = {
   h2b:"Hisoblaydi va tekshiradi",h2s:"Agent 500 000 bitim bazasidan SQL bilan hisoblaydi. Ikkinchi mustaqil model natijani qayta hisoblab solishtiradi.",
   h3b:"Isboti bilan javob",h3s:"Aniq raqam, qanday hisoblangani, tekshirsa bo'ladigan bitim raqamlari va CSV. Ma'lumotda yo'q bo'lsa — ochiq aytadi.",more:"Batafsil ›",
   briefT:"Bozor brifingi",briefS:"2026-yil oktyabr · 30 soniyada eng muhimi",foot:"Aniq Agent · Ma'lumotlar: UZEX ochiq reyestri formatidagi 500 000 bitim (2022–2026). Bekor qilingan bitimlar savdo hajmiga kiritilmaydi.",
-  newq:"＋ Yangi suhbat",ph:"Masalan: 2025-yilda qancha dizel sotilgan?",mH:"Bozor",mSub:"2022-yil yanvar — 2026-yil oktyabr · barcha raqamlar bazadan",
+  newq:"＋ Yangi suhbat",home:"Bosh sahifa",resume:"Suhbatni davom ettirish →",ph:"Masalan: 2025-yilda qancha dizel sotilgan?",mH:"Bozor",mSub:"2022-yil yanvar — 2026-yil oktyabr · barcha raqamlar bazadan",
   trendH:"Oylik savdo hajmi",trendS:"mlrd so'm · bekor qilinganlarsiz",riskH:"E'tibor talab qiladi",riskS:"Bitimlarining eng ko'p qismi bekor qilingan xaridorlar",
   topH:"Yetakchi tovarlar",topS:"mlrd so'm · bosing — tahlil qiling",regH:"Hududlar",regS:"mlrd so'm · sotuvchi ombori joylashuvi",
   kAmt:"Savdo hajmi",kAmtU:"mlrd so'm",kAmtS:"bekor qilinganlarsiz",kDeals:"Bitimlar",kDealsS:"2022–2026",kCancel:"Bekor qilingan",kCancelS:"ta bitim to'lanmagan",kPart:"Ishtirokchilar",kPartS:"sotuvchi · xaridor",
@@ -363,7 +375,7 @@ const I18N = {
   h2b:"Считает и проверяет",h2s:"Агент считает SQL-запросами по базе из 500 000 сделок. Вторая независимая модель пересчитывает и сверяет результат.",
   h3b:"Ответ с доказательством",h3s:"Точное число, как оно посчитано, номера сделок для проверки и CSV. Если данных нет — честно говорит об этом.",more:"Подробнее ›",
   briefT:"Сводка рынка",briefS:"Октябрь 2026 · главное за 30 секунд",foot:"Aniq Agent · Данные: 500 000 сделок в формате открытого реестра UZEX (2022–2026). Аннулированные сделки не входят в оборот.",
-  newq:"＋ Новый разговор",ph:"Например: сколько дизельного топлива продано в 2025 году?",mH:"Рынок",mSub:"Январь 2022 — октябрь 2026 · все числа из базы",
+  newq:"＋ Новый разговор",home:"Главная",resume:"Вернуться к разговору →",ph:"Например: сколько дизельного топлива продано в 2025 году?",mH:"Рынок",mSub:"Январь 2022 — октябрь 2026 · все числа из базы",
   trendH:"Оборот по месяцам",trendS:"млрд сум · без аннулированных",riskH:"Требуют внимания",riskS:"Покупатели с наибольшей долей аннулированных сделок",
   topH:"Лидирующие товары",topS:"млрд сум · нажмите для анализа",regH:"Регионы",regS:"млрд сум · по складу продавца",
   kAmt:"Оборот",kAmtU:"млрд сум",kAmtS:"без аннулированных",kDeals:"Сделки",kDealsS:"2022–2026",kCancel:"Аннулировано",kCancelS:"сделок не оплачено",kPart:"Участники",kPartS:"продавцы · покупатели",
@@ -395,8 +407,30 @@ function showView(v){
 }
 document.querySelectorAll("#tabs button").forEach(b => b.onclick = () => showView(b.dataset.v));
 document.querySelectorAll("[data-go]").forEach(a => a.onclick = () => showView(a.dataset.go));
-$("#brand").onclick = () => { showView("ask"); };
-$("#newq").onclick = () => { document.body.classList.remove("chatting"); $("#thread").innerHTML=""; placeComposer(); history.replaceState(null,"","/"); window.scrollTo({top:0}); };
+// ----- pages: home (/) and chat (/c, /a/<id>) with real browser history
+let LAST_CHAT_URL = "/c";
+function goHome(push){
+  document.body.classList.remove("chatting"); placeComposer(); showView("ask");
+  document.body.classList.toggle("hasthread", !!thread.children.length);
+  if (push){ history.pushState({v:"home"}, "", "/"); PUSHED_CHAT = false; }
+  window.scrollTo({top:0});
+}
+function goChat(push, url){
+  showView("ask");
+  if (!document.body.classList.contains("chatting")){ document.body.classList.add("chatting"); placeComposer(); }
+  if (push){ history.pushState({v:"chat"}, "", url || LAST_CHAT_URL); PUSHED_CHAT = true; }
+  setTimeout(() => window.scrollTo({top:document.body.scrollHeight}), 0);
+}
+$("#brand").onclick = () => goHome(true);
+let PUSHED_CHAT = false;
+$("#backHome").onclick = () => { if (PUSHED_CHAT) history.back(); else goHome(true); };
+$("#resume").onclick = () => goChat(true);
+$("#newq").onclick = () => { thread.innerHTML = ""; LAST_CHAT_URL = "/c"; history.replaceState({v:"chat"}, "", "/c"); $("#inp").focus(); };
+window.addEventListener("popstate", e => {
+  const path = location.pathname;
+  if (path === "/c" || path.startsWith("/a/")) { if (thread.children.length) goChat(false); else loadShared(path); }
+  else goHome(false);
+});
 
 function applyLang(){
   document.documentElement.lang = LANG;
@@ -490,7 +524,7 @@ function md(s){
 
 // ----- thread
 const thread = $("#thread");
-function startChat(){ if (!document.body.classList.contains("chatting")){ document.body.classList.add("chatting"); placeComposer(); } }
+function startChat(){ if (!document.body.classList.contains("chatting")) goChat(true); }
 function scrollEnd(){ window.scrollTo({top:document.body.scrollHeight, behavior:"smooth"}); }
 function addQ(text, heard){
   startChat();
@@ -602,7 +636,7 @@ async function ask(text, heard){
         if (ev.type === "final"){
           final = ev.result; p.done(); p.el.remove();
           card = renderAnswer(final || {answer:t("err")});
-          if (final && final.id) history.replaceState(null, "", "/a/" + final.id);
+          if (final && final.id){ LAST_CHAT_URL = "/a/" + final.id; history.replaceState({v:"chat"}, "", LAST_CHAT_URL); }
           busy = false; $("#send").disabled = false;
         } else if (ev.type === "verification" && card){
           Object.assign(card._res, {verification: ev.verification, verifier_queries: ev.verifier_queries});
@@ -671,8 +705,16 @@ $("#mic").onclick = async () => {
 
 // ----- boot
 placeComposer(); applyLang(); loadDash().then(() => { if (location.hash === "#market") showView("market"); });
-const m = location.pathname.match(/^\/a\/([a-f0-9]+)/);
-if (m){ fetch("/api/answer/" + m[1]).then(r => r.ok ? r.json() : null).then(res => { if (res){ addQ(res.question); const a = renderAnswer(res); a.querySelector(".bp") && a.querySelector(".bp").click(); window.scrollTo({top:0}); } }); }
+function loadShared(path){
+  const m = path.match(/^\/a\/([a-f0-9]+)/);
+  if (!m){ if (path === "/c") goChat(false); return; }
+  history.replaceState({v:"chat"}, "", path);
+  fetch("/api/answer/" + m[1]).then(r => r.ok ? r.json() : null).then(res => {
+    if (res){ goChat(false); addQ(res.question); const a = renderAnswer(res); a.querySelector(".bp") && a.querySelector(".bp").click(); window.scrollTo({top:0}); }
+    else goHome(false);
+  });
+}
+if (location.pathname !== "/") loadShared(location.pathname); else history.replaceState({v:"home"}, "", "/" + location.hash);
 </script>
 </body>
 </html>

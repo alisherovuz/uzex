@@ -1,4 +1,5 @@
 """Voice: Uzbek via ElevenLabs, Russian via Deepgram (with automatic fallbacks)."""
+import asyncio
 import logging
 import re
 
@@ -114,6 +115,10 @@ async def choose(lang: str, voice_id: str | None = None) -> dict:
 
 
 async def init_voices():
+    if config.TTS_PROVIDER == "native":
+        for lang in ("uz", "ru"):
+            ok = await _native_tts("Salom" if lang == "uz" else "Привет", lang)
+            log.info("native TTS self-test %s: %s", lang, "OK" if ok else "FAILED (ElevenLabs fallback)")
     if not config.ELEVENLABS_API_KEY:
         return
     for lang, env in (("uz", config.ELEVEN_VOICE_ID_UZ), ("ru", config.ELEVEN_VOICE_ID_RU)):
@@ -126,6 +131,27 @@ async def init_voices():
             log.warning("voice auto-pick for %s failed: %s", lang, e)
 
 
+async def _native_tts(text: str, lang: str):
+    """Native-speaker neural voices (Microsoft uz-UZ Madina / ru-RU Svetlana) — correct Uzbek pronunciation."""
+    try:
+        import edge_tts
+        voice_name = config.NATIVE_VOICE_UZ if lang == "uz" else config.NATIVE_VOICE_RU
+        comm = edge_tts.Communicate(text, voice_name, rate="+4%")
+        buf = bytearray()
+
+        async def collect():
+            async for chunk in comm.stream():
+                if chunk.get("type") == "audio":
+                    buf.extend(chunk["data"])
+        await asyncio.wait_for(collect(), timeout=15)
+        if buf:
+            return bytes(buf), "audio/mpeg"
+        log.warning("native tts returned no audio")
+    except Exception as e:  # noqa: BLE001
+        log.warning("native tts failed (%s): %s", lang, str(e)[:200])
+    return None
+
+
 async def tts(text: str, lang: str) -> tuple[bytes, str] | None:
     """Return (audio_bytes, mime) or None. Native voice per language; Uzbek on eleven_v3."""
     text = (text or "").strip()[:700]
@@ -136,7 +162,9 @@ async def tts(text: str, lang: str) -> tuple[bytes, str] | None:
     if key in _TTS_CACHE:
         return _TTS_CACHE[key]
     out = None
-    if lang == "ru" and config.DEEPGRAM_API_KEY and config.DEEPGRAM_TTS_MODEL_RU:
+    if config.TTS_PROVIDER == "native":
+        out = await _native_tts(text, lang)
+    if out is None and lang == "ru" and config.DEEPGRAM_API_KEY and config.DEEPGRAM_TTS_MODEL_RU:
         try:
             async with httpx.AsyncClient(timeout=TIMEOUT) as c:
                 r = await c.post("https://api.deepgram.com/v1/speak", params={"model": config.DEEPGRAM_TTS_MODEL_RU},
