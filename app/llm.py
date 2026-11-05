@@ -36,6 +36,7 @@ class Run:
         self.messages: list = []
         self.error: str | None = None
         self.fast: bool | None = None
+        self.tier: str | None = None  # OpenAI service_tier override ("priority" = faster)
 
     async def exec_tool(self, name: str, args: dict, emit: Emit | None) -> dict:
         if name == "run_sql":
@@ -82,6 +83,7 @@ def _dump(obj) -> str:
 _CLAUDE_TEMP_OK = True
 _EFFORT_OK: dict = {}
 _FAST_OK: dict = {"claude-sonnet-5-5": False, "claude-haiku-5-5": False}  # fast mode is Opus-only
+_TIER_OK: dict = {}  # OpenAI service_tier support per model (disabled on first rejection)
 
 
 async def claude_loop(run: Run, emit: Emit | None, deadline: float, max_turns: int = 10) -> Run:
@@ -160,6 +162,9 @@ async def gpt_loop(run: Run, emit: Emit | None, deadline: float, max_turns: int 
     extra = {}
     if config.OPENAI_REASONING and run.model.startswith(("gpt-5", "gpt-6", "o")):
         extra["reasoning_effort"] = config.OPENAI_REASONING
+    tier = run.tier if run.tier is not None else (config.OPENAI_TIER or "")
+    if tier and _TIER_OK.get(run.model, True):
+        extra["service_tier"] = tier
     for turn in range(max_turns):
         remaining = deadline - time.time()
         if remaining < 4:
@@ -170,6 +175,9 @@ async def gpt_loop(run: Run, emit: Emit | None, deadline: float, max_turns: int 
             resp = await asyncio.wait_for(client.chat.completions.create(
                 model=run.model, messages=messages, tools=_openai_tools(), **extra), timeout=max(5, remaining))
         except openai.BadRequestError as e:
+            if "service_tier" in str(e) and extra.pop("service_tier", None):
+                _TIER_OK[run.model] = False  # this key/model can't use the requested tier
+                continue
             if extra and "reasoning" in str(e):
                 extra = {}
                 continue

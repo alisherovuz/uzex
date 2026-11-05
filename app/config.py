@@ -13,6 +13,13 @@ CLAUDE_FAST = os.getenv("CLAUDE_FAST", "1")  # "1" = Anthropic fast mode (speed=
 FAST_MODEL = os.getenv("FAST_MODEL", "claude-haiku-5-5")  # speech text + follow-ups
 OPENAI_MODEL = os.getenv("OPENAI_MODEL", "gpt-6-astra")
 OPENAI_REASONING = os.getenv("OPENAI_REASONING", "low")  # for reasoning models; empty disables
+OPENAI_TIER = os.getenv("OPENAI_TIER", "")  # "priority" = faster processing where the account allows it
+
+# One-shot model benchmark, run in the background at startup when BENCH=1 (never touches live answering)
+BENCH = os.getenv("BENCH", "")
+BENCH_MODELS = os.getenv("BENCH_MODELS", "")  # csv of OpenAI model ids to try
+BENCH_TIERS = os.getenv("BENCH_TIERS", "default")  # csv of service tiers to try per model
+BENCH_CONC = int(os.getenv("BENCH_CONC", "2"))
 
 ELEVENLABS_API_KEY = os.getenv("ELEVENLABS_API_KEY", "")
 ELEVEN_STT_MODEL = os.getenv("ELEVEN_STT_MODEL", "scribe_v1")

@@ -26,6 +26,9 @@ async def startup():
     if config.OPENAI_API_KEY:
         asyncio.create_task(_check_openai())
     asyncio.create_task(voice.init_voices())
+    if config.BENCH:
+        from . import bench
+        asyncio.create_task(bench.run_openai_bench())
     if config.ANTHROPIC_API_KEY:
         asyncio.create_task(_keep_warm())
     if config.TELEGRAM_BOT_TOKEN and config.PUBLIC_URL:
