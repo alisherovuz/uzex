@@ -20,6 +20,8 @@ BENCH = os.getenv("BENCH", "")
 BENCH_MODELS = os.getenv("BENCH_MODELS", "")  # csv of OpenAI model ids to try
 BENCH_TIERS = os.getenv("BENCH_TIERS", "default")  # csv of service tiers to try per model
 BENCH_CONC = int(os.getenv("BENCH_CONC", "2"))
+BENCH_LIMIT = int(os.getenv("BENCH_LIMIT", "0"))  # 0 = full 296-question bank; else stratified subset
+BENCH_GAP = float(os.getenv("BENCH_GAP", "0"))  # min seconds between OpenAI calls (pace around rate limits)
 
 ELEVENLABS_API_KEY = os.getenv("ELEVENLABS_API_KEY", "")
 ELEVEN_STT_MODEL = os.getenv("ELEVEN_STT_MODEL", "scribe_v1")

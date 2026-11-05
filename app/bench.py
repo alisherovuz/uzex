@@ -41,6 +41,39 @@ def build_bank() -> list[dict]:
     return bank
 
 
+def _cat(qid: str) -> str:
+    """Coarse category from the question id, for stratified sampling."""
+    body = qid.split("_", 1)[1] if "_" in qid else qid
+    for p in ("cnt", "ton", "uzs", "trap", "price", "topsel", "canc", "brk", "buy", "reg", "exp", "late"):
+        if body.startswith(p) or p in body:
+            return p
+    return qid.split("_")[0]
+
+
+def stratified(bank: list[dict], limit: int) -> list[dict]:
+    """Deterministic subset of ~limit questions spread across categories and both languages."""
+    if limit <= 0 or limit >= len(bank):
+        return bank
+    groups: dict[str, list[dict]] = {}
+    for q in bank:
+        groups.setdefault(_cat(q["id"]), []).append(q)
+    order = sorted(groups)
+    out: list[dict] = []
+    i = 0
+    while len(out) < limit:
+        added = False
+        for g in order:
+            if i < len(groups[g]):
+                out.append(groups[g][i])
+                added = True
+                if len(out) >= limit:
+                    break
+        if not added:
+            break
+        i += 1
+    return out
+
+
 def score(q: dict, f: dict | None) -> bool:
     if f is None:
         return False
@@ -87,19 +120,31 @@ async def discover_models(candidates: list[str]) -> list[str]:
     return ok
 
 
-async def run_one(model: str, tier: str, bank: list[dict], conc: int) -> dict:
+async def run_one(model: str, tier: str, bank: list[dict], conc: int, gap: float) -> dict:
     sem = asyncio.Semaphore(conc)
     res: list[dict] = []
+    gate = {"next": 0.0}  # global pacing to respect a low request-rate limit
+    glock = asyncio.Lock()
+
+    async def pace() -> None:
+        if gap <= 0:
+            return
+        async with glock:
+            wait = gate["next"] - time.time()
+            if wait > 0:
+                await asyncio.sleep(wait)
+            gate["next"] = time.time() + gap
 
     async def one(q: dict) -> None:
         async with sem:
+            await pace()
             r = llm.Run("A", q["q"] + "\n\n[Today in the data = 2026-10-30.]", model)
             r.tier = None if tier == "default" else tier
             t0 = time.time()
             try:
-                await llm.gpt_loop(r, None, time.time() + 75)
+                await llm.gpt_loop(r, None, time.time() + 90)
             except Exception as e:  # noqa: BLE001
-                r.error = f"{type(e).__name__}: {str(e)[:160]}"
+                r.error = f"{type(e).__name__}: {str(e)[:200]}"
             dt = time.time() - t0
             res.append({"id": q["id"], "ok": score(q, r.final), "sec": round(dt, 2),
                         "err": r.error, "final": r.final})
@@ -139,10 +184,11 @@ async def run_openai_bench() -> None:
         log.warning("bench: no OpenAI key; nothing to do")
         return
     await asyncio.sleep(8)  # let the server finish starting and serve any early jury traffic first
-    bank = build_bank()
+    bank = stratified(build_bank(), config.BENCH_LIMIT)
     candidates = [m.strip() for m in config.BENCH_MODELS.split(",") if m.strip()] or [config.OPENAI_MODEL]
     tiers = [t.strip() for t in config.BENCH_TIERS.split(",") if t.strip()] or ["default"]
-    log.info("bench: start  models=%s tiers=%s bank=%d conc=%d", candidates, tiers, len(bank), config.BENCH_CONC)
+    log.info("bench: start models=%s tiers=%s bank=%d conc=%d gap=%.1fs", candidates, tiers,
+             len(bank), config.BENCH_CONC, config.BENCH_GAP)
     models = await discover_models(candidates)
     if not models:
         log.warning("bench: none of the requested models are available on this key")
@@ -151,7 +197,7 @@ async def run_openai_bench() -> None:
     for model in models:
         for tier in tiers:
             try:
-                summaries.append(await run_one(model, tier, bank, config.BENCH_CONC))
+                summaries.append(await run_one(model, tier, bank, config.BENCH_CONC, config.BENCH_GAP))
             except Exception as e:  # noqa: BLE001
                 log.warning("bench: %s/%s failed: %s", model, tier, str(e)[:200])
     log.info("BENCHDONE %s", json.dumps(summaries, ensure_ascii=False))
