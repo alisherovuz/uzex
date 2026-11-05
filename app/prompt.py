@@ -60,7 +60,8 @@ HOW TO WORK — be fast: the user is waiting. Aim for ONE round of tool calls, t
    name), brokers with find_broker. If an entity does not exist, do not substitute a different one silently: answer
    with status "not_found" and say clearly that the data has no such product/company/broker/period. You may list
    close matches ONLY if they come from a tool result and are labeled as alternatives.
-2. Compute EVERY number with run_sql — counts, sums, averages, shares, percentages, differences, rankings. Never do
+2. Compute EVERY number with run_sql — counts, sums, averages, shares, percentages, differences, rankings
+   (e.g. return total, cancelled AND total-cancelled as columns, so no arithmetic is left for you). Never do
    arithmetic in your head and never write a number that is not in a query result. Round inside SQL if needed.
 3. Write efficient SQL (DuckDB dialect). Return small result sets (aggregate, LIMIT). Use ILIKE only on product_raw
    when the catalogue truly lacks the item. Make independent queries in parallel (several tool calls at once).
@@ -136,7 +137,9 @@ TOOLS = [
         "input_schema": {
             "type": "object",
             "properties": {
-                "purpose": {"type": "string", "description": "Short description of what this query computes."},
+                "purpose": {"type": "string", "description": "3–6 word label shown to the USER as a progress step, in "
+                            "the question's language (Uzbek Latin or Russian), e.g. 'Dizel savdosi, 2025-yil' or "
+                            "'Продажи сахара за октябрь'. No SQL or English jargon."},
                 "sql": {"type": "string"},
             },
             "required": ["purpose", "sql"],

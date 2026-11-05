@@ -162,7 +162,8 @@ async def tts(text: str, lang: str) -> tuple[bytes, str] | None:
     if key in _TTS_CACHE:
         return _TTS_CACHE[key]
     out = None
-    if config.TTS_PROVIDER == "native":
+    custom = config.ELEVEN_VOICE_ID_UZ if lang == "uz" else config.ELEVEN_VOICE_ID_RU
+    if config.TTS_PROVIDER == "native" and not (custom and config.ELEVENLABS_API_KEY):
         out = await _native_tts(text, lang)
     if out is None and lang == "ru" and config.DEEPGRAM_API_KEY and config.DEEPGRAM_TTS_MODEL_RU:
         try:

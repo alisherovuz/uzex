@@ -59,7 +59,17 @@ def check_answer(answer: str, question: str, results: dict[str, dict], key_figur
     cands: list[float] = []
     for r in results.values():
         for row in r.get("rows", []):
-            cands.extend(_flatten(row))
+            vals = list(_flatten(row))
+            cands.extend(vals)
+            # safe derived arithmetic within one result row: a±b, a/b·100 (e.g. total − cancelled, shares)
+            nums = [v for v in vals if abs(v) < 1e16][:20]
+            for i, a in enumerate(nums):
+                for b in nums[i + 1:]:
+                    cands.extend((a - b, b - a, a + b))
+                    if b:
+                        cands.append(a / b * 100)
+                    if a:
+                        cands.append(b / a * 100)
     q_nums = [n for _, n, _ in parse_numbers(question)]
     unbacked = []
     for raw, n, dec in parse_numbers(answer):

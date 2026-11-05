@@ -363,7 +363,7 @@ const I18N = {
   you:"Siz",heard:"Ovozli savol",thinking:"Hisoblanmoqda",proof:"Isbotni ko'rish",hide:"Isbotni yopish",listen:"Tinglash",copy:"Nusxa",copied:"Nusxalandi",
   vOk:"2 model tasdiqladi",vRec:"Qayta tekshirildi",vBad:"Modellar farq qildi",vSingle:"Bazadan hisoblandi",vPend:"Mustaqil tekshiruv…",gOk:"Barcha raqamlar SQL natijasidan",gBad:"Tekshirilmagan raqam bor",notFound:"Ma'lumotlarda yo'q",
   hAssume:"Qanday hisoblandi",hKf:"Asosiy raqamlar",hEv:"Namuna bitimlar — tekshirish mumkin",hQ:"SQL so'rovlar",hV:"Mustaqil tekshiruv so'rovlari",hChart:"Grafik",csv:"CSV yuklab olish",rows:"qator",
-  st_start:"Savol tahlil qilinmoqda",st_find_product:"Tovar",st_find_company:"Kompaniya",st_find_broker:"Broker",st_found:"topildi",st_none:"topilmadi",st_guard:"Tekshirilmagan raqam rad etildi, qayta hisoblanmoqda",st_primary:"Javob tayyor — mustaqil tekshiruv",st_reconcile:"Natijalar solishtirilmoqda",
+  st_start:"Savol tahlil qilinmoqda",st_find_product:"Tovar qidirildi",st_find_company:"Kompaniya qidirildi",st_find_broker:"Broker qidirildi",st_found:"topildi",st_none:"topilmadi",st_guard:"Raqamlar aniqlashtirilmoqda",st_verify:"Mustaqil tekshiruv boshlandi",st_primary:"Javob tayyor — mustaqil tekshiruv",st_reconcile:"Natijalar solishtirilmoqda",
   micNo:"Mikrofonga ruxsat berilmadi",voiceErr:"Ovozni tanib bo'lmadi — qaytadan gapiring",listening:"Tinglayapman… to'xtatish uchun yana bosing",rec:"Tinglayapman",err:"Xatolik yuz berdi",sec:"s",
   cols:["№","Sana","Tovar","Hajm","Summa","Holat","Sotuvchi","Xaridor"],
   ex:["2025-yilda qancha dizel yoqilg'isi sotilgan?","2026-yilda eng yirik 5 ta sotuvchi kim?","Qaysi broker eng ko'p bitim tuzgan?","2024-yilda bekor qilingan bitimlar ulushi?","STIR 925910430 haqida ma'lumot"],
@@ -382,7 +382,7 @@ const I18N = {
   you:"Вы",heard:"Голосовой вопрос",thinking:"Считаю",proof:"Показать доказательство",hide:"Скрыть доказательство",listen:"Прослушать",copy:"Копировать",copied:"Скопировано",
   vOk:"Подтверждено 2 моделями",vRec:"Перепроверено",vBad:"Модели разошлись",vSingle:"Рассчитано по базе",vPend:"Независимая проверка…",gOk:"Все числа из результатов SQL",gBad:"Есть непроверенное число",notFound:"Нет в данных",
   hAssume:"Как посчитано",hKf:"Ключевые числа",hEv:"Примеры сделок — можно проверить",hQ:"SQL-запросы",hV:"Запросы независимой проверки",hChart:"График",csv:"Скачать CSV",rows:"строк",
-  st_start:"Разбираю вопрос",st_find_product:"Товар",st_find_company:"Компания",st_find_broker:"Брокер",st_found:"найдено",st_none:"не найдено",st_guard:"Непроверенное число отклонено, пересчитываю",st_primary:"Ответ готов — независимая проверка",st_reconcile:"Сверяю результаты",
+  st_start:"Разбираю вопрос",st_find_product:"Поиск товара",st_find_company:"Поиск компании",st_find_broker:"Поиск брокера",st_found:"найдено",st_none:"не найдено",st_guard:"Уточняю числа",st_verify:"Запущена независимая проверка",st_primary:"Ответ готов — независимая проверка",st_reconcile:"Сверяю результаты",
   micNo:"Нет доступа к микрофону",voiceErr:"Не удалось распознать — повторите",listening:"Слушаю… нажмите ещё раз, чтобы остановить",rec:"Слушаю",err:"Произошла ошибка",sec:"с",
   cols:["№","Дата","Товар","Объём","Сумма","Статус","Продавец","Покупатель"],
   ex:["Какой товар лидирует по обороту в 2026 году?","Средняя цена сахара в октябре 2026?","Сколько экспортных сделок было в 2024 году?","Какие покупатели чаще всего не платят?","Сколько сделок у ИНН 925910430?"],
@@ -544,13 +544,13 @@ function progress(){
     done(){ clearInterval(iv); }};
 }
 function onEvent(p, ev){
-  const who = ev.by === "B" ? (LANG==="ru"?"Проверка":"Tekshiruv") : (ev.by === "A" ? (LANG==="ru"?"Аналитик":"Tahlilchi") : "");
+  // users see only the analyst's steps, in their language; the background checker works silently
+  if (ev.by === "B") { if (!p._vshown){ p._vshown = true; p.add("", t("st_verify")); } return; }
+  const ru = LANG === "ru";
   if (ev.type === "step" && ev.text === "start") p.add("ok", t("st_start"));
-  else if (ev.type === "lookup") p.add(ev.found ? "ok":"bad", `${t("st_"+ev.tool)} «${esc(ev.query)}» — ${ev.found ? ev.found+" "+t("st_found") : t("st_none")}`, who);
-  else if (ev.type === "sql") p.add(ev.ok ? "ok":"bad", `${esc(ev.purpose)} · ${ev.ms ?? "?"} ms`, who);
-  else if (ev.type === "guard") p.add("bad", t("st_guard"), who);
-  else if (ev.type === "step" && ev.text === "primary_done") p.add("", t("st_primary"));
-  else if (ev.type === "step" && ev.text === "reconcile") p.add("", t("st_reconcile"));
+  else if (ev.type === "lookup") p.add("ok", `${t("st_"+ev.tool)}: ${esc(ev.query)} — ${ev.found ? t("st_found") : t("st_none")}`);
+  else if (ev.type === "sql" && ev.ok) p.add("ok", esc(ev.purpose));
+  else if (ev.type === "guard") { if (!p._gshown){ p._gshown = true; p.add("", t("st_guard")); } }
 }
 function table(cols, rows){
   if (!cols || !cols.length) return "";
