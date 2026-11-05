@@ -3,11 +3,11 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>Aniq — birja bitimlari bo'yicha aniq javoblar</title>
-<meta name="description" content="Aniq — UZEX birja bitimlari bo'yicha o'zbek va rus tilida javob beradigan AI-tahlilchi. Har bir raqam isboti bilan.">
+<title>Aniq Agent — birja bitimlari bo'yicha aniq javoblar</title>
+<meta name="description" content="Aniq Agent — UZEX birja bitimlari bo'yicha o'zbek va rus tilida javob beradigan AI-tahlilchi. Har bir raqam isboti bilan.">
 <meta name="theme-color" content="#fbfbfd">
 <link rel="icon" href="/static/logo.svg" type="image/svg+xml">
-<link rel="apple-touch-icon" href="/static/logo.svg">
+<link rel="apple-touch-icon" href="/static/aniq-agent-icon-180.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
 <script src="/static/chart.umd.js"></script>
@@ -35,6 +35,8 @@ button{font-family:inherit;cursor:pointer;color:inherit}
 .brand{display:flex;align-items:center;gap:10px;cursor:pointer;user-select:none}
 .brand img{width:30px;height:30px;display:block}
 .brand b{font-size:21px;font-weight:800;letter-spacing:-.045em}
+.brand b em{font-style:normal;font-weight:500;color:var(--faint);margin-left:5px;letter-spacing:-.03em}
+button:focus{outline:none}button:focus-visible{outline:2px solid var(--em2);outline-offset:2px}
 .brand span{font-size:11px;font-weight:600;color:var(--mute);border:1px solid var(--line);border-radius:999px;padding:3px 8px;letter-spacing:.02em}
 .seg{display:inline-flex;background:var(--soft2);border-radius:999px;padding:3px;gap:2px}
 .seg button{border:0;background:none;padding:7px 16px;border-radius:999px;font-size:14px;font-weight:600;color:var(--ink2);transition:all .2s}
@@ -140,6 +142,21 @@ body.chatting .dock{display:block}
 .ans .body li{margin:4px 0;color:var(--ink2)}
 .ans .body b,.ans .body strong{color:var(--em);font-weight:700}
 .meta{display:flex;flex-wrap:wrap;gap:8px;margin:16px 0 4px}
+.stat{margin:-4px 0 14px}
+.stat .n{font-size:46px;font-weight:800;letter-spacing:-.05em;line-height:1.05;font-variant-numeric:tabular-nums;color:var(--ink)}
+.stat .n small{font-size:20px;font-weight:650;color:var(--mute);letter-spacing:-.02em;margin-left:6px}
+.stat .l{font-size:14px;color:var(--mute);margin-top:4px;font-weight:500}
+.fu{display:flex;flex-wrap:wrap;gap:8px;margin:2px 0 26px}
+.fu button{border:1px solid var(--line);background:#fff;border-radius:999px;padding:8px 14px;font-size:14px;color:var(--ink2);display:inline-flex;gap:6px;align-items:center}
+.fu button:hover{border-color:var(--emline);color:var(--em);background:var(--emsoft)}
+.fu button::before{content:"↳";color:var(--faint)}
+.how{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
+.how .card{padding:24px}
+.how .k{width:34px;height:34px;border-radius:10px;background:var(--emsoft);color:var(--em);display:grid;place-items:center;font-weight:800;font-size:15px;margin-bottom:16px}
+.how b{display:block;font-size:17.5px;letter-spacing:-.02em;margin-bottom:6px}
+.how span{font-size:14.5px;color:var(--mute);line-height:1.5}
+.composer.recording{border-color:#ffc9c9;box-shadow:0 0 0 4px rgba(215,0,21,.08),var(--shadow2)}
+.composer.recording textarea::placeholder{color:var(--red)}
 .pill{display:inline-flex;align-items:center;gap:6px;font-size:13px;font-weight:600;border-radius:999px;padding:6px 12px;background:var(--soft);color:var(--ink2)}
 .pill svg{width:15px;height:15px}
 .pill.ok{background:var(--emsoft);color:var(--em)}
@@ -206,6 +223,8 @@ footer img{width:22px;vertical-align:middle;margin-right:6px;opacity:.9}
   .ans{padding:20px 18px 4px}.acts{margin:12px -18px 0;padding:6px 8px}.proof{margin:0 -18px;padding:4px 18px 20px}
   .trust{gap:14px;flex-direction:column;align-items:center}
   .bars .row{grid-template-columns:110px 1fr 64px}
+  .how{grid-template-columns:1fr}
+  .stat .n{font-size:36px}
   .kpi{padding:18px 16px 16px}
   .kpi .v{font-size:24px;white-space:nowrap}
   .kpi .v small{display:block;font-size:13px;margin:2px 0 0}
@@ -217,7 +236,7 @@ footer img{width:22px;vertical-align:middle;margin-right:6px;opacity:.9}
 </head>
 <body>
 <nav class="nav">
-  <div class="brand" id="brand"><img src="/static/logo.svg" alt="Aniq"><b>aniq</b><span>UZEX</span></div>
+  <div class="brand" id="brand"><img src="/static/logo.svg" alt="Aniq Agent"><b>aniq<em>agent</em></b><span>UZEX</span></div>
   <div class="mid seg" id="tabs"><button data-v="ask" class="on" data-i="tAsk">So'rash</button><button data-v="market" data-i="tMarket">Bozor</button></div>
   <div class="seg small" id="langs"><button data-l="uz" class="on">UZ</button><button data-l="ru">RU</button></div>
 </nav>
@@ -238,6 +257,12 @@ footer img{width:22px;vertical-align:middle;margin-right:6px;opacity:.9}
       </div>
     </div>
 
+    <div class="section-h"><h2 data-i="howH">Qanday ishlaydi</h2></div>
+    <div class="how">
+      <div class="card"><div class="k">1</div><b data-i="h1b">So'rang</b><span data-i="h1s">Oddiy tilda yozing yoki ayting — o'zbekcha yoki ruscha. Tovar, kompaniya, broker, sana — istalgani.</span></div>
+      <div class="card"><div class="k">2</div><b data-i="h2b">Hisoblaydi va tekshiradi</b><span data-i="h2s">Agent 500 000 bitim bazasidan SQL bilan hisoblaydi. Ikkinchi mustaqil model natijani qayta hisoblab solishtiradi.</span></div>
+      <div class="card"><div class="k">3</div><b data-i="h3b">Isboti bilan javob</b><span data-i="h3s">Aniq raqam, qanday hisoblangani, tekshirsa bo'ladigan bitim raqamlari va CSV. Ma'lumotda yo'q bo'lsa — ochiq aytadi.</span></div>
+    </div>
     <div class="section-h"><h2 data-i="glance">Bozor bir qarashda</h2><a data-go="market" data-i="more">Batafsil ›</a></div>
     <div class="grid4" id="kpis"></div>
     <div class="card" id="briefCard">
@@ -248,7 +273,7 @@ footer img{width:22px;vertical-align:middle;margin-right:6px;opacity:.9}
       </div>
       <div id="briefText"></div>
     </div>
-    <footer><img src="/static/logo.svg" alt=""><span data-i="foot">Aniq · Ma'lumotlar: UZEX ochiq reyestri formatidagi 500 000 bitim (2022–2026). Bekor qilingan bitimlar savdo hajmiga kiritilmaydi.</span></footer>
+    <footer><img src="/static/logo.svg" alt=""><span data-i="foot">Aniq Agent · Ma'lumotlar: UZEX ochiq reyestri formatidagi 500 000 bitim (2022–2026). Bekor qilingan bitimlar savdo hajmiga kiritilmaydi.</span></footer>
   </div>
 
   <div id="thread"></div>
@@ -298,8 +323,11 @@ const IC = {
 const I18N = {
  uz:{tAsk:"So'rash",tMarket:"Bozor",eyebrow:"UZEX birja bitimlari bo'yicha AI-tahlilchi",h1:"Savol bering.<br><span>Aniq javob oling.</span>",
   lead:"500 000 ta birja bitimi bo'yicha o'zbek yoki rus tilida so'rang — yozib yoki ovoz bilan. Har bir raqam bazadan hisoblanadi va isboti bilan ko'rsatiladi.",
-  tr1:"Raqamlarni o'ylab topmaydi",tr2:"Har javob isboti bilan",tr3:"Ikki model tekshiradi",glance:"Bozor bir qarashda",more:"Batafsil ›",
-  briefT:"Bozor brifingi",briefS:"2026-yil oktyabr · 30 soniyada eng muhimi",foot:"Aniq · Ma'lumotlar: UZEX ochiq reyestri formatidagi 500 000 bitim (2022–2026). Bekor qilingan bitimlar savdo hajmiga kiritilmaydi.",
+  tr1:"Raqamlarni o'ylab topmaydi",tr2:"Har javob isboti bilan",tr3:"Ikki model tekshiradi",glance:"Bozor bir qarashda",
+  howH:"Qanday ishlaydi",h1b:"So'rang",h1s:"Oddiy tilda yozing yoki ayting — o'zbekcha yoki ruscha. Tovar, kompaniya, broker, sana — istalgani.",
+  h2b:"Hisoblaydi va tekshiradi",h2s:"Agent 500 000 bitim bazasidan SQL bilan hisoblaydi. Ikkinchi mustaqil model natijani qayta hisoblab solishtiradi.",
+  h3b:"Isboti bilan javob",h3s:"Aniq raqam, qanday hisoblangani, tekshirsa bo'ladigan bitim raqamlari va CSV. Ma'lumotda yo'q bo'lsa — ochiq aytadi.",more:"Batafsil ›",
+  briefT:"Bozor brifingi",briefS:"2026-yil oktyabr · 30 soniyada eng muhimi",foot:"Aniq Agent · Ma'lumotlar: UZEX ochiq reyestri formatidagi 500 000 bitim (2022–2026). Bekor qilingan bitimlar savdo hajmiga kiritilmaydi.",
   newq:"＋ Yangi suhbat",ph:"Masalan: 2025-yilda qancha dizel sotilgan?",mH:"Bozor",mSub:"2022-yil yanvar — 2026-yil oktyabr · barcha raqamlar bazadan",
   trendH:"Oylik savdo hajmi",trendS:"mlrd so'm · bekor qilinganlarsiz",riskH:"E'tibor talab qiladi",riskS:"Bitimlarining eng ko'p qismi bekor qilingan xaridorlar",
   topH:"Yetakchi tovarlar",topS:"mlrd so'm · bosing — tahlil qiling",regH:"Hududlar",regS:"mlrd so'm · sotuvchi ombori joylashuvi",
@@ -308,14 +336,17 @@ const I18N = {
   vOk:"2 model tasdiqladi",vRec:"Qayta tekshirildi",vBad:"Modellar farq qildi",vSingle:"Bazadan hisoblandi",gOk:"Barcha raqamlar SQL natijasidan",gBad:"Tekshirilmagan raqam bor",notFound:"Ma'lumotlarda yo'q",
   hAssume:"Qanday hisoblandi",hKf:"Asosiy raqamlar",hEv:"Namuna bitimlar — tekshirish mumkin",hQ:"SQL so'rovlar",hV:"Mustaqil tekshiruv so'rovlari",hChart:"Grafik",csv:"CSV yuklab olish",rows:"qator",
   st_start:"Savol tahlil qilinmoqda",st_find_product:"Tovar",st_find_company:"Kompaniya",st_find_broker:"Broker",st_found:"topildi",st_none:"topilmadi",st_guard:"Tekshirilmagan raqam rad etildi, qayta hisoblanmoqda",st_primary:"Javob tayyor — mustaqil tekshiruv",st_reconcile:"Natijalar solishtirilmoqda",
-  micNo:"Mikrofonga ruxsat berilmadi",voiceErr:"Ovozni tanib bo'lmadi — qaytadan gapiring",listening:"Tinglayapman… to'xtatish uchun yana bosing",err:"Xatolik yuz berdi",sec:"s",
+  micNo:"Mikrofonga ruxsat berilmadi",voiceErr:"Ovozni tanib bo'lmadi — qaytadan gapiring",listening:"Tinglayapman… to'xtatish uchun yana bosing",rec:"Tinglayapman",err:"Xatolik yuz berdi",sec:"s",
   cols:["№","Sana","Tovar","Hajm","Summa","Holat","Sotuvchi","Xaridor"],
   ex:["2025-yilda qancha dizel yoqilg'isi sotilgan?","2026-yilda eng yirik 5 ta sotuvchi kim?","Qaysi broker eng ko'p bitim tuzgan?","2024-yilda bekor qilingan bitimlar ulushi?","STIR 925910430 haqida ma'lumot"],
   askP:p=>`«${p}» savdo hajmi yillar bo'yicha qanday o'zgargan?`,askR:r=>`${r}da savdo hajmi bo'yicha yetakchi tovarlar qaysilar?`,askB:i=>`STIR ${i} xaridorini tekshir: nechta bitim, nechtasi bekor qilingan va qaysi tovarlar?`},
  ru:{tAsk:"Спросить",tMarket:"Рынок",eyebrow:"ИИ-аналитик сделок биржи UZEX",h1:"Задайте вопрос.<br><span>Получите точный ответ.</span>",
   lead:"Спрашивайте о 500 000 биржевых сделок на русском или узбекском — текстом или голосом. Каждое число считается по базе и показывается с доказательством.",
-  tr1:"Не выдумывает цифры",tr2:"Каждый ответ с доказательством",tr3:"Проверяют две модели",glance:"Рынок с первого взгляда",more:"Подробнее ›",
-  briefT:"Сводка рынка",briefS:"Октябрь 2026 · главное за 30 секунд",foot:"Aniq · Данные: 500 000 сделок в формате открытого реестра UZEX (2022–2026). Аннулированные сделки не входят в оборот.",
+  tr1:"Не выдумывает цифры",tr2:"Каждый ответ с доказательством",tr3:"Проверяют две модели",glance:"Рынок с первого взгляда",
+  howH:"Как это работает",h1b:"Спросите",h1s:"Напишите или скажите обычными словами — по-русски или по-узбекски. Товар, компания, брокер, дата — что угодно.",
+  h2b:"Считает и проверяет",h2s:"Агент считает SQL-запросами по базе из 500 000 сделок. Вторая независимая модель пересчитывает и сверяет результат.",
+  h3b:"Ответ с доказательством",h3s:"Точное число, как оно посчитано, номера сделок для проверки и CSV. Если данных нет — честно говорит об этом.",more:"Подробнее ›",
+  briefT:"Сводка рынка",briefS:"Октябрь 2026 · главное за 30 секунд",foot:"Aniq Agent · Данные: 500 000 сделок в формате открытого реестра UZEX (2022–2026). Аннулированные сделки не входят в оборот.",
   newq:"＋ Новый разговор",ph:"Например: сколько дизельного топлива продано в 2025 году?",mH:"Рынок",mSub:"Январь 2022 — октябрь 2026 · все числа из базы",
   trendH:"Оборот по месяцам",trendS:"млрд сум · без аннулированных",riskH:"Требуют внимания",riskS:"Покупатели с наибольшей долей аннулированных сделок",
   topH:"Лидирующие товары",topS:"млрд сум · нажмите для анализа",regH:"Регионы",regS:"млрд сум · по складу продавца",
@@ -324,7 +355,7 @@ const I18N = {
   vOk:"Подтверждено 2 моделями",vRec:"Перепроверено",vBad:"Модели разошлись",vSingle:"Рассчитано по базе",gOk:"Все числа из результатов SQL",gBad:"Есть непроверенное число",notFound:"Нет в данных",
   hAssume:"Как посчитано",hKf:"Ключевые числа",hEv:"Примеры сделок — можно проверить",hQ:"SQL-запросы",hV:"Запросы независимой проверки",hChart:"График",csv:"Скачать CSV",rows:"строк",
   st_start:"Разбираю вопрос",st_find_product:"Товар",st_find_company:"Компания",st_find_broker:"Брокер",st_found:"найдено",st_none:"не найдено",st_guard:"Непроверенное число отклонено, пересчитываю",st_primary:"Ответ готов — независимая проверка",st_reconcile:"Сверяю результаты",
-  micNo:"Нет доступа к микрофону",voiceErr:"Не удалось распознать — повторите",listening:"Слушаю… нажмите ещё раз, чтобы остановить",err:"Произошла ошибка",sec:"с",
+  micNo:"Нет доступа к микрофону",voiceErr:"Не удалось распознать — повторите",listening:"Слушаю… нажмите ещё раз, чтобы остановить",rec:"Слушаю",err:"Произошла ошибка",sec:"с",
   cols:["№","Дата","Товар","Объём","Сумма","Статус","Продавец","Покупатель"],
   ex:["Какой товар лидирует по обороту в 2026 году?","Средняя цена сахара в октябре 2026?","Сколько экспортных сделок было в 2024 году?","Какие покупатели чаще всего не платят?","Сколько сделок у ИНН 925910430?"],
   askP:p=>`Динамика оборота товара «${p}» по годам`,askR:r=>`Какие товары лидируют по обороту в регионе ${r}?`,askB:i=>`Проверь покупателя ИНН ${i}: сколько сделок, сколько аннулировано и какие товары?`}
@@ -483,7 +514,9 @@ function renderAnswer(res){
       ${res.id && !q.error ? `<a class="dl" href="/api/answer/${res.id}/${q.id}.csv">↓ ${t("csv")}</a>`:""}</div></details>`).join("");
   const vq = (res.verifier_queries||[]).map(q => `<details class="sq"><summary>${esc(q.purpose)}</summary><pre class="code">${esc(q.sql)}</pre></details>`).join("");
   const chartId = "c" + Math.random().toString(36).slice(2);
-  a.innerHTML = `<div class="body">${md(res.answer || "")}</div><div class="meta">${pills.join("")}</div>
+  const k0 = (res.status === "answered" && (res.key_figures||[])[0]) || null;
+  const stat = k0 ? `<div class="stat"><div class="n">${fmt(k0.value, Number.isInteger(k0.value)?0:(Math.abs(k0.value)>=1000?1:2))}<small>${esc(k0.unit||"")}</small></div><div class="l">${esc(k0.label)}</div></div>` : "";
+  a.innerHTML = `${stat}<div class="body">${md(res.answer || "")}</div><div class="meta">${pills.join("")}</div>
     ${res.id ? `<div class="acts"><button class="primary bp">${IC.search}<span>${t("proof")}</span></button><button class="bl">${IC.sound}${t("listen")}</button><button class="bc">${IC.copy}<span>${t("copy")}</span></button></div>
     <div class="proof">
       ${(res.assumptions||[]).length ? `<h4>${t("hAssume")}</h4><ol class="steps">${res.assumptions.map(x=>`<li>${esc(x)}</li>`).join("")}</ol>`:""}
@@ -494,6 +527,12 @@ function renderAnswer(res){
       ${vq ? `<h4>${t("hV")} · ${esc(v.verifier||"")}</h4>${vq}`:""}
     </div>` : ""}`;
   thread.appendChild(a);
+  if ((res.followups||[]).length){
+    const fu = document.createElement("div"); fu.className = "fu";
+    fu.innerHTML = res.followups.map(q => `<button>${esc(q)}</button>`).join("");
+    fu.querySelectorAll("button").forEach(b => b.onclick = () => { fu.remove(); ask(b.textContent); });
+    thread.appendChild(fu);
+  }
   if (res.id){
     a.querySelector(".bp").onclick = () => { const p = a.querySelector(".proof"); p.classList.toggle("open");
       a.querySelector(".bp span").textContent = p.classList.contains("open") ? t("hide") : t("proof");
@@ -539,6 +578,8 @@ $("#inp").addEventListener("keydown", e => { if (e.key === "Enter" && !e.shiftKe
 function autosize(){ const i = $("#inp"); i.style.height = "auto"; i.style.height = Math.min(160, i.scrollHeight) + "px"; }
 $("#inp").addEventListener("input", autosize);
 
+document.addEventListener("keydown", e => { if (e.key === "/" && document.activeElement !== $("#inp")) { e.preventDefault(); showView("ask"); $("#inp").focus(); } });
+
 // ----- microphone
 let rec = null, chunks = [];
 $("#mic").onclick = async () => {
@@ -557,6 +598,10 @@ $("#mic").onclick = async () => {
       } catch(e){ $("#mic").innerHTML = IC.mic; toast(t("voiceErr")); }
     };
     rec.start(); $("#mic").classList.add("rec"); $("#mic").innerHTML = IC.stop; toast(t("listening"));
+    const comp = $("#composer"), inp = $("#inp"), ph = inp.placeholder, t0 = Date.now();
+    comp.classList.add("recording"); inp.disabled = true;
+    const tick = setInterval(() => { const sec = Math.floor((Date.now()-t0)/1000); inp.placeholder = `● ${t("rec")}  0:${String(sec).padStart(2,"0")}`; if (sec >= 45 && rec.state === "recording") rec.stop(); }, 250);
+    rec.addEventListener("stop", () => { clearInterval(tick); comp.classList.remove("recording"); inp.disabled = false; inp.placeholder = ph; });
   } catch(e){ toast(t("micNo")); }
 };
 

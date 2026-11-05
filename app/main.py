@@ -25,6 +25,7 @@ async def startup():
         await asyncio.to_thread(insights.briefing, lang)
     if config.OPENAI_API_KEY:
         asyncio.create_task(_check_openai())
+    asyncio.create_task(voice.init_voices())
     if config.TELEGRAM_BOT_TOKEN and config.PUBLIC_URL:
         asyncio.create_task(tg.set_webhook())
     log.info("ready: claude=%s openai=%s eleven=%s deepgram=%s telegram=%s", bool(config.ANTHROPIC_API_KEY),
@@ -159,6 +160,29 @@ async def tts(payload: dict):
     if not out:
         raise HTTPException(503, "speech is not available")
     return Response(out[0], media_type=out[1])
+
+
+@app.get("/voices")
+async def voices_page():
+    return FileResponse(config.WEB_DIR / "voices.html", headers={"Cache-Control": "no-cache"})
+
+
+@app.get("/api/voices")
+async def voices(lang: str = "uz"):
+    lang = "ru" if lang == "ru" else "uz"
+    try:
+        lib = await voice.library(lang, 24)
+    except Exception as e:  # noqa: BLE001
+        raise HTTPException(502, f"voice library unavailable: {e}")
+    return {"current": voice.VOICE.get(lang), "current_info": voice.VOICE_INFO.get(lang), "voices": lib}
+
+
+@app.post("/api/voices/select")
+async def voices_select(payload: dict):
+    if payload.get("key") != config.TELEGRAM_WEBHOOK_SECRET:
+        raise HTTPException(403, "admin key required")
+    lang = "ru" if payload.get("lang") == "ru" else "uz"
+    return await voice.choose(lang, payload.get("voice_id"))
 
 
 @app.post("/tg/{secret}")

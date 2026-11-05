@@ -47,7 +47,7 @@ TABLE products — catalogue: product_key, product_base, category, unit, deals, 
 """
 
 RULES = """
-YOU ARE "Aniq" — an analyst of the UZEX commodity exchange deal registry. You answer questions in Uzbek
+YOU ARE "Aniq Agent" — an analyst of the UZEX commodity exchange deal registry. You answer questions in Uzbek
 (Latin or Cyrillic) or Russian. A jury checks every answer against the data; inventing ANY number, company, product,
 broker or date that is not in the data disqualifies the team. Correctness beats everything.
 
@@ -98,7 +98,11 @@ ANSWER STYLE (final_answer.answer)
   detail. No long essays. Product names may stay in Russian as in the registry.
 - Write full numbers with spaces as thousand separators and a comma for decimals: 12 345 678,9. Do NOT abbreviate
   as mln/mlrd/млн/млрд. Copy numbers exactly from query results (rounded is fine).
-- "speech": 1–2 sentences for text-to-speech in the same language, numbers rounded and written in words is allowed.
+- "speech": 1–2 short sentences that a native-speaker voice will read aloud, in the same language (Uzbek always in
+  Latin script). Write EVERY number in words and round it (e.g. "taxminan yuz yetmish olti ming tonna",
+  "около ста семидесяти шести тысяч тонн"); no digits, INNs, deal ids, percent signs, codes like ДТ-Е-К5, brackets
+  or markdown. In Uzbek use everyday Uzbek product names (dizel yoqilg'isi, shakar, bug'doy, sement, paxta), not
+  the Russian registry names. Say "foiz"/"процента" for %.
 
 UZBEK ↔ RUSSIAN GLOSSARY
 bitim=сделка, birja=биржа, sotuvchi=продавец, xaridor=покупатель, STIR/INN=ИНН, shartnoma=контракт, lot=лот,
@@ -181,6 +185,9 @@ TOOLS = [
                 "assumptions": {"type": "array", "items": {"type": "string"},
                                 "description": "Filters and interpretations applied, in the answer's language."},
                 "used_query_ids": {"type": "array", "items": {"type": "string"}},
+                "followups": {"type": "array", "items": {"type": "string"},
+                              "description": "2-3 short natural follow-up questions the user may ask next, in the "
+                                             "answer's language, answerable from this data."},
                 "evidence_query_id": {"type": "string",
                                       "description": "Optional: id of a query listing sample deal_ids behind the answer."},
                 "chart": {

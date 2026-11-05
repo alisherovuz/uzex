@@ -202,6 +202,7 @@ async def answer(question: str, emit=None) -> dict:
         "id": rid, "question": question, "status": f.get("status"), "language": f.get("language", lang),
         "answer": f.get("answer", ""), "speech": f.get("speech", ""), "assumptions": f.get("assumptions", []),
         "key_figures": f.get("key_figures", []), "verification": verification,
+        "followups": (f.get("followups") or [])[:3],
         "numbers_check": {"ok": not p.unbacked, "unbacked": p.unbacked},
         "queries": _pack_queries(p), "lookups": p.lookups,
         "verifier_queries": [{"purpose": q["purpose"], "sql": q["sql"]} for q in v.queries.values()],

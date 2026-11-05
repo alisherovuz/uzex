@@ -19,7 +19,7 @@ async def fake(run, emit, deadline):
         'speech': "2025-yilda taxminan yuz yetmish olti ming tonna dizel sotilgan.",
         'key_figures': [{'label': 'Sotilgan hajm, tonna', 'value': row[3], 'unit': 't', 'query_id': run.tag + '1'}],
         'assumptions': ['Bekor qilingan bitimlar hajmga kiritilmadi', 'Kilogramm tonnaga o‘girildi', 'Barcha dizel markalari (product_base = топливо дизельное)'],
-        'used_query_ids': [run.tag + '1'], 'evidence_query_id': run.tag + '1',
+        'followups': ['Dizel narxi 2025-yilda qanday o‘zgargan?', 'Eng ko‘p dizel sotgan kompaniya qaysi?', 'Bu 2024-yil bilan solishtirganda qancha?'], 'used_query_ids': [run.tag + '1'], 'evidence_query_id': run.tag + '1',
         'chart': {'query_id': run.tag + '1', 'type': 'bar', 'x': 'year', 'y': 'tonnes', 'title': 'Dizel, tonna'}}, emit)
     return run
 agent.claude_loop = fake; agent.gpt_loop = fake

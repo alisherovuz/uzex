@@ -121,10 +121,10 @@ async def handle_update(update: dict):
                               [[{"text": "📊 Bozor brifingi"}, {"text": "📊 Сводка рынка"}]],
                   "resize_keyboard": True}
             await call("sendMessage", json={"chat_id": chat_id, "parse_mode": "HTML", "reply_markup": kb, "text": (
-                "<b>Aniq</b> — UZEX birja bitimlari bo'yicha savollarga aniq javob beraman.\n"
+                "<b>Aniq Agent</b> — UZEX birja bitimlari bo'yicha savollarga aniq javob beraman.\n"
                 "Har bir raqam ma'lumotlar bazasidan hisoblanadi va isboti bilan beriladi. "
                 "Ma'lumotlarda yo'q narsani o'ylab topmayman.\n\n"
-                "<b>Aniq</b> — отвечаю на вопросы о сделках биржи UZEX. Каждое число посчитано по базе "
+                "<b>Aniq Agent</b> — отвечаю на вопросы о сделках биржи UZEX. Каждое число посчитано по базе "
                 "и показано с доказательством. Ничего не выдумываю.\n\n"
                 "✍️ Savol yozing yoki 🎙 ovozli xabar yuboring / Напишите вопрос или отправьте голосовое.")})
             return

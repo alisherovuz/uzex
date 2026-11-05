@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="uz"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Aniq Agent — ovoz tanlash</title><link rel="icon" href="/static/logo.svg">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
+<style>
+body{margin:0;background:#fbfbfd;color:#1d1d1f;font-family:Inter,-apple-system,system-ui,sans-serif}
+.w{max-width:860px;margin:0 auto;padding:40px 20px 80px}
+h1{font-size:38px;letter-spacing:-.04em;margin:0 0 6px}p{color:#6e6e73;margin:0 0 24px}
+.seg{display:inline-flex;background:#efeff2;border-radius:999px;padding:3px;margin-bottom:22px}
+.seg button{border:0;background:none;padding:8px 18px;border-radius:999px;font:600 14px Inter;cursor:pointer}
+.seg button.on{background:#fff;box-shadow:0 1px 3px rgba(0,0,0,.12)}
+.v{display:flex;align-items:center;gap:14px;background:#fff;border-radius:16px;padding:14px 16px;margin:10px 0;box-shadow:0 1px 2px rgba(0,0,0,.04),0 6px 20px rgba(0,0,0,.05)}
+.v b{display:block;font-size:16px}.v span{font-size:13px;color:#6e6e73}
+.v button{border:0;border-radius:999px;padding:9px 14px;font:600 13.5px Inter;cursor:pointer}
+.play{background:#f5f5f7}.use{background:#1d1d1f;color:#fff;margin-left:auto}
+.cur{outline:2px solid #12b886}.cur .use{background:#0b8a63}
+.try{display:flex;gap:8px;margin:0 0 18px}.try input{flex:1;border:1px solid #e6e6eb;border-radius:12px;padding:11px 14px;font:15px Inter}
+.try button{border:0;border-radius:12px;background:#0b8a63;color:#fff;font:600 14px Inter;padding:0 16px;cursor:pointer}
+</style></head><body><div class="w">
+<h1>Ovoz tanlash</h1><p>ElevenLabs kutubxonasidagi ona tilida so'zlashuvchi ovozlar. Tinglang va "Tanlash" ni bosing.</p>
+<div class="seg"><button data-l="uz" class="on">O'zbekcha</button><button data-l="ru">Русский</button></div>
+<div class="try"><input id="txt" value="2025-yilda taxminan yuz yetmish olti ming tonna dizel yoqilg'isi sotilgan."><button id="say">Joriy ovozda eshitish</button></div>
+<div id="list">…</div></div>
+<script>
+const key = new URLSearchParams(location.search).get("key") || "";
+let lang = "uz", audio = null;
+const sample = {uz:"2025-yilda taxminan yuz yetmish olti ming tonna dizel yoqilg'isi sotilgan.", ru:"В две тысячи двадцать пятом году продано около ста семидесяти шести тысяч тонн дизельного топлива."};
+async function load(){
+  document.getElementById("txt").value = sample[lang];
+  const el = document.getElementById("list"); el.textContent = "…";
+  const r = await fetch("/api/voices?lang=" + lang); if (!r.ok){ el.textContent = "Kutubxona mavjud emas"; return; }
+  const d = await r.json();
+  el.innerHTML = d.voices.map(v => `<div class="v ${(d.current_info && d.current_info.voice_id===v.voice_id) ? "cur" : ""}">
+    <button class="play" data-u="${v.preview_url||""}">▶</button>
+    <div><b>${v.name}</b><span>${[v.gender, v.age, v.accent, v.descriptive, v.use_case].filter(Boolean).join(" · ")}</span></div>
+    <button class="use" data-id="${v.voice_id}">${(d.current_info && d.current_info.voice_id===v.voice_id) ? "✓ Tanlangan" : "Tanlash"}</button></div>`).join("") || "Ovoz topilmadi";
+  el.querySelectorAll(".play").forEach(b => b.onclick = () => { if (audio) audio.pause(); if (b.dataset.u){ audio = new Audio(b.dataset.u); audio.play(); } });
+  el.querySelectorAll(".use").forEach(b => b.onclick = async () => {
+    b.textContent = "…";
+    const r = await fetch("/api/voices/select", {method:"POST", headers:{"Content-Type":"application/json"}, body:JSON.stringify({lang, voice_id:b.dataset.id, key})});
+    if (!r.ok) { alert("Admin kaliti kerak (?key=...)"); }
+    load();
+  });
+}
+document.getElementById("say").onclick = async () => {
+  const r = await fetch("/api/tts", {method:"POST", headers:{"Content-Type":"application/json"}, body:JSON.stringify({text:document.getElementById("txt").value, lang})});
+  if (r.ok){ if (audio) audio.pause(); audio = new Audio(URL.createObjectURL(await r.blob())); audio.play(); }
+};
+document.querySelectorAll(".seg button").forEach(b => b.onclick = () => { lang = b.dataset.l; document.querySelectorAll(".seg button").forEach(x => x.classList.toggle("on", x===b)); load(); });
+load();
+</script></body></html>

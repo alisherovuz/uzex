@@ -1,4 +1,4 @@
-# Aniq — UZEX AI Hackathon
+# Aniq Agent — UZEX AI Hackathon
 
 *Aniq* means "exact" in Uzbek.
 

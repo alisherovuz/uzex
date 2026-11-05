@@ -1,4 +1,5 @@
 """Voice: Uzbek via ElevenLabs, Russian via Deepgram (with automatic fallbacks)."""
+import logging
 import re
 
 import httpx
@@ -6,6 +7,7 @@ import httpx
 from . import config
 
 TIMEOUT = httpx.Timeout(40.0, connect=10.0)
+log = logging.getLogger("voice")
 
 
 def clean_transcript(t: str) -> str:
@@ -63,37 +65,111 @@ async def _stt(audio: bytes, mime: str, lang: str = "auto") -> dict:
     return {"text": "", "error": "; ".join(errors) or "no speech provider configured"}
 
 
+VOICE = {"uz": None, "ru": None}       # active voice ids
+VOICE_INFO = {"uz": None, "ru": None}  # name/accent of the chosen voice
+_TTS_CACHE: dict = {}
+EL = "https://api.elevenlabs.io"
+
+
+async def library(lang: str, n: int = 12) -> list[dict]:
+    """Native voices for a language from the ElevenLabs shared voice library, most used first."""
+    code = {"uz": "uz", "ru": "ru"}[lang]
+    async with httpx.AsyncClient(timeout=TIMEOUT) as c:
+        r = await c.get(f"{EL}/v1/shared-voices", headers={"xi-api-key": config.ELEVENLABS_API_KEY},
+                        params={"language": code, "page_size": n, "sort": "usage_character_count_1y"})
+    r.raise_for_status()
+    out = []
+    for v in r.json().get("voices", []):
+        out.append({k: v.get(k) for k in ("voice_id", "public_owner_id", "name", "gender", "age", "accent",
+                                          "descriptive", "use_case", "preview_url", "language",
+                                          "usage_character_count_1y")})
+    return out
+
+
+async def _add(v: dict, lang: str) -> str | None:
+    async with httpx.AsyncClient(timeout=TIMEOUT) as c:
+        r = await c.post(f"{EL}/v1/voices/add/{v['public_owner_id']}/{v['voice_id']}",
+                         headers={"xi-api-key": config.ELEVENLABS_API_KEY},
+                         json={"new_name": f"Aniq {lang.upper()} - {v.get('name', '')}"[:60]})
+    if r.status_code == 200:
+        return r.json().get("voice_id")
+    if "already" in r.text.lower():
+        return v["voice_id"]
+    log.warning("voice add failed %s: %s", r.status_code, r.text[:200])
+    return None
+
+
+async def choose(lang: str, voice_id: str | None = None) -> dict:
+    """Pick (and add to the account) a native voice. voice_id selects a specific library voice."""
+    voices = await library(lang, 30)
+    pick = next((v for v in voices if v["voice_id"] == voice_id), None) if voice_id else None
+    pick = pick or (voices[0] if voices else None)
+    if not pick:
+        return {"ok": False, "error": f"no {lang} voices in the library"}
+    vid = await _add(pick, lang) or pick["voice_id"]
+    VOICE[lang], VOICE_INFO[lang] = vid, pick
+    _TTS_CACHE.clear()
+    log.info("TTS voice for %s: %s (%s, %s)", lang, pick.get("name"), pick.get("gender"), vid)
+    return {"ok": True, "voice": pick, "voice_id": vid}
+
+
+async def init_voices():
+    if not config.ELEVENLABS_API_KEY:
+        return
+    for lang, env in (("uz", config.ELEVEN_VOICE_ID_UZ), ("ru", config.ELEVEN_VOICE_ID_RU)):
+        if env:
+            VOICE[lang] = env
+            continue
+        try:
+            await choose(lang)
+        except Exception as e:  # noqa: BLE001
+            log.warning("voice auto-pick for %s failed: %s", lang, e)
+
+
 async def tts(text: str, lang: str) -> tuple[bytes, str] | None:
-    """Return (audio_bytes, mime) or None."""
-    text = (text or "").strip()[:600]
+    """Return (audio_bytes, mime) or None. Native voice per language; Uzbek on eleven_v3."""
+    text = (text or "").strip()[:700]
     if not text:
         return None
+    lang = "ru" if lang == "ru" else "uz"
+    key = (lang, text)
+    if key in _TTS_CACHE:
+        return _TTS_CACHE[key]
+    out = None
     if lang == "ru" and config.DEEPGRAM_API_KEY and config.DEEPGRAM_TTS_MODEL_RU:
         try:
             async with httpx.AsyncClient(timeout=TIMEOUT) as c:
                 r = await c.post("https://api.deepgram.com/v1/speak", params={"model": config.DEEPGRAM_TTS_MODEL_RU},
                                  headers={"Authorization": f"Token {config.DEEPGRAM_API_KEY}"}, json={"text": text})
             r.raise_for_status()
-            return r.content, r.headers.get("content-type", "audio/mpeg")
+            out = (r.content, r.headers.get("content-type", "audio/mpeg"))
         except Exception:  # noqa: BLE001
-            pass
-    if not config.ELEVENLABS_API_KEY:
-        return None
-    models = [config.ELEVEN_TTS_MODEL_RU if lang == "ru" else config.ELEVEN_TTS_MODEL_UZ, "eleven_v3",
-              "eleven_multilingual_v2"]
-    seen = set()
-    for m in models:
-        if m in seen:
-            continue
-        seen.add(m)
-        try:
-            async with httpx.AsyncClient(timeout=TIMEOUT) as c:
-                r = await c.post(f"https://api.elevenlabs.io/v1/text-to-speech/{config.ELEVEN_VOICE_ID}",
-                                 params={"output_format": "mp3_44100_128"},
-                                 headers={"xi-api-key": config.ELEVENLABS_API_KEY},
-                                 json={"text": text, "model_id": m})
-            if r.status_code == 200:
-                return r.content, "audio/mpeg"
-        except Exception:  # noqa: BLE001
-            continue
-    return None
+            out = None
+    if out is None and config.ELEVENLABS_API_KEY:
+        voice = VOICE.get(lang) or config.ELEVEN_VOICE_ID
+        model = config.ELEVEN_TTS_MODEL_RU if lang == "ru" else config.ELEVEN_TTS_MODEL_UZ
+        attempts = [(model, True), (model, False), ("eleven_v3", False), ("eleven_multilingual_v2", False)]
+        seen = set()
+        for m, with_lang in attempts:
+            if (m, with_lang) in seen:
+                continue
+            seen.add((m, with_lang))
+            body = {"text": text, "model_id": m,
+                    "voice_settings": {"stability": 0.5, "similarity_boost": 0.8, "style": 0.0, "use_speaker_boost": True}}
+            if with_lang:
+                body["language_code"] = "uz" if lang == "uz" else "ru"
+            try:
+                async with httpx.AsyncClient(timeout=TIMEOUT) as c:
+                    r = await c.post(f"{EL}/v1/text-to-speech/{voice}", params={"output_format": "mp3_44100_128"},
+                                     headers={"xi-api-key": config.ELEVENLABS_API_KEY}, json=body)
+                if r.status_code == 200:
+                    out = (r.content, "audio/mpeg")
+                    break
+                log.warning("tts %s lang=%s failed %s: %s", m, with_lang, r.status_code, r.text[:160])
+            except Exception as e:  # noqa: BLE001
+                log.warning("tts error: %s", e)
+    if out:
+        if len(_TTS_CACHE) > 300:
+            _TTS_CACHE.clear()
+        _TTS_CACHE[key] = out
+    return out
