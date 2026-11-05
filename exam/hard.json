@@ -1,0 +1,601 @@
+[
+ {
+  "id": "ai92_units",
+  "lang": "uz",
+  "q": "2025-yilda AI-92 benzin qancha sotilgan?",
+  "tol": 0.005,
+  "note": "litr va tonna alohida",
+  "nums_all": [
+   50098000.0,
+   27043.0
+  ]
+ },
+ {
+  "id": "dtek5_price",
+  "lang": "ru",
+  "q": "Средневзвешенная цена дизельного топлива ДТ-Е-К5 за тонну в октябре 2026 года?",
+  "tol": 0.003,
+  "note": "",
+  "nums_any": [
+   15026104.0
+  ]
+ },
+ {
+  "id": "export_uzs_2025",
+  "lang": "uz",
+  "q": "2025-yilda eksport bitimlarining umumiy summasi so'mda qancha (bekor qilinganlarsiz)?",
+  "tol": 0.003,
+  "note": "",
+  "nums_any": [
+   2533979960439.0
+  ]
+ },
+ {
+  "id": "sugar_partial",
+  "lang": "ru",
+  "q": "По частично исполненным сделкам с сахаром в 2025 году: сколько тонн было законтрактовано и сколько фактически поставлено?",
+  "tol": 0.005,
+  "note": "",
+  "nums_all": [
+   4769.0,
+   2891.0
+  ]
+ },
+ {
+  "id": "late_pay_2024",
+  "lang": "uz",
+  "q": "2024-yilda nechta bitim to'lov muddatidan kechikib to'langan?",
+  "tol": 0.005,
+  "note": "answer 0: unpaid deals are cancelled, never paid late",
+  "nums_any": [
+   0.0
+  ],
+  "texts_any": [
+   "0 ta",
+   "hech qanday",
+   "birorta ham",
+   "yo'q",
+   "yo‘q",
+   "kechikib to'langan bitim yo",
+   "mavjud emas",
+   "uchramaydi"
+  ]
+ },
+ {
+  "id": "late_dlv_seller",
+  "lang": "ru",
+  "q": "Какой продавец чаще всего задерживал поставку в 2025 году (по числу сделок)?",
+  "tol": 0.005,
+  "note": "\"Kinen Energo\" MChJ",
+  "texts_any": [
+   "911688324"
+  ]
+ },
+ {
+  "id": "same_broker_2025",
+  "lang": "uz",
+  "q": "2025-yilda sotuvchi va xaridor bitta brokerdan foydalangan bitimlar soni nechta?",
+  "tol": 0.005,
+  "note": "",
+  "nums_any": [
+   1088.0,
+   1012.0
+  ]
+ },
+ {
+  "id": "top_pair",
+  "lang": "ru",
+  "q": "Какая пара продавец–покупатель заключила больше всего сделок за всё время и сколько?",
+  "tol": 0.005,
+  "note": "",
+  "nums_any": [
+   642.0
+  ],
+  "texts_all": [
+   [
+    "925910430"
+   ],
+   [
+    "983531029"
+   ]
+  ]
+ },
+ {
+  "id": "top_month_2025",
+  "lang": "uz",
+  "q": "2025-yilning qaysi oyida savdo hajmi (so'mda) eng yuqori bo'lgan?",
+  "tol": 0.005,
+  "note": "",
+  "texts_any": [
+   "oktyabr",
+   "2025-10"
+  ]
+ },
+ {
+  "id": "avg_deal_2023",
+  "lang": "ru",
+  "q": "Какова средняя сумма одной сделки в 2023 году в сумах (без аннулированных)?",
+  "tol": 0.003,
+  "note": "",
+  "nums_any": [
+   389946944.0
+  ]
+ },
+ {
+  "id": "eng_premium",
+  "lang": "uz",
+  "q": "2025-yilda ingliz auksionida nechta bitim boshlang'ich narxdan 10% dan ko'proq qimmatga yopilgan?",
+  "tol": 0.005,
+  "note": "",
+  "nums_any": [
+   4981.0,
+   4630.0
+  ]
+ },
+ {
+  "id": "cancel_region_2024",
+  "lang": "ru",
+  "q": "В каком регионе была самая высокая доля аннулированных сделок в 2024 году?",
+  "tol": 0.005,
+  "note": "",
+  "texts_any": [
+   "Sirdaryo",
+   "сырдар"
+  ]
+ },
+ {
+  "id": "most_cancel_buyer",
+  "lang": "uz",
+  "q": "Qaysi xaridorda butun davr mobaynida eng ko'p bekor qilingan bitim bor?",
+  "tol": 0.005,
+  "note": "\"Zoket Invest\" OK",
+  "texts_any": [
+   "983531029"
+  ]
+ },
+ {
+  "id": "buyers_2026",
+  "lang": "ru",
+  "q": "Сколько уникальных покупателей совершили сделки в 2026 году?",
+  "tol": 0.005,
+  "note": "",
+  "nums_any": [
+   12878.0,
+   12733.0
+  ]
+ },
+ {
+  "id": "fwd_open",
+  "lang": "uz",
+  "q": "Hozir nechta forvard bitim 'Заключен' (imzolangan, to'lov muddati o'tmagan) holatida?",
+  "tol": 0.005,
+  "note": "",
+  "nums_any": [
+   3153.0
+  ]
+ },
+ {
+  "id": "last_day",
+  "lang": "ru",
+  "q": "Сколько сделок было заключено 30 октября 2026 года?",
+  "tol": 0.005,
+  "note": "",
+  "nums_any": [
+   964.0
+  ]
+ },
+ {
+  "id": "max_deal",
+  "lang": "uz",
+  "q": "So'mda eng katta bitim qaysi? Raqami va summasi qancha?",
+  "tol": 0.005,
+  "note": "",
+  "texts_all": [
+   [
+    "247890"
+   ]
+  ],
+  "nums_any": [
+   30190376286.0,
+   30190376286.0
+  ]
+ },
+ {
+  "id": "cotton_1_2",
+  "lang": "ru",
+  "q": "Сколько хлопка-сырца 1 сорта 2 класса продано в 2025 году?",
+  "tol": 0.004,
+  "note": "kg or tonnes",
+  "nums_any": [
+   336128325.0,
+   336128.3
+  ]
+ },
+ {
+  "id": "sugar_chg",
+  "lang": "uz",
+  "q": "2026-yil oktyabrda shakarning o'rtacha narxi sentyabrga nisbatan necha foizga o'zgargan?",
+  "tol": 0.02,
+  "note": "",
+  "nums_any": [
+   1.3,
+   1.3,
+   1.3,
+   1.3
+  ]
+ },
+ {
+  "id": "both_roles",
+  "lang": "ru",
+  "q": "Сколько компаний выступали на бирже и продавцом, и покупателем?",
+  "tol": 0.005,
+  "note": "answer 0",
+  "texts_any": [
+   "0",
+   "ни одн",
+   "нет таких",
+   "не было",
+   "отсутству",
+   "нет компаний",
+   "ни разу"
+  ]
+ },
+ {
+  "id": "nonvat_2025",
+  "lang": "uz",
+  "q": "QQS to'lovchisi bo'lmagan xaridorlar 2025-yilda nechta bitim tuzgan?",
+  "tol": 0.005,
+  "note": "",
+  "nums_any": [
+   32843.0,
+   30547.0
+  ]
+ },
+ {
+  "id": "export_share_2024",
+  "lang": "ru",
+  "q": "Какую долю (в процентах) занимал экспорт в обороте биржи в 2024 году?",
+  "tol": 0.02,
+  "note": "",
+  "nums_any": [
+   5.67,
+   5.7
+  ]
+ },
+ {
+  "id": "contracts_2025",
+  "lang": "uz",
+  "q": "2025-yilda nechta yangi shartnoma (kontrakt kartochkasi) ro'yxatdan o'tgan?",
+  "tol": 0.005,
+  "note": "",
+  "nums_any": [
+   1830.0
+  ]
+ },
+ {
+  "id": "spot_pterm",
+  "lang": "ru",
+  "q": "Какой средний срок оплаты (в днях) по спотовым контрактам?",
+  "tol": 0.02,
+  "note": "",
+  "nums_any": [
+   6.5,
+   6.48
+  ]
+ },
+ {
+  "id": "weekday",
+  "lang": "uz",
+  "q": "Haftaning qaysi kunida eng ko'p bitim tuziladi?",
+  "tol": 0.005,
+  "note": "",
+  "texts_any": [
+   "chorshanba"
+  ]
+ },
+ {
+  "id": "busy_hour",
+  "lang": "ru",
+  "q": "В какой час дня в 2025 году заключалось больше всего сделок?",
+  "tol": 0.005,
+  "note": "",
+  "texts_any": [
+   "10:",
+   "10:00",
+   "10 час",
+   "с 10",
+   "10-й",
+   "10 ч",
+   "10-ой",
+   "10 часов"
+  ]
+ },
+ {
+  "id": "cement_tash_obl",
+  "lang": "ru",
+  "q": "Сколько тонн цемента продано в Ташкентской области в 2024 году?",
+  "tol": 0.005,
+  "note": "",
+  "nums_any": [
+   259017.0,
+   259017.0
+  ]
+ },
+ {
+  "id": "sugar_cyr",
+  "lang": "uz_cyrl",
+  "q": "2025 йилда қанча шакар сотилган?",
+  "tol": 0.005,
+  "note": "",
+  "nums_any": [
+   108440.0,
+   108440.0
+  ]
+ },
+ {
+  "id": "copper_usd_2025",
+  "lang": "ru",
+  "q": "На какую сумму в долларах экспортирован медный катод в 2025 году?",
+  "tol": 0.003,
+  "note": "",
+  "nums_any": [
+   136296573.79,
+   136296574.0
+  ]
+ },
+ {
+  "id": "trap_dec2026",
+  "lang": "uz",
+  "q": "2026-yil dekabr oyida nechta bitim tuzilgan?",
+  "tol": 0.005,
+  "note": "",
+  "not_found": true
+ },
+ {
+  "id": "trap_bk000",
+  "lang": "ru",
+  "q": "Сколько сделок у брокера BK000?",
+  "tol": 0.005,
+  "note": "",
+  "not_found": true
+ },
+ {
+  "id": "trap_gold",
+  "lang": "uz",
+  "q": "Birjada qancha oltin sotilgan?",
+  "tol": 0.005,
+  "note": "",
+  "not_found": true
+ },
+ {
+  "id": "trap_stock",
+  "lang": "ru",
+  "q": "Какова текущая цена акций UZEX на бирже?",
+  "tol": 0.005,
+  "note": "",
+  "not_found": true
+ },
+ {
+  "id": "false_premise",
+  "lang": "uz",
+  "q": "Nega 2023-yilda birorta ham bitim bekor qilinmagan?",
+  "tol": 0.005,
+  "note": "must correct the premise",
+  "nums_any": [
+   6313.0
+  ]
+ },
+ {
+  "id": "translit_company",
+  "lang": "ru",
+  "q": "Сколько сделок продажи заключила компания «Пудексиз Пласт»?",
+  "tol": 0.005,
+  "note": "",
+  "nums_any": [
+   2438.0,
+   2274.0
+  ],
+  "texts_any": [
+   "975923536",
+   "pudexiz"
+  ]
+ },
+ {
+  "id": "top3_tonnage",
+  "lang": "uz",
+  "q": "2025-yilda hajm bo'yicha (tonnada) eng ko'p sotilgan 3 ta tovar qaysilar?",
+  "tol": 0.005,
+  "note": "{'пшеница продовольственная': 1843137.0, 'портландцемент': 994135.0, 'хлопок-сырец (спот)': 709127.666, 'хлопок сырец (спот)': 618676.844, 'пшеница': 201756.0}",
+  "texts_all": [
+   [
+    "пшениц",
+    "bug'doy",
+    "bug‘doy"
+   ],
+   [
+    "хлоп",
+    "paxta"
+   ],
+   [
+    "цемент",
+    "sement"
+   ]
+  ]
+ },
+ {
+  "id": "paid_not_delivered",
+  "lang": "ru",
+  "q": "Сколько сделок оплачено, но ещё не поставлено, и на какую сумму в сумах?",
+  "tol": 0.003,
+  "note": "",
+  "nums_all": [
+   5854.0
+  ],
+  "nums_any": [
+   3328004059811.0
+  ]
+ },
+ {
+  "id": "dlv_no_pay",
+  "lang": "uz",
+  "q": "To'lanmasdan yetkazib berilgan bitimlar bormi? Nechta?",
+  "tol": 0.005,
+  "note": "answer 0",
+  "texts_any": [
+   "0",
+   "yo'q",
+   "yo‘q",
+   "mavjud emas",
+   "uchramaydi",
+   "hech qanday",
+   "birorta ham"
+  ]
+ },
+ {
+  "id": "export_broker",
+  "lang": "ru",
+  "q": "Какой брокер обслуживал больше всего экспортных сделок на стороне покупателя?",
+  "tol": 0.005,
+  "note": "",
+  "texts_any": [
+   "BK017"
+  ]
+ },
+ {
+  "id": "fergana_top_2024",
+  "lang": "uz",
+  "q": "2024-yilda Farg'ona viloyatida summa bo'yicha eng ko'p sotilgan tovar qaysi?",
+  "tol": 0.005,
+  "note": "подсолнечное масло",
+  "texts_any": [
+   "подсол",
+   "kungaboqar"
+  ]
+ },
+ {
+  "id": "two_part",
+  "lang": "uz",
+  "q": "2024 va 2025-yillarda bekor qilinmagan bitimlar soni qancha bo'lgan?",
+  "tol": 0.005,
+  "note": "",
+  "nums_all": [
+   99324.0,
+   107678.0
+  ]
+ },
+ {
+  "id": "yoy_growth",
+  "lang": "ru",
+  "q": "На сколько процентов вырос оборот биржи в 2025 году по сравнению с 2024 годом?",
+  "tol": 0.01,
+  "note": "",
+  "nums_any": [
+   21.9,
+   21.85
+  ]
+ },
+ {
+  "id": "typo",
+  "lang": "uz",
+  "q": "2025-yilda karbamit qancha tonna sotilgan?",
+  "tol": 0.005,
+  "note": "",
+  "nums_any": [
+   159393.0,
+   159393.0
+  ]
+ },
+ {
+  "id": "mixed_lang",
+  "lang": "uz",
+  "q": "2024-yilda сахар белый bo'yicha nechta сделка bo'lgan?",
+  "tol": 0.005,
+  "note": "",
+  "nums_any": [
+   2631.0,
+   2419.0
+  ]
+ },
+ {
+  "id": "usd_rate",
+  "lang": "ru",
+  "q": "Какой был курс доллара 15 марта 2025 года по данным биржи?",
+  "tol": 0.0005,
+  "note": "",
+  "nums_any": [
+   12589.97
+  ]
+ },
+ {
+  "id": "contract_price",
+  "lang": "uz",
+  "q": "102557-raqamli shartnomaning bazis narxi qancha va qaysi tovar?",
+  "tol": 0.005,
+  "note": "",
+  "nums_any": [
+   9527.0
+  ],
+  "texts_any": [
+   "бензин",
+   "benzin",
+   "92"
+  ]
+ },
+ {
+  "id": "avg_delay",
+  "lang": "ru",
+  "q": "На сколько дней в среднем опаздывали поставки в 2025 году (среди опоздавших)?",
+  "tol": 0.03,
+  "note": "",
+  "nums_any": [
+   8.0,
+   8.02
+  ]
+ },
+ {
+  "id": "top5_brokers",
+  "lang": "uz",
+  "q": "Bitimlar soni bo'yicha eng faol 5 ta broker qaysilar?",
+  "tol": 0.005,
+  "note": "",
+  "texts_all": [
+   [
+    "BK111"
+   ],
+   [
+    "BK085"
+   ],
+   [
+    "BK017"
+   ],
+   [
+    "BK106"
+   ],
+   [
+    "BK102"
+   ]
+  ]
+ },
+ {
+  "id": "cyr_inn",
+  "lang": "uz_cyrl",
+  "q": "СТИР 908181397 харидор сифатида нечта битим тузган?",
+  "tol": 0.005,
+  "note": "",
+  "nums_any": [
+   3267.0,
+   3040.0
+  ]
+ },
+ {
+  "id": "petrol_price_units",
+  "lang": "ru",
+  "q": "Сколько стоил бензин АИ-92 в октябре 2026 года?",
+  "tol": 0.01,
+  "note": "must give per-litre AND per-tonne",
+  "nums_all": [
+   11016.0,
+   15847696.0
+  ]
+ }
+]

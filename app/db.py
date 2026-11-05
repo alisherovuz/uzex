@@ -160,6 +160,41 @@ def find_product(query: str, limit: int = 15) -> dict:
                     "variants of a product. If no match fits, the product is NOT in the data."}
 
 
+LEGAL = r"\b(mchj|mas.?uliyati cheklangan jamiyati|masuliyati|cheklangan|jamiyati|ooo|mchj|xk|aj|ok|qk|ao|oao|zao|ип|мчж|ооо|хк|аж|ок|ат)\b"
+_NAMES = None
+
+
+def skeleton(s: str) -> str:
+    """Phonetic skeleton so the same company matches in Uzbek Latin, Uzbek Cyrillic and Russian spelling."""
+    s = cyr2lat(_norm(s))
+    s = re.sub(LEGAL, " ", s)
+    s = s.replace("ks", "x").replace("kh", "x").replace("h", "x").replace("ts", "s").replace("w", "v")
+    s = s.replace("yo", "o").replace("y", "i").replace("q", "k").replace("g'", "g").replace("o'", "o").replace("e", "e")
+    return re.sub(r"[^a-z]", "", s)
+
+
+def _company_index():
+    global _NAMES
+    if _NAMES is None:
+        cur = cursor()
+        _NAMES = [(inn, name, skeleton(name)) for inn, name in cur.execute("SELECT inn, name FROM companies").fetchall()]
+        cur.close()
+    return _NAMES
+
+
+def fuzzy_companies(query: str, limit: int = 8) -> list[str]:
+    import difflib
+    sk = skeleton(query)
+    if len(sk) < 3:
+        return []
+    idx = _company_index()
+    hits = [inn for inn, _, s in idx if sk in s]
+    if not hits:
+        sks = {s: inn for inn, _, s in idx}
+        hits = [sks[m] for m in difflib.get_close_matches(sk, list(sks), n=limit, cutoff=0.78)]
+    return hits[:limit]
+
+
 def find_company(query: str, limit: int = 10) -> dict:
     q = query.strip()
     cur = cursor()
@@ -185,6 +220,11 @@ def find_company(query: str, limit: int = 10) -> dict:
             rows = cur.execute(
                 f"SELECT inn, name, region, activity, role, vat_payer FROM companies WHERE {' AND '.join(conds)} "
                 f"LIMIT {limit}", params).fetchall()
+            if not rows:  # phonetic / fuzzy fallback across scripts (e.g. Пудексиз -> Pudexiz)
+                inns = fuzzy_companies(q, limit)
+                if inns:
+                    rows = cur.execute("SELECT inn, name, region, activity, role, vat_payer FROM companies "
+                                       f"WHERE inn IN ({','.join('?' * len(inns))})", inns).fetchall()
         out = []
         for inn, name, region, act, role, vat in rows:
             s, b = cur.execute(

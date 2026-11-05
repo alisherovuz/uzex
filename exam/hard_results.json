@@ -1,0 +1,38 @@
+[
+ {
+  "id": "busy_hour",
+  "ok": true,
+  "why": "",
+  "sec": 0.0,
+  "q": "В какой час дня в 2025 году заключалось больше всего сделок?",
+  "answer": "Больше всего сделок в 2025 году заключено в **10-й час** дня: **16 668** сделок, из них 1 167 аннулировано, не аннулированных 15 501.\nЕсли считать только не аннулированные, лидирует 13-й час: 15 518 сделок. Разрыв небольшой.\nСледующие по числу сделок (всего): 13 ч — 16 661, 11 ч — 16 594, 16 ч — 16 582.",
+  "status": "answered",
+  "verification": "verified",
+  "note": "",
+  "sql": [
+   "SELECT CAST(substr(deal_time,1,2) AS INT) AS hour, COUNT(*) AS total, SUM(is_cancelled::INT) AS cancelled, COUNT(*)-SUM(is_cancelled::INT) AS remaining, list(deal_id ORDER BY deal_id)[1:5] AS sample_deal_ids FROM deals WHERE year=2025 GROUP BY 1 ORDER BY total DESC LIMIT 5"
+  ],
+  "assumptions": [
+   "Период: весь 2025 год, час берётся из deal_time",
+   "Основной подсчёт включает аннулированные сделки; не аннулированные указаны отдельно"
+  ]
+ },
+ {
+  "id": "translit_company",
+  "ok": true,
+  "why": "",
+  "sec": 0.0,
+  "q": "Сколько сделок продажи заключила компания «Пудексиз Пласт»?",
+  "answer": "Компания «Pudexiz Plast» MChJ как продавец заключила **2 438** сделок, из них аннулировано 164; состоявшихся (не аннулированных) — **2 274**.",
+  "status": "answered",
+  "verification": "verified",
+  "note": "",
+  "sql": [
+   "select count(*) total, count(*) filter(where is_cancelled) cancelled, count(*) filter(where not is_cancelled) remain, list(deal_id order by amount_uzs desc)[1:5] sample_deal_ids from deals where seller_inn='975923536'"
+  ],
+  "assumptions": [
+   "Роль продавец: seller_inn компании",
+   "Аннулированные сделки показаны отдельно"
+  ]
+ }
+]
