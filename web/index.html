@@ -55,7 +55,8 @@ button:focus{outline:none}button:focus-visible{outline:2px solid var(--em2);outl
 .lmenu button:hover{background:var(--soft)}
 .lmenu button .flag{width:26px;height:26px}
 
-.nav .mid{margin:0 auto}
+.nav .mid{position:absolute;left:50%;transform:translateX(-50%)}
+.nav .langdd{margin-left:auto}
 /* ---------- layout */
 .view{display:none}
 .view.on{display:block}
@@ -240,6 +241,7 @@ footer img{width:22px;vertical-align:middle;margin-right:6px;opacity:.9}
   .grid4{grid-template-columns:1fr 1fr}
   .grid2,.grid2b{grid-template-columns:1fr}
   .nav{padding:0 16px;gap:10px}
+  .nav .mid{position:static;transform:none;margin:0 auto}
   .brand span{display:none}
   .wrap{padding:0 16px}
   #chatwrap{padding:0 14px}
