@@ -22,8 +22,11 @@ def detect_lang(text: str) -> str:
     return "uz"
 
 
+GPT_OK = {"ok": True}
+
+
 def _providers():
-    has_c, has_o = bool(config.ANTHROPIC_API_KEY), bool(config.OPENAI_API_KEY)
+    has_c, has_o = bool(config.ANTHROPIC_API_KEY), bool(config.OPENAI_API_KEY) and GPT_OK["ok"]
     if has_c and has_o:
         return ("claude", config.CLAUDE_MODEL), ("gpt", config.OPENAI_MODEL)
     if has_c:
@@ -125,8 +128,19 @@ async def answer(question: str, emit=None) -> dict:
             run.error = f"{type(e).__name__}: {str(e)[:300]}"
         return run
 
+    async def verify():
+        await safe(_loop(verifier_p[0]), v, deadline - 18)
+        if v.final is None and verifier_p[0] == "gpt" and config.ANTHROPIC_API_KEY and deadline - time.time() > 35:
+            if v.error and ("401" in v.error or "Authentication" in v.error or "auth" in v.error.lower()):
+                GPT_OK["ok"] = False  # stop calling a key that is rejected
+            v.__init__("B", question + hint, config.CLAUDE_MODEL)  # independent second Claude run
+            verification["verifier"] = config.CLAUDE_MODEL
+            await safe(claude_loop, v, deadline - 18)
+        return v
+
+    verification = {"state": "single", "primary": primary_p[1], "verifier": verifier_p[1], "note": ""}
     pt = asyncio.create_task(safe(_loop(primary_p[0]), p, deadline - 3))
-    vt = asyncio.create_task(safe(_loop(verifier_p[0]), v, deadline - 18))
+    vt = asyncio.create_task(verify())
     await pt
     if p.final is None:
         # primary failed: fall back to the verifier's answer if it finishes
@@ -140,7 +154,6 @@ async def answer(question: str, emit=None) -> dict:
         except asyncio.TimeoutError:
             pass
 
-    verification = {"state": "single", "primary": primary_p[1], "verifier": verifier_p[1], "note": ""}
     if p.final is not None and v.final is not None:
         ok, missing = figures_agree(p.final.get("key_figures", []), v.final.get("key_figures", []))
         if p.final.get("status") != v.final.get("status") and "not_found" in (p.final.get("status"), v.final.get("status")):

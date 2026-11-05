@@ -1,4 +1,6 @@
-# Isbotli Agent — UZEX AI Hackathon
+# Aniq — UZEX AI Hackathon
+
+*Aniq* means "exact" in Uzbek.
 
 An AI agent that answers questions about UZEX exchange deals in **Uzbek and Russian**. It **never invents a number**: every figure is computed with SQL, checked by a guard, cross-checked by a second independent model, and shown with its proof.
 
@@ -41,7 +43,7 @@ python scripts/build_db.py data/uzex_spot_data.zip data/uzex.duckdb
 uvicorn app.main:app --port 8000
 ```
 
-or `docker build -t isbotli . && docker run -p 8000:8000 --env-file .env isbotli`.
+or `docker build -t aniq . && docker run -p 8000:8000 --env-file .env aniq`.
 
 ### Environment variables
 

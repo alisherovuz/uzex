@@ -13,7 +13,7 @@ from .llm import get_system
 
 logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(name)s: %(message)s")
 log = logging.getLogger("isbotli")
-app = FastAPI(title="Isbotli Agent — UZEX", docs_url="/api/docs")
+app = FastAPI(title="Aniq — UZEX deals analyst", docs_url="/api/docs")
 app.mount("/static", StaticFiles(directory=str(config.WEB_DIR / "static")), name="static")
 
 
@@ -23,6 +23,8 @@ async def startup():
     await asyncio.to_thread(insights.overview)
     for lang in ("uz", "ru"):
         await asyncio.to_thread(insights.briefing, lang)
+    if config.OPENAI_API_KEY:
+        asyncio.create_task(_check_openai())
     if config.TELEGRAM_BOT_TOKEN and config.PUBLIC_URL:
         asyncio.create_task(tg.set_webhook())
     log.info("ready: claude=%s openai=%s eleven=%s deepgram=%s telegram=%s", bool(config.ANTHROPIC_API_KEY),
@@ -30,9 +32,26 @@ async def startup():
              bool(config.TELEGRAM_BOT_TOKEN))
 
 
+async def _check_openai():
+    import httpx
+    try:
+        async with httpx.AsyncClient(timeout=15) as c:
+            r = await c.get("https://api.openai.com/v1/models", headers={"Authorization": f"Bearer {config.OPENAI_API_KEY}"})
+        if r.status_code in (401, 403):
+            agent.GPT_OK["ok"] = False
+            log.warning("OpenAI key rejected (%s): verifier falls back to an independent Claude run", r.status_code)
+    except Exception as e:  # noqa: BLE001
+        log.warning("OpenAI check failed: %s", e)
+
+
 @app.get("/")
 async def index():
     return FileResponse(config.WEB_DIR / "index.html", headers={"Cache-Control": "no-cache"})
+
+
+@app.get("/favicon.ico")
+async def favicon():
+    return FileResponse(config.WEB_DIR / "static" / "logo.svg", media_type="image/svg+xml")
 
 
 @app.get("/a/{rid}")
@@ -42,7 +61,7 @@ async def answer_page(rid: str):
 
 @app.get("/api/health")
 async def health():
-    return {"ok": True, "llm": {"claude": bool(config.ANTHROPIC_API_KEY), "gpt": bool(config.OPENAI_API_KEY),
+    return {"ok": True, "llm": {"claude": bool(config.ANTHROPIC_API_KEY), "gpt": bool(config.OPENAI_API_KEY) and agent.GPT_OK["ok"],
                                 "claude_model": config.CLAUDE_MODEL, "gpt_model": config.OPENAI_MODEL},
             "voice": {"elevenlabs": bool(config.ELEVENLABS_API_KEY), "deepgram": bool(config.DEEPGRAM_API_KEY)},
             "telegram": bool(config.TELEGRAM_BOT_TOKEN)}

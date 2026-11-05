@@ -1,4 +1,6 @@
 """Voice: Uzbek via ElevenLabs, Russian via Deepgram (with automatic fallbacks)."""
+import re
+
 import httpx
 
 from . import config
@@ -6,7 +8,21 @@ from . import config
 TIMEOUT = httpx.Timeout(40.0, connect=10.0)
 
 
+def clean_transcript(t: str) -> str:
+    """Drop audio-event tags like [тишина], (music), [silence]; empty if nothing meaningful is left."""
+    t = re.sub(r"[\[(（][^\])）]{0,40}[\])）]", " ", t or "")
+    t = re.sub(r"\s+", " ", t).strip(" .,-—")
+    return t if len(re.sub(r"\W", "", t)) >= 3 else ""
+
+
 async def stt(audio: bytes, mime: str, lang: str = "auto") -> dict:
+    res = await _stt(audio, mime, lang)
+    if "text" in res:
+        res["text"] = clean_transcript(res["text"])
+    return res
+
+
+async def _stt(audio: bytes, mime: str, lang: str = "auto") -> dict:
     """Transcribe. lang: 'uz' | 'ru' | 'auto'. Returns {text, language, provider}."""
     errors = []
     order = []
