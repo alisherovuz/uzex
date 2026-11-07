@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>✓</text></svg>">
+<title>Aniq — isbotlangan bitimlar birjasi</title>
+<style>
+:root{--ink:#0f1b2d;--muted:#5b6778;--line:#e3e7ee;--bg:#f6f7f9;--card:#fff;--brand:#0b6e4f;--brand2:#0a4f8a;--warn:#b45309;--bad:#b42318;--good:#067647;--soft:#eef6f2}
+*{box-sizing:border-box}body{margin:0;font-family:ui-sans-serif,system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif;color:var(--ink);background:var(--bg);line-height:1.45}
+.demo{background:#fff7e6;border-bottom:1px solid #f3d9a4;color:#7a4b00;font-size:13px;padding:7px 16px;text-align:center}
+header{max-width:1080px;margin:0 auto;padding:22px 20px 6px;display:flex;align-items:center;gap:14px;flex-wrap:wrap}
+.logo{font-weight:800;font-size:26px;letter-spacing:-.5px}.logo b{color:var(--brand)}
+.tag{color:var(--muted);font-size:15px}
+main{max-width:1080px;margin:0 auto;padding:8px 20px 60px}
+.steps{display:flex;gap:6px;margin:14px 0 18px;flex-wrap:wrap}
+.step{flex:1;min-width:150px;padding:9px 12px;border-radius:10px;background:#e9edf2;color:var(--muted);font-size:13px;font-weight:600}
+.step.on{background:var(--ink);color:#fff}.step.done{background:var(--soft);color:var(--brand)}
+.card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:20px;margin-bottom:16px}
+h2{margin:0 0 6px;font-size:20px}h3{margin:0 0 8px;font-size:16px}.sub{color:var(--muted);margin:0 0 14px;font-size:14px}
+textarea{width:100%;min-height:84px;font:inherit;font-size:16px;padding:12px;border:1px solid #cfd6e0;border-radius:10px;resize:vertical}
+button{font:inherit;font-weight:600;border:0;border-radius:10px;padding:11px 16px;cursor:pointer;background:var(--ink);color:#fff}
+button.sec{background:#e9edf2;color:var(--ink)}button.good{background:var(--good)}button.bad{background:var(--bad)}
+button:disabled{opacity:.45;cursor:not-allowed}
+.chips{display:flex;gap:8px;flex-wrap:wrap;margin:10px 0 14px}.chip{background:#eef2f7;color:var(--ink);font-weight:500;font-size:13px;padding:7px 10px;border-radius:999px}
+.grid{display:grid;gap:12px}.g2{grid-template-columns:1fr 1fr}.g4{grid-template-columns:repeat(4,1fr)}
+@media(max-width:760px){.g2,.g4{grid-template-columns:1fr}}
+.prob{border:1px solid var(--line);border-radius:12px;padding:12px;background:#fff;font-size:13px}.prob .p{color:var(--bad);font-weight:600}.prob .s{color:var(--good);font-weight:700;margin-top:6px}
+.field{display:flex;flex-direction:column;gap:4px;font-size:13px;color:var(--muted)}
+.field input,.field select{font:inherit;font-size:15px;color:var(--ink);padding:9px 10px;border:1px solid #cfd6e0;border-radius:8px}
+.field.miss input,.field.miss select{border-color:var(--warn);background:#fffaf0}
+.row{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+.lot{border:1px solid var(--line);border-radius:12px;padding:14px;display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap}
+.lot.no{background:#fbfbfc;color:#8a94a3}.lot.no .why{color:var(--bad)}
+.badge{display:inline-block;font-size:12px;font-weight:700;padding:3px 8px;border-radius:999px}
+.b-ok{background:#dcfae6;color:var(--good)}.b-no{background:#fee4e2;color:var(--bad)}.b-warn{background:#fef0c7;color:var(--warn)}
+.big{font-size:22px;font-weight:800}.muted{color:var(--muted);font-size:13px}
+.note{border-left:4px solid var(--brand2);background:#eef4fb;padding:10px 12px;border-radius:8px;font-size:14px}
+.note.w{border-color:var(--warn);background:#fffaf0}.note.g{border-color:var(--good);background:var(--soft)}.note.r{border-color:var(--bad);background:#fef3f2}
+table{width:100%;border-collapse:collapse;font-size:14px}td,th{padding:9px 8px;border-bottom:1px solid var(--line);text-align:left}
+th{font-size:12px;color:var(--muted);font-weight:600;text-transform:uppercase;letter-spacing:.03em}
+tr.shill td{color:var(--bad);text-decoration:line-through}tr.shill td.r{text-decoration:none}tr.win td{background:var(--soft);font-weight:700}
+.mono{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:12px}
+.timer{font-size:34px;font-weight:800;font-variant-numeric:tabular-nums}
+.tl{display:flex;gap:0;margin:12px 0 4px;flex-wrap:wrap}.tl div{flex:1;min-width:110px;text-align:center;font-size:12px;padding:10px 4px;border-top:4px solid #e3e7ee;color:var(--muted)}
+.tl div.ok{border-color:var(--good);color:var(--good);font-weight:700}.tl div.cur{border-color:var(--ink);color:var(--ink);font-weight:700}.tl div.x{border-color:var(--bad);color:var(--bad);font-weight:700}
+.log li{margin:4px 0;font-size:13px}.hidden{display:none}
+svg text{font-family:inherit}
+footer{max-width:1080px;margin:0 auto;padding:0 20px 40px;color:var(--muted);font-size:12px}
+</style>
+</head>
+<body>
+<div class="demo">Narxlar va sotuvchilarning yetkazish tarixi — tashkilotchilar bergan UZEX bitimlar reyestridan. Lot hajmi, ombor guvohnomalari, boshqa agentlar va escrow — <b>simulyatsiya</b>. Haqiqiy pul ishlatilmaydi.</div>
+<header>
+  <div class="logo">Ani<b>q</b></div>
+  <div class="tag">2035-yil birjasi: siz ehtiyojni aytasiz — agent savdolashadi — har bir qadam isbotlanadi.</div>
+</header>
+<main>
+  <div class="steps">
+    <div class="step on" id="s1">1 · Ehtiyoj</div>
+    <div class="step" id="s2">2 · Tekshirilgan lotlar va narx pasporti</div>
+    <div class="step" id="s3">3 · Muhrlangan agent auksioni</div>
+    <div class="step" id="s4">4 · Escrow va bitim isboti</div>
+  </div>
+  <div id="view"></div>
+</main>
+<footer>Aniq · UZEX AI Hackathon 2026 prototipi. AI faqat tilni tushunadi va tushuntiradi; narx, saralash, qoidalar va holat o'zgarishlari — deterministik kod.</footer>
+<script type="module" src="app.js"></script>
+</body>
+</html>
