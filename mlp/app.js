@@ -1,263 +1,268 @@
 import * as L from './logic.js';
 
 const $ = (s) => document.querySelector(s);
-const view = $('#view');
+const root = $('#root');
 let M = null;
-const S = { intent: null, pass: null, hist: null, lots: null, lot: null, myBid: null, auction: null, deal: null, chain: [] };
+const S = { intent: null, pass: null, lots: null, lot: null, myBid: null, auction: null, deal: null, chain: [] };
 const esc = (s) => String(s).replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
-const som = (n) => `${L.fmt(n)} so'm`;
+const mln = (n) => (n >= 1e6 ? `${(n / 1e6).toFixed(2).replace('.', ',')} mln` : L.fmt(n));
+const wait = (ms) => new Promise((r) => setTimeout(r, ms));
 
-function steps(k) {
-  [1, 2, 3, 4].forEach((i) => { const e = $('#s' + i); e.className = 'step' + (i === k ? ' on' : i < k ? ' done' : ''); });
+function countUp(el, to, ms = 1100, f = mln) {
+  const t0 = performance.now();
+  const tick = (t) => { const k = Math.min(1, (t - t0) / ms), e = 1 - Math.pow(1 - k, 3); el.textContent = f(Math.round(to * e)); if (k < 1) requestAnimationFrame(tick); };
+  requestAnimationFrame(tick);
+}
+const runCounters = () => document.querySelectorAll('[data-count]').forEach((el) => countUp(el, +el.dataset.count));
+
+function fly(emoji, x = innerWidth / 2, y = innerHeight / 2) {
+  for (let k = 0; k < 7; k++) {
+    const e = document.createElement('div');
+    e.className = 'fly'; e.textContent = emoji;
+    e.style.left = `${x - 20 + (k - 3) * 34}px`; e.style.top = `${y}px`; e.style.animationDelay = `${k * 70}ms`;
+    document.body.appendChild(e); setTimeout(() => e.remove(), 1800);
+  }
+}
+
+// ---------------- Landing ----------------
+function landing() {
+  const tick = [];
+  for (const p of L.PRODUCTS) {
+    const m = M[p.id];
+    tick.push(`<span>${p.name} <b>${mln(m.median)}</b> so'm/t</span>`);
+    const o = m.outliers[0];
+    if (o) tick.push(`<span>№${o.id} <span class="up">▲ +${Math.round(o.markup * 100)}%</span></span>`);
+  }
+  root.innerHTML = `
+  <div class="land">
+    <div class="nav in"><div class="logo"><div class="mark">A</div>Aniq</div><span class="pill g"><span class="dot"></span>UZEX 2035</span></div>
+    <div class="hero">
+      <span class="pill in" style="--d:1">Birja terminali kerak emas</span>
+      <h1 class="in" style="--d:2">Ayting.<br><span class="grad">Qolganini Aniq qiladi.</span></h1>
+      <p class="in" style="--d:3">Agent savdolashadi. Har bir qadam isbotlanadi.</p>
+      <button class="btn in" style="--d:4" id="start">Boshlash →</button>
+      <div class="feat">
+        ${[['📈', 'Shubhali narx', 'Narx pasporti'], ['📦', 'Yo\'q tovar', 'Tasdiqlangan zaxira'], ['🎭', 'Soxta taklif', 'Muhrlangan auksion'], ['💸', 'Qotgan pul', 'Avto-qaytarish']]
+          .map(([i, x, y], k) => `<div class="f in" style="--d:${5 + k}"><span class="ic" style="--d:${k}">${i}</span><div class="x">${x}</div><div class="y">${y}</div></div>`).join('')}
+      </div>
+    </div>
+    <div class="tick"><div>${tick.join('')}${tick.join('')}</div></div>
+  </div>`;
+  $('#start').onclick = () => need();
+}
+
+// ---------------- Shell ----------------
+function shell(step, name, title, body, back) {
+  root.innerHTML = `
+  <div class="app">
+    <div class="top"><button class="back" id="back" aria-label="Orqaga">←</button>
+      <div class="prog">${[1, 2, 3, 4].map((i) => `<i class="${i < step ? 'done' : i === step ? 'on' : ''}"></i>`).join('')}</div>
+      <span class="pill">${step}/4</span></div>
+    <div class="stepname in">${name}</div>
+    <h2 class="h in" style="--d:1">${title}</h2>
+    ${body}
+    <div class="foot">Narx va sotuvchilar — tashkilotchilar reyestri · Lot, agentlar, escrow — simulyatsiya</div>
+  </div>`;
+  $('#back').onclick = back;
   window.scrollTo({ top: 0, behavior: 'smooth' });
 }
 
+// ---------------- 1 · Need ----------------
 const EXAMPLES = [
   "Farg'onaga 20 tonna AI-92 benzin kerak, 20 kun ichida, tonnasi 17 mln so'mdan oshmasin",
   'Нужно 50 тонн цемента в Ташкент за 20 дней, не дороже 1 000 000 сум за тонну',
   "Samarqandga 30 tonna bug'doy kerak, 15 kun ichida",
 ];
-
-// ---------- Step 1 ----------
-function renderNeed() {
-  steps(1);
-  view.innerHTML = `
-  <div class="grid g4" style="margin-bottom:16px">
-    ${[
-      ['Narxga ishonch yo\'q: 1–2 taklif bilan narx ko\'tariladi', 'Narx pasporti: real tarix, shubhali sakrashlar belgilanadi'],
-      ['Mavjud bo\'lmagan tovar sotiladi, jo\'natma bo\'lmaydi', 'Faqat ombor guvohnomasi bilan tasdiqlangan lotlar'],
-      ['Soxta xaridorlar narxni sun\'iy oshiradi', 'Muhrlangan takliflar + 2-narx qoidasi + shill-filtr'],
-      ['Pul qaytmaydi, call-markazga tushib bo\'lmaydi', 'Escrow: yetkazilmasa — avtomatik qaytarish'],
-    ].map(([p, s]) => `<div class="prob"><div class="p">${p}</div><div class="s">→ ${s}</div></div>`).join('')}
-  </div>
-  <div class="card">
-    <h2>Nima kerak? Oddiy tilda yozing</h2>
-    <p class="sub">O'zbek yoki rus tilida. Birja terminalini bilish shart emas — agent sizning nomingizdan ishlaydi, lekin faqat siz belgilagan chegaralar ichida.</p>
-    <textarea id="need" placeholder="Masalan: Farg'onaga 20 tonna AI-92 kerak, 20 kun ichida, tonnasi 17 mln so'mdan oshmasin"></textarea>
-    <div class="chips">${EXAMPLES.map((e, i) => `<button class="chip" data-ex="${i}">${esc(e)}</button>`).join('')}</div>
-    <button id="parse">Tushunish →</button>
-    <div id="confirm"></div>
-  </div>`;
-  view.querySelectorAll('[data-ex]').forEach((b) => b.onclick = () => { $('#need').value = EXAMPLES[b.dataset.ex]; $('#parse').click(); });
-  $('#parse').onclick = () => {
-    const txt = $('#need').value.trim();
-    if (!txt) return;
-    renderConfirm(L.parseIntent(txt));
-  };
+function need() {
+  shell(1, 'Ehtiyoj', 'Nima kerak?', `
+    <div class="ask in" style="--d:2"><textarea id="need" placeholder="Oddiy tilda yozing…">${esc(S.intent?.text ?? '')}</textarea><button class="send" id="parse" aria-label="Yuborish">→</button></div>
+    <div class="ex">${EXAMPLES.map((e, i) => `<button class="in" style="--d:${3 + i}" data-ex="${i}">${esc(e)}</button>`).join('')}</div>
+    <div id="mand"></div>`, landing);
+  const go = () => { const t = $('#need').value.trim(); if (t) mandate({ ...L.parseIntent(t), text: t }); };
+  $('#parse').onclick = go;
+  $('#need').onkeydown = (e) => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); go(); } };
+  root.querySelectorAll('[data-ex]').forEach((b) => b.onclick = () => { $('#need').value = EXAMPLES[b.dataset.ex]; go(); });
+  if (S.intent) mandate(S.intent);
 }
 
-function renderConfirm(i) {
+function mandate(i) {
   const miss = (k) => (i.missing.includes(k) ? ' miss' : '');
-  $('#confirm').innerHTML = `
-  <hr style="border:0;border-top:1px solid var(--line);margin:18px 0">
-  <h3>Agent topshirig'i (mandat) — tasdiqlang</h3>
-  <p class="sub">${i.complete ? 'Hammasi tushunildi. Tekshirib, tasdiqlang.' : '<b style="color:var(--warn)">Ba\'zi ma\'lumotlar topilmadi — agent taxmin qilmaydi.</b> Sariq maydonlarni to\'ldiring.'}</p>
-  <div class="grid g4">
-    <label class="field${miss('productId')}">Tovar<select id="f-p"><option value="">—</option>${L.PRODUCTS.map((p) => `<option value="${p.id}" ${p.id === i.productId ? 'selected' : ''}>${p.name}</option>`).join('')}</select></label>
-    <label class="field${miss('qty')}">Hajm (tonna)<input id="f-q" type="number" min="1" value="${i.qty ?? ''}"></label>
-    <label class="field${miss('regionId')}">Manzil<select id="f-r"><option value="">—</option>${L.REGIONS.map((r) => `<option value="${r.id}" ${r.id === i.regionId ? 'selected' : ''}>${r.name}</option>`).join('')}</select></label>
-    <label class="field${miss('days')}">Muddat (kun)<input id="f-d" type="number" min="1" value="${i.days ?? ''}"></label>
-  </div>
-  <div class="grid g2" style="margin-top:12px">
-    <label class="field${miss('maxPrice')}">Maksimal narx, so'm / tonna (agent bundan oshirolmaydi)<input id="f-m" type="number" min="1" value="${i.maxPrice ?? ''}"></label>
-    <div class="note" style="align-self:end">🔒 Chegaralar kodda qulflanadi: agent hajmni, tovar navini yoki narx chegarasini o'zi o'zgartira olmaydi.</div>
-  </div>
-  <div class="row" style="margin-top:14px"><button id="go">Mandatni tasdiqlash va lotlarni topish →</button></div>`;
+  $('#mand').innerHTML = `
+  <div class="card in">
+    <div class="row" style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">
+      <b style="font-size:18px">Agent mandati</b>${i.complete ? '<span class="pill g">✓ Tushunildi</span>' : '<span class="pill a">To\'ldiring</span>'}</div>
+    <div class="mand">
+      <div class="mf wide${miss('productId')}"><label>Tovar</label><select id="f-p"><option value="">—</option>${L.PRODUCTS.map((p) => `<option value="${p.id}" ${p.id === i.productId ? 'selected' : ''}>${p.name}</option>`).join('')}</select></div>
+      <div class="mf${miss('qty')}"><label>Tonna</label><input id="f-q" type="number" inputmode="numeric" value="${i.qty ?? ''}"></div>
+      <div class="mf${miss('days')}"><label>Kun</label><input id="f-d" type="number" inputmode="numeric" value="${i.days ?? ''}"></div>
+      <div class="mf${miss('regionId')}"><label>Manzil</label><select id="f-r"><option value="">—</option>${L.REGIONS.map((r) => `<option value="${r.id}" ${r.id === i.regionId ? 'selected' : ''}>${r.name}</option>`).join('')}</select></div>
+      <div class="mf${miss('maxPrice')}"><label>Maks. so'm / t</label><input id="f-m" type="number" inputmode="numeric" value="${i.maxPrice ?? ''}"></div>
+    </div>
+    <div class="lock">🔒 Agent bu chegaradan chiqolmaydi</div>
+    <button class="btn" id="go" style="width:100%;margin-top:8px">Lotlarni topish →</button>
+  </div>`;
+  $('#mand').scrollIntoView({ behavior: 'smooth', block: 'start' });
   $('#go').onclick = () => {
-    const v = L.validateIntent({
-      productId: $('#f-p').value || null, qty: parseInt($('#f-q').value, 10), regionId: $('#f-r').value || null,
-      days: parseInt($('#f-d').value, 10), maxPrice: parseInt($('#f-m').value, 10),
-    });
-    if (!v.complete) return renderConfirm(v);
-    S.intent = v; renderLots();
+    const v = L.validateIntent({ productId: $('#f-p').value || null, qty: parseInt($('#f-q').value, 10), regionId: $('#f-r').value || null, days: parseInt($('#f-d').value, 10), maxPrice: parseInt($('#f-m').value, 10) });
+    if (!v.complete) return mandate({ ...v, text: i.text });
+    S.intent = { ...v, text: i.text }; market();
   };
 }
 
-// ---------- Step 2 ----------
-function spark(pass) {
-  const W = 1000, H = 220, pad = 34, D = pass.daily;
-  const xs = (k) => pad + (k / (D.length - 1)) * (W - pad * 2);
-  const ps = D.map((h) => h.p).concat([pass.p10, pass.p90]), lo = Math.min(...ps) * 0.98, hi = Math.max(...ps) * 1.02;
-  const ys = (p) => H - pad - ((p - lo) / (hi - lo)) * (H - pad * 2);
-  const path = D.map((h, k) => `${k ? 'L' : 'M'}${xs(k).toFixed(1)},${ys(h.p).toFixed(1)}`).join('');
-  return `<svg viewBox="0 0 ${W} ${H}" width="100%" role="img" aria-label="Kunlik median narx">
-    <rect x="${pad}" y="${ys(pass.p90)}" width="${W - pad * 2}" height="${ys(pass.p10) - ys(pass.p90)}" fill="#e8f3ee"/>
-    <line x1="${pad}" x2="${W - pad}" y1="${ys(pass.median)}" y2="${ys(pass.median)}" stroke="#0b6e4f" stroke-dasharray="5 5"/>
-    <path d="${path}" fill="none" stroke="#0f1b2d" stroke-width="2.5"/>
-    <text x="${pad}" y="16" font-size="15" fill="#5b6778">Kunlik median narx, so'm/t · oxirgi ${D.length} savdo kuni · yashil: P10–P90 oralig'i</text>
-    <text x="${pad}" y="${H - 8}" font-size="14" fill="#5b6778">${D[0].d}</text><text x="${W - pad}" y="${H - 8}" font-size="14" fill="#5b6778" text-anchor="end">${D.at(-1).d}</text>
+// ---------------- 2 · Market ----------------
+function chart(pass) {
+  const W = 700, H = 200, D = pass.daily;
+  const ps = D.map((h) => h.p).concat([pass.p10, pass.p90]), lo = Math.min(...ps) * 0.97, hi = Math.max(...ps) * 1.03;
+  const x = (k) => (k / (D.length - 1)) * W, y = (p) => H - ((p - lo) / (hi - lo)) * H;
+  const line = D.map((h, k) => `${k ? 'L' : 'M'}${x(k).toFixed(1)},${y(h.p).toFixed(1)}`).join('');
+  return `<svg class="chart" viewBox="0 0 ${W} ${H + 24}" width="100%" preserveAspectRatio="none" style="display:block;margin-top:14px">
+    <defs><linearGradient id="gl" x1="0" x2="1"><stop offset="0" stop-color="#33e6a0"/><stop offset="1" stop-color="#5aa9ff"/></linearGradient>
+    <linearGradient id="ga" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#33e6a0" stop-opacity=".25"/><stop offset="1" stop-color="#33e6a0" stop-opacity="0"/></linearGradient></defs>
+    <rect x="0" y="${y(pass.p90)}" width="${W}" height="${y(pass.p10) - y(pass.p90)}" fill="rgba(255,255,255,.035)" rx="6"/>
+    <path class="area" d="${line}L${W},${H}L0,${H}Z" fill="url(#ga)"/>
+    <path class="line" d="${line}" fill="none" stroke="url(#gl)" stroke-width="3" stroke-linejoin="round"/>
+    <line x1="0" x2="${W}" y1="${y(pass.median)}" y2="${y(pass.median)}" stroke="rgba(255,255,255,.3)" stroke-dasharray="5 6"/>
+    <text x="0" y="${H + 20}" font-size="12" fill="#8b97aa">${D[0].d}</text><text x="${W}" y="${H + 20}" font-size="12" fill="#8b97aa" text-anchor="end">${D.at(-1).d}</text>
   </svg>`;
 }
+const ring = (v, ok) => {
+  const c = 2 * Math.PI * 23, col = ok ? '#33e6a0' : '#ff5d6c';
+  return `<div class="ring"><svg width="56" height="56"><circle cx="28" cy="28" r="23" stroke="rgba(255,255,255,.08)" stroke-width="5" fill="none"/><circle cx="28" cy="28" r="23" stroke="${col}" stroke-width="5" fill="none" stroke-linecap="round" stroke-dasharray="${c}" stroke-dashoffset="${c * (1 - v)}" style="transition:stroke-dashoffset 1.2s"/></svg><b style="color:${col}">${Math.round(v * 100)}%</b></div>`;
+};
 
-function renderLots() {
-  steps(2);
+function market() {
   const i = S.intent, p = L.product(i.productId);
   S.pass = L.passport(M[i.productId]); S.lots = L.lotsFor(i, M[i.productId]);
-  const ok = S.lots.filter((l) => l.eligible);
-  const adv = L.agentBid(i, S.pass);
-  S.myBid = adv.bid;
-  view.innerHTML = `
-  <div class="card">
-    <h2>Narx pasporti · ${p.name}</h2>
-    <p class="sub">Tashkilotchilar bergan UZEX bitimlar reyestridan hisoblangan: ${L.fmt(S.pass.n)} ta bitim, ${S.pass.from} — ${S.pass.to}, ichki spot, bekor qilinganlar chiqarilgan. AI raqam o'ylab topmaydi.</p>
-    <div class="grid g4">
-      <div><div class="muted">Median</div><div class="big">${som(S.pass.median)}</div></div>
-      <div><div class="muted">Odatiy oraliq (P10–P90)</div><div class="big" style="font-size:17px">${L.fmt(S.pass.p10)} – ${L.fmt(S.pass.p90)}</div></div>
-      <div><div class="muted">Oxirgi kun mediani</div><div class="big">${som(S.pass.last)}</div></div>
-      <div><div class="muted">Sizning chegarangiz</div><div class="big">${som(i.maxPrice)}</div></div>
+  const adv = L.agentBid(i, S.pass); S.myBid = adv.bid;
+  const ok = S.lots.filter((l) => l.eligible).sort((a, b) => a.start - b.start), no = S.lots.filter((l) => !l.eligible);
+  const short = (r) => r.replace(/ —.*/, '').replace(/:.*/, '');
+  shell(2, p.name, 'Narx pasporti', `
+    <div class="card in" style="--d:2">
+      <div class="stats">
+        <div class="stat"><div class="k">Median</div><div class="v" data-count="${S.pass.median}">0</div><div class="u">so'm / t</div></div>
+        <div class="stat"><div class="k">Odatiy oraliq</div><div class="v" style="font-size:clamp(15px,2.6vw,19px)">${mln(S.pass.p10)} – ${mln(S.pass.p90)}</div><div class="u">P10–P90</div></div>
+        <div class="stat"><div class="k">Sizning chegara</div><div class="v" data-count="${i.maxPrice}" style="color:${adv.warn ? 'var(--a)' : 'var(--g)'}">0</div><div class="u">so'm / t</div></div>
+      </div>
+      ${chart(S.pass)}
+      <div class="muted" style="margin-top:6px">${L.fmt(S.pass.n)} ta real bitim · ${S.pass.from} — ${S.pass.to}</div>
     </div>
-    ${spark(S.pass)}
-    <div class="note w">⚠️ <b>Odatiy oraliqdan ancha yuqori bitimlar</b> (P90 dan 12%+ yuqori) — tekshiruv uchun belgilandi. Raqamlarni reyestrda tekshirish mumkin:
-      <table style="margin-top:6px"><thead><tr><th>Bitim №</th><th>Sana</th><th>Boshlang'ich</th><th>Yakuniy narx/t</th><th>Ustama</th></tr></thead><tbody>
-      ${S.pass.outliers.map((o) => `<tr><td class="mono">${o.id}</td><td>${o.d}</td><td>${L.fmt(o.start)}</td><td><b>${L.fmt(o.p)}</b></td><td style="color:var(--bad)">+${Math.round(o.markup * 100)}%</td></tr>`).join('')}
-      </tbody></table></div>
-    ${adv.warn ? `<div class="note r" style="margin-top:10px">Sizning chegarangiz odatiy oraliqdan <b>${Math.round((i.maxPrice / S.pass.p90 - 1) * 100)}%</b> yuqori. Agent tavsiyasi: <b>${som(adv.suggested)}</b>.
-      <div class="row" style="margin-top:8px"><button class="sec" id="keep">O'z chegaramni qoldiraman</button><button id="accept">Tavsiyani qabul qilaman</button></div></div>` : ''}
-  </div>
-  <div class="card">
-    <h2>Lotlar: ${ok.length} ta mos, ${S.lots.length - ok.length} ta chiqarildi</h2>
-    <p class="sub">Qoidalar hamma uchun bir xil. Sotuvchi, STIR, shartnoma muddati va yetkazish tarixi — reyestrdan. Lot hajmi va ombor guvohnomasi — simulyatsiya.</p>
-    <div class="grid">${S.lots.map((l) => `
-      <div class="lot ${l.eligible ? '' : 'no'}">
-        <div>
-          <div><b>${l.id}</b> · ${esc(l.seller)} ${l.stock.verified ? '<span class="badge b-ok">✓ Zaxira tasdiqlangan</span>' : '<span class="badge b-no">✗ Zaxira tasdiqlanmagan</span>'}</div>
-          <div class="muted">STIR ${l.inn} · ${esc(l.region)} · ${l.qty} t (simulyatsiya) · shartnoma: to'lovdan keyin ${l.deliveryDays} kunda yetkazish</div>
-          <div class="muted">Yetkazish tarixi (reyestr): <b style="color:${l.record.onTime >= L.MIN_ON_TIME ? 'var(--good)' : 'var(--bad)'}">${(l.record.onTime * 100).toFixed(1)}% o'z vaqtida</b> · ${l.record.n} ta to'langan bitim · ${l.record.late} kechikkan · ${l.record.partial} qisman · ${l.record.undelivered} to'langan, yetkazilmagan</div>
-          <div class="muted">${esc(l.stock.note)}</div>
-          ${l.reasons.map((r) => `<div class="why muted">✗ ${esc(r)}</div>`).join('')}
-        </div>
-        <div style="text-align:right"><div class="muted">Boshlang'ich narx</div><div class="big" style="font-size:18px">${som(l.start)}</div>
-          ${l.eligible ? `<button data-lot="${l.id}" style="margin-top:8px">Auksionga kirish →</button>` : ''}</div>
-      </div>`).join('')}
-    </div>
-  </div>`;
-  if (adv.warn) {
-    $('#keep').onclick = (e) => { S.myBid = i.maxPrice; e.target.closest('.note').innerHTML = `Agent sizning chegarangiz bilan qatnashadi: <b>${som(S.myBid)}</b>.`; };
-    $('#accept').onclick = (e) => { S.myBid = adv.suggested; e.target.closest('.note').innerHTML = `✓ Agent taklifi: <b>${som(S.myBid)}</b> (sizning chegarangizdan past).`; };
-  }
-  view.querySelectorAll('[data-lot]').forEach((b) => b.onclick = () => { S.lot = S.lots.find((l) => l.id === b.dataset.lot); renderAuction(); });
+    ${S.pass.outliers.length ? `<details class="in" style="--d:3;margin-bottom:14px"><summary><span class="pill r">⚠ ${S.pass.outliers.length}</span> ta shubhali qimmat bitim <span class="muted" style="margin-left:auto">ko'rish</span></summary>
+      <div class="ol">${S.pass.outliers.map((o) => `<span class="id">№${o.id}</span><span>${o.d}</span><b style="color:var(--r)">+${Math.round(o.markup * 100)}%</b>`).join('')}</div></details>` : ''}
+    ${adv.warn ? `<div class="warnbox in" style="--d:3"><span style="font-size:26px">🤖</span><div style="flex:1"><b>Chegarangiz bozordan yuqori.</b><div class="muted">Tavsiya: ${mln(adv.suggested)}</div></div><button class="btn sm" id="accept">Qabul</button></div>` : ''}
+    <div class="stepname in" style="--d:4">Lotlar · ${ok.length} ta mos</div>
+    ${ok.map((l, k) => `
+      <div class="lot ok in" style="--d:${5 + k}" data-lot="${l.id}">${ring(l.record.onTime, true)}
+        <div class="main"><div class="nm">${esc(l.seller)}</div><div class="chips"><span class="pill g">✓ Zaxira</span><span class="pill">${l.deliveryDays} kun</span><span class="pill">${esc(l.region.replace(' viloyati', ''))}</span></div></div>
+        <div class="pr">${mln(l.start)}<div class="muted">boshlang'ich</div></div></div>`).join('')}
+    <div class="stepname in" style="--d:7;color:var(--mut)">Chiqarildi · ${no.length}</div>
+    ${no.map((l, k) => `
+      <div class="lot no in" style="--d:${8 + k}">${ring(l.record.onTime, l.record.onTime >= L.MIN_ON_TIME)}
+        <div class="main"><div class="nm">${esc(l.seller)}</div><div class="chips">${l.reasons.map((r) => `<span class="pill r">✗ ${esc(short(r))}</span>`).join('')}</div></div>
+        <div class="pr">${mln(l.start)}</div></div>`).join('')}
+    <div class="muted" style="text-align:center">Doira — sotuvchi o'z vaqtida yetkazgan bitimlar ulushi (reyestr)</div>`, need);
+  runCounters();
+  if (adv.warn) $('#accept').onclick = (e) => { S.myBid = adv.suggested; e.target.closest('.warnbox').innerHTML = `<span style="font-size:26px">✓</span><b>Agent ${mln(S.myBid)} bilan qatnashadi</b>`; };
+  root.querySelectorAll('[data-lot]').forEach((b) => b.onclick = () => { S.lot = S.lots.find((l) => l.id === b.dataset.lot); auction(); });
 }
 
-// ---------- Step 3 ----------
-async function renderAuction() {
-  steps(3);
-  const lot = S.lot;
+// ---------------- 3 · Auction ----------------
+async function auction() {
+  const lot = S.lot, SEC = 6, C = 2 * Math.PI * 66;
   const me = { name: 'Sizning agentingiz', amount: Math.max(S.myBid, lot.start), accountAgeDays: 900, linkedToSeller: false, cancelRate: 0, me: true };
-  const bids = [me, ...L.otherBidders(lot, S.pass, me.amount)];
-  const commits = await Promise.all(bids.map(async (b, k) => ({ ...b, salt: Math.random().toString(36).slice(2, 10), k })));
-  for (const c of commits) c.commit = await L.sha256(`${c.name}|${c.amount}|${c.salt}`);
-  view.innerHTML = `
-  <div class="card">
-    <div class="row" style="justify-content:space-between;flex-wrap:nowrap;align-items:flex-start">
-      <div style="flex:1"><h2>Muhrlangan auksion · ${lot.id}</h2>
-      <p class="sub">${S.intent.qty} t · ${esc(lot.seller)} · boshlang'ich ${som(lot.start)}. Har bir agent <b>bitta yashirin</b> taklif beradi. Hech kim boshqalarning taklifini ko'rmaydi — shuning uchun "narxni ko'tarib qo'yish" ishlamaydi.</p></div>
-      <div style="text-align:right;min-width:120px"><div class="muted">Yopilishigacha</div><div class="timer" id="timer">0:08</div></div>
-    </div>
-    <table><thead><tr><th>Ishtirokchi</th><th>Muhr (SHA-256 majburiyat)</th><th>Taklif</th><th>Tekshiruv</th></tr></thead><tbody id="tb"></tbody></table>
-    <div id="result"></div>
-  </div>
-  <div class="card"><h3>Qoidalar (oldindan e'lon qilingan)</h3>
-    <div class="muted">1) Har bir agent bitta muhrlangan taklif beradi; muhr = SHA-256(ishtirokchi | summa | tuz). Ochilganda muhr qayta hisoblanadi.<br>
-    2) Sotuvchi bilan bog'liq yoki yangi + ko'p bekor qiluvchi akkauntlar chiqariladi (sababi ko'rsatiladi).<br>
-    3) Eng yuqori haqiqiy taklif yutadi va <b>ikkinchi eng yuqori haqiqiy narxni</b> to'laydi (Vickrey). Shuning uchun haqiqiy chegarani aytish — eng to'g'ri strategiya; blef foyda bermaydi.<br>
-    4) Agent foydalanuvchi chegarasidan oshib taklif bera olmaydi — bu kodda tekshiriladi.</div></div>`;
-  const tb = $('#tb');
-  commits.forEach((c, k) => setTimeout(() => {
-    tb.insertAdjacentHTML('beforeend', `<tr id="r${k}"><td>${esc(c.name)}</td><td class="mono">${c.commit.slice(0, 20)}…</td><td>🔒 yashirin</td><td class="r muted">kutilmoqda</td></tr>`);
-  }, 350 * k));
-  let left = 8;
-  const iv = setInterval(async () => {
-    left--; $('#timer').textContent = `0:0${Math.max(left, 0)}`;
-    if (left > 0) return;
-    clearInterval(iv);
-    $('#timer').textContent = 'Yopildi';
-    const r = L.runAuction(lot, commits);
-    S.auction = r;
-    for (const c of commits) {
-      const ok = (await L.sha256(`${c.name}|${c.amount}|${c.salt}`)) === c.commit;
-      const b = r.all.find((x) => x.name === c.name);
-      const row = $('#r' + c.k);
-      row.className = b.shill ? 'shill' : r.winner?.name === c.name ? 'win' : '';
-      row.children[2].textContent = som(c.amount);
-      row.children[3].innerHTML = b.shill ? `<span class="badge b-no">Chiqarildi</span><div style="font-size:12px">${b.reasons.map(esc).join('; ')}</div>`
-        : `<span class="badge b-ok">${ok ? 'Muhr mos ✓' : 'Muhr mos emas'}</span>${r.winner?.name === c.name ? ' <span class="badge b-ok">G\'olib</span>' : ''}`;
-    }
-    const won = r.winner?.me;
-    const saved = (r.payIfShill - r.pay) * S.intent.qty;
-    $('#result').innerHTML = won ? `
-      <div class="note g" style="margin-top:14px"><b>Siz yutdingiz.</b> Sizning taklifingiz: ${som(r.winner.amount)}/t. Siz to'laysiz: <b>${som(r.pay)}/t</b> — ikkinchi eng yuqori haqiqiy taklif.
-      <br>Soxta ishtirokchi hisobga olinganda narx ${som(r.payIfShill)}/t bo'lardi. Filtr sizga <b>${som(saved)}</b> tejadi (${S.intent.qty} t uchun).</div>
-      <div class="row" style="margin-top:12px"><button id="deal">Bitimni tasdiqlash va escrowga o'tish →</button></div>`
-      : `<div class="note r" style="margin-top:14px"><b>Siz yutmadingiz.</b> G'olib taklifi sizning chegarangizdan yuqori edi. Agent chegaradan oshmadi — bu qoida. <button class="sec" id="back">Orqaga</button></div>`;
-    if (won) $('#deal').onclick = startDeal; else $('#back').onclick = renderLots;
-  }, 1000);
+  const bids = [me, ...L.otherBidders(lot, S.pass, me.amount)].map((b) => ({ ...b, salt: Math.random().toString(36).slice(2, 10) }));
+  for (const b of bids) b.commit = await L.sha256(`${b.name}|${b.amount}|${b.salt}`);
+  const short = (n) => n.replace('Agent · ', '').replace(' MChJ', '');
+  shell(3, `${lot.id} · ${S.intent.qty} t`, 'Muhrlangan auksion', `
+    <div class="arena">
+      <div class="clock in" style="--d:2"><svg width="150" height="150"><circle cx="75" cy="75" r="66" stroke="rgba(255,255,255,.08)" stroke-width="8" fill="none"/>
+        <circle class="p" id="cp" cx="75" cy="75" r="66" stroke="url(#cg)" stroke-width="8" fill="none" stroke-linecap="round" stroke-dasharray="${C}" stroke-dashoffset="0"/>
+        <defs><linearGradient id="cg"><stop offset="0" stop-color="#33e6a0"/><stop offset="1" stop-color="#5aa9ff"/></linearGradient></defs></svg><div class="t" id="ct">${SEC}</div></div>
+      <div class="muted in" style="--d:3;margin-bottom:14px" id="phase">🔒 Takliflar muhrlangan — hech kim ko'rmaydi</div>
+      <div class="bids">${bids.map((b, k) => `
+        <div class="bid in ${b.me ? 'me' : ''}" style="--d:${4 + k}" id="b${k}"><div class="fl">
+          <div class="fa"><div class="who">${b.me ? '🧑‍💼 ' : '🤖 '}${esc(short(b.name))}</div><div style="font-size:30px">🔒</div><div class="hash">${b.commit.slice(0, 24)}…</div></div>
+          <div class="ba"><div class="who">${esc(short(b.name))}</div><div class="amt">${mln(b.amount)}</div><div class="tag"></div></div>
+        </div></div>`).join('')}</div>
+      <div id="res" style="width:100%"></div>
+      <div class="card in" style="--d:9;margin-top:16px;width:100%"><div class="how">
+        <div>🔒 Har kim bitta yashirin taklif beradi</div><div>🎭 Sotuvchiga bog'liq akkaunt chiqariladi</div><div>🏆 Eng yuqori yutadi — ikkinchi narxni to'laydi</div></div></div>
+    </div>`, market);
+  for (let s = SEC; s > 0; s--) {
+    $('#ct').textContent = s; $('#cp').style.strokeDashoffset = C * (1 - (s - 1) / SEC);
+    await wait(1000); if (!$('#ct')) return;
+  }
+  $('#ct').textContent = '✓'; $('#phase').textContent = '🔓 Muhrlar ochilmoqda…';
+  const r = L.runAuction(lot, bids); S.auction = r;
+  for (let k = 0; k < bids.length; k++) {
+    const b = r.all[k], el = $('#b' + k);
+    el.classList.add('open'); if (b.shill) el.classList.add('shill'); if (r.winner?.name === b.name) el.classList.add('win');
+    el.querySelector('.tag').innerHTML = b.shill ? '<span class="pill r">🎭 Soxta</span>' : r.winner?.name === b.name ? '<span class="pill g">🏆 G\'olib</span>' : '<span class="pill">✓ Muhr mos</span>';
+    await wait(450);
+  }
+  $('#phase').textContent = '🎭 Soxta ishtirokchi sotuvchiga bog\'liq — chiqarildi';
+  const won = r.winner?.me, saved = (r.payIfShill - r.pay) * S.intent.qty;
+  $('#res').innerHTML = won ? `<div class="result"><div class="muted">Siz yutdingiz · to'laysiz</div><div class="big" id="pay">0</div><div class="muted">so'm / t · taklifingiz ${mln(r.winner.amount)}</div>
+      <div style="margin:12px 0"><span class="pill g">🛡 Filtr tejadi: ${mln(saved)} so'm</span></div><button class="btn" id="deal" style="width:100%">Bitimni tasdiqlash →</button></div>`
+    : `<div class="result" style="box-shadow:inset 0 0 0 1px var(--r);background:rgba(255,93,108,.08)"><div class="big">Yutmadingiz</div><div class="muted">Agent chegaradan oshmadi</div><button class="btn ghost" id="again" style="margin-top:12px">Boshqa lot</button></div>`;
+  if (won) { countUp($('#pay'), r.pay); fly('✨', innerWidth / 2, innerHeight * 0.7); $('#deal').onclick = startDeal; } else $('#again').onclick = market;
+  $('#res').scrollIntoView({ behavior: 'smooth', block: 'center' });
 }
 
-// ---------- Step 4 ----------
-const LABEL = { agreed: 'Kelishildi', escrow: 'Pul escrowda', shipped: 'Jo\'natildi', delivered: 'Yetkazildi', released: 'Pul sotuvchiga', refunded: 'Pul qaytarildi' };
-const now = () => new Date().toLocaleString('uz-UZ', { hour12: false });
-
-async function log(data) { S.chain = await L.appendEvent(S.chain, { t: now(), ...data }); }
+// ---------------- 4 · Deal ----------------
+const LABEL = { agreed: 'Kelishildi', escrow: 'Pul escrowda', shipped: 'Yo\'lda', delivered: 'Yetkazildi', released: 'Yakunlandi', refunded: 'Pul qaytdi' };
+const ICON = { agreed: '🤝', escrow: '🔐', shipped: '🚚', delivered: '📦', released: '✅', refunded: '↩️' };
+const now = () => new Date().toLocaleTimeString('uz-UZ', { hour12: false });
+const log = async (d) => { S.chain = await L.appendEvent(S.chain, { t: now(), ...d }); };
 
 async function startDeal() {
-  steps(4);
-  const r = S.auction, i = S.intent;
-  const goods = r.pay * i.qty, fee = Math.round(goods * 0.001);
-  S.deal = { state: 'agreed', goods, fee, total: goods + fee, deadline: S.lot.deliveryDays };
-  S.chain = [];
-  await log({ e: 'agreed', lot: S.lot.id, seller: S.lot.seller, qty: i.qty, price: r.pay, total: S.deal.total });
-  renderDeal();
+  const r = S.auction, goods = r.pay * S.intent.qty, fee = Math.round(goods * 0.001);
+  S.deal = { state: 'agreed', total: goods + fee, fee };
+  S.chain = []; S.broken = false;
+  await log({ e: 'agreed', lot: S.lot.id, seller: S.lot.seller, qty: S.intent.qty, price: r.pay, total: S.deal.total });
+  deal();
+}
+async function act(ev, btn) {
+  const next = L.transition(S.deal.state, ev);
+  S.deal.state = next;
+  await log({ e: next, ...(next === 'refunded' ? { refund: S.deal.total } : {}) });
+  const rc = btn?.getBoundingClientRect();
+  if (next === 'refunded') fly('💸', rc ? rc.left + rc.width / 2 : undefined, rc ? rc.top : undefined);
+  if (next === 'released') fly('✅', rc ? rc.left + rc.width / 2 : undefined, rc ? rc.top : undefined);
+  deal();
 }
 
-async function act(event) {
-  try {
-    const next = L.transition(S.deal.state, event);
-    S.deal.state = next;
-    const msg = { pay: 'Xaridor to\'lovi escrow hisobiga tushdi', ship: 'Sotuvchi jo\'natdi (yuk xati №TTN-55102)', confirm: 'Xaridor yetkazilganini tasdiqladi', release: 'Pul sotuvchiga o\'tkazildi', deadline: `Yetkazish muddati (${S.deal.deadline} kun) o'tdi — avtomatik qaytarish` }[event];
-    await log({ e: next, note: msg, ...(next === 'refunded' ? { refund: S.deal.total } : {}) });
-  } catch (err) { alertBox(err.message); }
-  renderDeal();
-}
-function alertBox(m) { const n = $('#err'); if (n) n.textContent = m; }
-
-async function renderDeal() {
-  const d = S.deal, i = S.intent, st = d.state;
+async function deal() {
+  const d = S.deal, st = d.state;
   const flow = st === 'refunded' ? ['agreed', 'escrow', 'refunded'] : ['agreed', 'escrow', 'shipped', 'delivered', 'released'];
-  const idx = flow.indexOf(st);
-  const valid = await L.verifyChain(S.chain);
-  const btn = {
-    agreed: `<button id="b-pay">To'lash (escrowga)</button>`,
-    escrow: `<button id="b-ship">Sotuvchi jo'natdi</button> <button class="bad" id="b-dl">Sotuvchi yetkazmadi — muddat o'tdi</button>`,
-    shipped: `<button class="good" id="b-cf">Yetkazildi, tasdiqlayman</button> <button class="bad" id="b-dl">Yetib kelmadi — muddat o'tdi</button>`,
-    delivered: `<button class="good" id="b-rel">Pulni sotuvchiga chiqarish</button>`,
-  }[st] || '';
-  view.innerHTML = `
-  <div class="card">
-    <h2>Bitim · ${S.lot.id} · ${L.product(i.productId).name}</h2>
-    <p class="sub">${i.qty} t × ${som(S.auction.pay)} · sotuvchi: ${esc(S.lot.seller)} · manzil: ${L.region(i.regionId).name}</p>
-    <div class="grid g4">
-      <div><div class="muted">Tovar</div><div class="big" style="font-size:18px">${som(d.goods)}</div></div>
-      <div><div class="muted">Birja yig'imi (demo stavka 0,1%)</div><div class="big" style="font-size:18px">${som(d.fee)}</div></div>
-      <div><div class="muted">Jami</div><div class="big" style="font-size:18px">${som(d.total)}</div></div>
-      <div><div class="muted">Holat</div><div class="big" style="font-size:18px;color:${st === 'refunded' ? 'var(--bad)' : st === 'released' ? 'var(--good)' : 'var(--ink)'}">${LABEL[st]}</div></div>
+  const idx = flow.indexOf(st), valid = await L.verifyChain(S.chain);
+  const acts = {
+    agreed: `<button class="btn" data-a="pay">🔐 To'lash</button>`,
+    escrow: `<button class="btn" data-a="ship">🚚 Jo'natildi</button><button class="btn red" data-a="deadline">⏰ Yetkazilmadi</button>`,
+    shipped: `<button class="btn" data-a="confirm">📦 Qabul qildim</button><button class="btn red" data-a="deadline">⏰ Kelmadi</button>`,
+    delivered: `<button class="btn" data-a="release">✅ Pulni chiqarish</button>`,
+  }[st] || `<button class="btn ghost" id="restart">↻ Yangi ehtiyoj</button>`;
+  const sub = { agreed: 'To\'lov escrowga tushadi', escrow: 'Sotuvchi yetkazmaguncha pul sizniki', shipped: 'Qabul qilsangiz — pul chiqadi', delivered: 'Bir bosishda yakunlanadi', released: 'Pul faqat yetkazilgandan keyin o\'tdi', refunded: 'Avtomatik. Qo\'ng\'iroq yo\'q, ariza yo\'q.' }[st];
+  shell(4, `${S.lot.id} · ${esc(S.lot.seller)}`, 'Bitim', `
+    <div class="card in" style="--d:2;text-align:center">
+      <div class="orb s-${st}">${ICON[st]}</div>
+      <div class="state">${LABEL[st]}</div>
+      <div class="amount"><b id="amt" style="color:var(--ink)">${mln(d.total)}</b> so'm · ${sub}</div>
+      <div class="tl">${flow.map((s, k) => `${k ? `<div class="bar ${k <= idx ? (s === 'refunded' ? 'x' : 'ok') : ''}"></div>` : ''}<div class="n ${k < idx || (k === idx && st === 'released') ? 'ok' : k === idx ? (st === 'refunded' ? 'x' : 'cur') : ''}">${k < idx || st === 'released' ? '✓' : k === idx && st === 'refunded' ? '↩' : k + 1}</div>`).join('')}</div>
+      <div class="tll">${flow.map((s) => `<span>${LABEL[s]}</span>`).join('')}</div>
+      <div class="acts">${acts}</div>
     </div>
-    <div class="tl">${flow.map((s, k) => `<div class="${k < idx ? 'ok' : k === idx ? (s === 'refunded' ? 'x' : st === 'released' ? 'ok' : 'cur') : ''}">${LABEL[s]}</div>`).join('')}</div>
-    ${st === 'refunded' ? `<div class="note r"><b>${som(d.total)} xaridorga avtomatik qaytarildi.</b> Call-markazga qo'ng'iroq, ariza yoki kutish kerak emas. Sotuvchining ishonch reytingi pasaytirildi; holat inson ko'rib chiqishi uchun ochildi.</div>` : ''}
-    ${st === 'released' ? `<div class="note g"><b>Bitim yakunlandi.</b> Pul faqat yetkazish tasdiqlangandan keyin sotuvchiga o'tdi.</div>` : ''}
-    <div class="row" style="margin-top:12px">${btn}</div><div id="err" class="muted" style="color:var(--bad)"></div>
-  </div>
-  <div class="card">
-    <h3>Bitim isboti (hash-zanjir)</h3>
-    <p class="sub">Har bir voqea oldingisining hashi bilan bog'langan. Bitta raqam o'zgartirilsa — zanjir buziladi. Shikoyat yoki nazorat uchun tayyor dalil.</p>
-    <ol class="log">${S.chain.map((c) => `<li><b>${LABEL[c.data.e] || c.data.e}</b> · ${esc(c.data.t)}${c.data.note ? ' · ' + esc(c.data.note) : ''} <span class="mono muted">#${c.hash.slice(0, 12)}</span></li>`).join('')}</ol>
-    <div class="row"><span class="badge ${valid ? 'b-ok' : 'b-no'}">${valid ? '✓ Zanjir butun — yozuvlar o\'zgartirilmagan' : '✗ Zanjir buzilgan — yozuv o\'zgartirilgan!'}</span>
-    <button class="sec" id="tamper">Sinab ko'ring: narxni yashirincha o'zgartirish</button>
-    <button class="sec" id="restart">Yangi ehtiyoj</button></div>
-  </div>`;
-  const on = (id, ev) => { const b = $(id); if (b) b.onclick = () => act(ev); };
-  on('#b-pay', 'pay'); on('#b-ship', 'ship'); on('#b-cf', 'confirm'); on('#b-rel', 'release'); on('#b-dl', 'deadline');
-  $('#tamper').onclick = () => { S.chain[0].data.price = S.chain[0].data.price + 500_000; renderDeal(); };
-  $('#restart').onclick = () => { Object.assign(S, { intent: null, deal: null, chain: [] }); renderNeed(); };
+    <div class="card in" style="--d:3">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px"><b>Bitim isboti</b>
+        <span class="pill ${valid ? 'g' : 'r'}">${valid ? '✓ Butun' : '✗ O\'zgartirilgan!'}</span></div>
+      <div class="chain ${valid ? '' : 'broken'}">${S.chain.map((c) => `<div class="blk"><b>${ICON[c.data.e]} ${LABEL[c.data.e]}</b><code>${c.data.t} · #${c.hash.slice(0, 10)}</code></div>`).join('')}</div>
+      <button class="btn ghost sm" id="tamper" style="margin-top:6px">🕵️ Narxni yashirin o'zgartirib ko'ring</button>
+    </div>`, market);
+  root.querySelectorAll('[data-a]').forEach((b) => b.onclick = () => act(b.dataset.a, b));
+  const rs = $('#restart'); if (rs) rs.onclick = () => { Object.assign(S, { intent: null, deal: null, chain: [] }); need(); };
+  $('#tamper').onclick = () => { S.chain[0].data.price += 500_000; deal(); };
+  if (st === 'refunded') countUp($('#amt'), d.total, 900);
 }
 
-fetch('market.json').then((r) => r.json()).then((d) => { M = d; renderNeed(); }).catch(() => { view.innerHTML = '<div class="card">Bozor ma\'lumotini yuklab bo\'lmadi.</div>'; });
+root.innerHTML = '<div style="min-height:100vh;display:grid;place-items:center"><div class="mark" style="animation:pulse 1s infinite">A</div></div>';
+fetch('market.json').then((r) => r.json()).then((d) => { M = d; landing(); })
+  .catch(() => { root.innerHTML = '<div class="app"><h2 class="h">Ma\'lumot yuklanmadi</h2></div>'; });
