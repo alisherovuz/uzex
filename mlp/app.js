@@ -35,7 +35,7 @@ function landing() {
   }
   root.innerHTML = `
   <div class="land">
-    <div class="nav in"><div class="logo"><div class="mark">A</div>Aniq</div><span class="pill g"><span class="dot"></span>UZEX 2035</span></div>
+    <div class="nav in"><div class="logo"><img src="logo.svg" alt="">aniq<em>agent</em></div><span class="pill g"><span class="dot"></span>UZEX 2035</span></div>
     <div class="hero">
       <span class="pill in" style="--d:1">Birja terminali kerak emas</span>
       <h1 class="in" style="--d:2">Ayting.<br><span class="grad">Qolganini Aniq qiladi.</span></h1>
@@ -116,18 +116,18 @@ function chart(pass) {
   const x = (k) => (k / (D.length - 1)) * W, y = (p) => H - ((p - lo) / (hi - lo)) * H;
   const line = D.map((h, k) => `${k ? 'L' : 'M'}${x(k).toFixed(1)},${y(h.p).toFixed(1)}`).join('');
   return `<svg class="chart" viewBox="0 0 ${W} ${H + 24}" width="100%" preserveAspectRatio="none" style="display:block;margin-top:14px">
-    <defs><linearGradient id="gl" x1="0" x2="1"><stop offset="0" stop-color="#33e6a0"/><stop offset="1" stop-color="#5aa9ff"/></linearGradient>
-    <linearGradient id="ga" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#33e6a0" stop-opacity=".25"/><stop offset="1" stop-color="#33e6a0" stop-opacity="0"/></linearGradient></defs>
-    <rect x="0" y="${y(pass.p90)}" width="${W}" height="${y(pass.p10) - y(pass.p90)}" fill="rgba(255,255,255,.035)" rx="6"/>
+    <defs><linearGradient id="gl" x1="0" x2="1"><stop offset="0" stop-color="#12b886"/><stop offset="1" stop-color="#0b8a63"/></linearGradient>
+    <linearGradient id="ga" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#12b886" stop-opacity=".18"/><stop offset="1" stop-color="#12b886" stop-opacity="0"/></linearGradient></defs>
+    <rect x="0" y="${y(pass.p90)}" width="${W}" height="${y(pass.p10) - y(pass.p90)}" fill="rgba(0,0,0,.03)" rx="6"/>
     <path class="area" d="${line}L${W},${H}L0,${H}Z" fill="url(#ga)"/>
     <path class="line" d="${line}" fill="none" stroke="url(#gl)" stroke-width="3" stroke-linejoin="round"/>
-    <line x1="0" x2="${W}" y1="${y(pass.median)}" y2="${y(pass.median)}" stroke="rgba(255,255,255,.3)" stroke-dasharray="5 6"/>
+    <line x1="0" x2="${W}" y1="${y(pass.median)}" y2="${y(pass.median)}" stroke="rgba(0,0,0,.25)" stroke-dasharray="5 6"/>
     <text x="0" y="${H + 20}" font-size="12" fill="#8b97aa">${D[0].d}</text><text x="${W}" y="${H + 20}" font-size="12" fill="#8b97aa" text-anchor="end">${D.at(-1).d}</text>
   </svg>`;
 }
 const ring = (v, ok) => {
-  const c = 2 * Math.PI * 23, col = ok ? '#33e6a0' : '#ff5d6c';
-  return `<div class="ring"><svg width="56" height="56"><circle cx="28" cy="28" r="23" stroke="rgba(255,255,255,.08)" stroke-width="5" fill="none"/><circle cx="28" cy="28" r="23" stroke="${col}" stroke-width="5" fill="none" stroke-linecap="round" stroke-dasharray="${c}" stroke-dashoffset="${c * (1 - v)}" style="transition:stroke-dashoffset 1.2s"/></svg><b style="color:${col}">${Math.round(v * 100)}%</b></div>`;
+  const c = 2 * Math.PI * 23, col = ok ? '#0b8a63' : '#d70015';
+  return `<div class="ring"><svg width="56" height="56"><circle cx="28" cy="28" r="23" stroke="rgba(0,0,0,.07)" stroke-width="5" fill="none"/><circle cx="28" cy="28" r="23" stroke="${col}" stroke-width="5" fill="none" stroke-linecap="round" stroke-dasharray="${c}" stroke-dashoffset="${c * (1 - v)}" style="transition:stroke-dashoffset 1.2s"/></svg><b style="color:${col}">${Math.round(v * 100)}%</b></div>`;
 };
 
 function market() {
@@ -174,9 +174,9 @@ async function auction() {
   const short = (n) => n.replace('Agent · ', '').replace(' MChJ', '');
   shell(3, `${lot.id} · ${S.intent.qty} t`, 'Muhrlangan auksion', `
     <div class="arena">
-      <div class="clock in" style="--d:2"><svg width="150" height="150"><circle cx="75" cy="75" r="66" stroke="rgba(255,255,255,.08)" stroke-width="8" fill="none"/>
+      <div class="clock in" style="--d:2"><svg width="150" height="150"><circle cx="75" cy="75" r="66" stroke="rgba(0,0,0,.07)" stroke-width="8" fill="none"/>
         <circle class="p" id="cp" cx="75" cy="75" r="66" stroke="url(#cg)" stroke-width="8" fill="none" stroke-linecap="round" stroke-dasharray="${C}" stroke-dashoffset="0"/>
-        <defs><linearGradient id="cg"><stop offset="0" stop-color="#33e6a0"/><stop offset="1" stop-color="#5aa9ff"/></linearGradient></defs></svg><div class="t" id="ct">${SEC}</div></div>
+        <defs><linearGradient id="cg"><stop offset="0" stop-color="#12b886"/><stop offset="1" stop-color="#0b8a63"/></linearGradient></defs></svg><div class="t" id="ct">${SEC}</div></div>
       <div class="muted in" style="--d:3;margin-bottom:14px" id="phase">🔒 Takliflar muhrlangan — hech kim ko'rmaydi</div>
       <div class="bids">${bids.map((b, k) => `
         <div class="bid in ${b.me ? 'me' : ''}" style="--d:${4 + k}" id="b${k}"><div class="fl">
@@ -203,7 +203,7 @@ async function auction() {
   const won = r.winner?.me, saved = (r.payIfShill - r.pay) * S.intent.qty;
   $('#res').innerHTML = won ? `<div class="result"><div class="muted">Siz yutdingiz · to'laysiz</div><div class="big" id="pay">0</div><div class="muted">so'm / t · taklifingiz ${mln(r.winner.amount)}</div>
       <div style="margin:12px 0"><span class="pill g">🛡 Filtr tejadi: ${mln(saved)} so'm</span></div><button class="btn" id="deal" style="width:100%">Bitimni tasdiqlash →</button></div>`
-    : `<div class="result" style="box-shadow:inset 0 0 0 1px var(--r);background:rgba(255,93,108,.08)"><div class="big">Yutmadingiz</div><div class="muted">Agent chegaradan oshmadi</div><button class="btn ghost" id="again" style="margin-top:12px">Boshqa lot</button></div>`;
+    : `<div class="result" style="box-shadow:inset 0 0 0 1px #ffc9c4;background:#ffeceb"><div class="big">Yutmadingiz</div><div class="muted">Agent chegaradan oshmadi</div><button class="btn ghost" id="again" style="margin-top:12px">Boshqa lot</button></div>`;
   if (won) { countUp($('#pay'), r.pay); fly('✨', innerWidth / 2, innerHeight * 0.7); $('#deal').onclick = startDeal; } else $('#again').onclick = market;
   $('#res').scrollIntoView({ behavior: 'smooth', block: 'center' });
 }
@@ -263,6 +263,6 @@ async function deal() {
   if (st === 'refunded') countUp($('#amt'), d.total, 900);
 }
 
-root.innerHTML = '<div style="min-height:100vh;display:grid;place-items:center"><div class="mark" style="animation:pulse 1s infinite">A</div></div>';
+root.innerHTML = '<div style="min-height:100vh;display:grid;place-items:center"><img src="logo.svg" width="44" style="animation:pulse 1s infinite"></div>';
 fetch('market.json').then((r) => r.json()).then((d) => { M = d; landing(); })
   .catch(() => { root.innerHTML = '<div class="app"><h2 class="h">Ma\'lumot yuklanmadi</h2></div>'; });
