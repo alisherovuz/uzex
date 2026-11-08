@@ -103,6 +103,40 @@ async function call(req, res) {
   } catch (e) { console.error('call error', e.message); return send(200, { ok: false, reason: 'upstream' }); }
 }
 
+// ---------- live demo call (hidden /demo page) ----------
+async function demoCall(req, res) {
+  const send = (code, o) => { res.writeHead(code, { 'content-type': 'application/json', 'cache-control': 'no-store' }); res.end(JSON.stringify(o)); };
+  let b; try { b = await readBody(req); } catch { return send(400, { ok: false, reason: 'bad request' }); }
+  if (!process.env.DEMO_PIN || String(b.pin || '') !== process.env.DEMO_PIN) return send(403, { ok: false, reason: 'Wrong PIN' });
+  const to = normPhone(b.to || process.env.DEMO_TO);
+  const agent = process.env.DEMO_AGENT_ID || process.env.ELEVENLABS_AGENT_ID;
+  const phoneId = process.env.ELEVENLABS_PHONE_NUMBER_ID;
+  if (!to || !agent || !phoneId || !EL.key) return send(200, { ok: false, reason: 'Demo not configured (number/agent/phone id)' });
+  const t0 = Date.now();
+  try {
+    const r = await fetch('https://api.elevenlabs.io/v1/convai/sip-trunk/outbound-call', {
+      method: 'POST', headers: { 'xi-api-key': EL.key, 'content-type': 'application/json' },
+      body: JSON.stringify({ agent_id: agent, agent_phone_number_id: phoneId, to_number: to,
+        conversation_initiation_client_data: { dynamic_variables: { buyer_id: 'demo', purpose: 'demo', lots: '', result_text: '' } },
+        telephony_call_config: { ringing_timeout_secs: 45 } }),
+    });
+    const j = await r.json().catch(() => ({}));
+    const ok = r.ok && j.success !== false;
+    console.log('demo call', to.slice(0, 7) + '…', ok ? 'ok' : 'fail', r.status, JSON.stringify(j).slice(0, 300));
+    return send(200, { ok, ms: Date.now() - t0, conversation: j.conversation_id, reason: ok ? undefined : (j.message || j.detail?.message || JSON.stringify(j.detail || j).slice(0, 200)) });
+  } catch (e) { return send(200, { ok: false, reason: e.message }); }
+}
+async function demoStatus(req, res, url) {
+  const send = (code, o) => { res.writeHead(code, { 'content-type': 'application/json', 'cache-control': 'no-store' }); res.end(JSON.stringify(o)); };
+  if (!process.env.DEMO_PIN || url.searchParams.get('pin') !== process.env.DEMO_PIN) return send(403, {});
+  const id = url.searchParams.get('id'); if (!id) return send(400, {});
+  const r = await fetch('https://api.elevenlabs.io/v1/convai/conversations/' + encodeURIComponent(id), { headers: { 'xi-api-key': EL.key } }).catch(() => null);
+  if (!r || !r.ok) return send(200, { status: 'unknown' });
+  const j = await r.json();
+  const last = (j.transcript || []).slice(-2).map((m) => ({ role: m.role, text: (m.message || '').slice(0, 160) }));
+  return send(200, { status: j.status, duration: j.metadata?.call_duration_secs, reason: j.metadata?.termination_reason, last });
+}
+
 async function chat(req, res) {
   const ip = (req.headers['x-forwarded-for'] || req.socket.remoteAddress || '').toString().split(',')[0].trim();
   if (limited(ip)) { res.writeHead(429, { 'content-type': 'application/json' }); return res.end(JSON.stringify({ error: 'Too many questions — please wait a few minutes.' })); }
@@ -157,6 +191,9 @@ http.createServer(async (req, res) => {
     if (url.pathname === '/api/chat' && req.method === 'POST') return await chat(req, res);
     if (url.pathname === '/api/tts') return await tts(req, res, url);
     if (url.pathname === '/api/call' && req.method === 'POST') return await call(req, res);
+    if (url.pathname === '/api/demo-call' && req.method === 'POST') return await demoCall(req, res);
+    if (url.pathname === '/api/demo-status') return await demoStatus(req, res, url);
+    if (url.pathname === '/demo' || url.pathname === '/demo/') url.pathname = '/demo.html';
     if (url.pathname === '/api/config') { res.writeHead(200, { 'content-type': 'application/json' }); return res.end(JSON.stringify({ phone: PHONE, ready: !!process.env.ANTHROPIC_API_KEY, tts: ttsReady() })); }
     if (url.pathname === '/health') { res.writeHead(200); return res.end('ok'); }
     let p = normalize(decodeURIComponent(url.pathname)).replace(/^(\.\.[/\\])+/, '');
