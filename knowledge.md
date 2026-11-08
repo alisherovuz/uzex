@@ -42,6 +42,26 @@ Why this beats "another assistant": the official agent is only one door. The ope
 - **Own agent (MCP)**: a person's own AI agent connects to iBek and uses the same tools.
 - The exact phone number is shown on the iBek website.
 
+## The hackathon task (official brief from the organizers)
+Title: "The Exchange of 2035 — Reinvent UZEX". Imagine that by 2035 all traditional ideas about exchange trading are outdated: no trading terminals, complex interfaces, trading through brokers, or deep study of exchange mechanics. What replaced them? The task is NOT to improve the existing platform, build another AI assistant, or automate traditional processes. It is to use AI to create a fundamentally new model of how people and businesses interact with UZEX, starting from zero, without being limited by today's interfaces, roles or methods. Perhaps brokers are no longer needed; perhaps buyers and sellers find each other in a completely different way; perhaps AI changes how orders are formed, offers are found and deals are made. Key question: "If today's exchange trading system did not exist, how would you build it with AI?" Motto: "Don't automate the past. Reinvent the future of UZEX."
+The solution must meet three principles:
+- Accessibility (Qulaylik va hammaboplik): an ordinary person with no trading experience can use it easily.
+- Transparency (Shaffoflik): participants understand deal terms, how prices are formed, and trading results.
+- Safety (Xavfsizlik): the model manages risk, protects participants' interests and ensures compliance with rules.
+
+## How iBek answers the brief
+- New interaction model, not a better terminal: the user states a need ("20 tonnes of cement, at most X") by text or voice; an agent — iBek's own or the user's personal agent via MCP — does the rest. No terminal, no order book to watch, no broker required in the 2035 model.
+- Not "another AI assistant": an assistant answers questions; iBek acts. And the market itself is redesigned for agents (sealed batch rounds, one common price), so the AI layer and the market mechanism change together.
+- Accessibility: talk or text in Uzbek, Russian or English from any phone; no app, no training. A farmer buying 5 t gets the same price as a factory buying 500 t.
+- Transparency: one rule anyone can say in a sentence; every round publishes the seed hash, then all bids, the price and allocations; anyone can press Verify and recompute.
+- Safety: the deterministic engine, not the AI, enforces limits; money is reserved before the bid; by default the user confirms; mandates cap what agents may spend; invariants are tested; MyID identity and a UZEX sandbox pilot are the path to compliance.
+
+## About UZEX (public facts, for context)
+- UZEX is the Uzbek Republican Commodity Exchange, a joint-stock company registered in April 1994, separate from the Tashkent securities exchange. Its stated purpose is organizing open commodity auctions with prices formed by supply and demand, under principles of openness and equal competitive conditions. It also runs B2B commerce, public procurement (Xarid), mobile-number auctions and logistics services.
+- Company-reported results for January–September 2026: more than 1.7 million concluded transactions, more than 27,600 new registered clients, total transaction value +29% year on year, exchange trading +31%.
+- UZEX already uses AI: a procurement chatbot (launched May 2025), AI checks of offer consistency, and automated moderation of announcements. That is why iBek is not pitched as "UZEX's first AI assistant" — the new part is the agent-first trading model.
+- Revenue context: UZEX earns transaction and clearing fees and sells information subscriptions. Transaction value passing through the exchange is not UZEX's own revenue.
+
 ## Feature pool and agent tools
 Every feature is one tool an agent can call. Most already run live in the prototype.
 
