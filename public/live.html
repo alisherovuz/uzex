@@ -1,0 +1,137 @@
+<!doctype html>
+<html lang="uz">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, user-scalable=no">
+<meta name="robots" content="noindex,nofollow">
+<meta name="theme-color" content="#000000">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<title> </title>
+<style>
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent;-webkit-user-select:none;user-select:none}
+html,body{height:100%;margin:0;background:#000;color:#fff;font-family:-apple-system,BlinkMacSystemFont,"SF Pro Display",Helvetica,Arial,sans-serif;overflow:hidden}
+.v{position:fixed;inset:0;display:none;flex-direction:column;align-items:center;padding:calc(70px + env(safe-area-inset-top)) 24px calc(60px + env(safe-area-inset-bottom))}
+.v.on{display:flex}
+#idle{justify-content:center;gap:18px;color:#555;font-size:15px;text-align:center}
+#idle button{background:#1c1c1e;color:#8e8e93;border:0;border-radius:14px;padding:16px 26px;font-size:17px}
+#idle.armed{color:#222}
+#idle.armed button{display:none}
+.av{width:118px;height:118px;border-radius:50%;background:linear-gradient(180deg,#a1a1a6,#636366);display:grid;place-items:center;font-size:44px;font-weight:600;margin-top:40px}
+.name{font-size:34px;font-weight:500;margin-top:20px;letter-spacing:-.01em}
+.sub{font-size:17px;color:#aeaeb2;margin-top:6px}
+.spacer{flex:1}
+.btns{display:flex;justify-content:space-between;width:100%;max-width:320px}
+.b{display:flex;flex-direction:column;align-items:center;gap:10px;font-size:14px;color:#ddd;background:none;border:0}
+.c{width:78px;height:78px;border-radius:50%;display:grid;place-items:center}
+.c svg{width:36px;height:36px;fill:#fff}
+.red{background:#ff3b30}.green{background:#34c759}
+.green{animation:pulse 1.4s infinite}
+@keyframes pulse{0%{box-shadow:0 0 0 0 rgba(52,199,89,.55)}100%{box-shadow:0 0 0 22px rgba(52,199,89,0)}}
+#call .btns{justify-content:center}
+.wave{display:flex;gap:6px;height:40px;align-items:center;margin-top:34px}
+.wave i{width:6px;border-radius:3px;background:#fff;height:8px;transition:height .12s}
+</style>
+</head>
+<body>
+<div class="v on" id="idle"><button id="arm">Tayyor</button><div id="msg"></div></div>
+
+<div class="v" id="ring">
+  <div class="sub">mobile</div>
+  <div class="av">iB</div>
+  <div class="name">iBek</div>
+  <div class="sub">qo'ng'iroq qilmoqda…</div>
+  <div class="spacer"></div>
+  <div class="btns">
+    <button class="b" id="decline"><div class="c red"><svg viewBox="0 0 24 24"><path d="M12 9c-1.6 0-3.15.25-4.6.72v3.1c0 .39-.23.74-.56.9-.98.49-1.87 1.12-2.66 1.85a1 1 0 0 1-1.4-.02L.29 13.08a1 1 0 0 1 0-1.41C3.34 8.77 7.46 7 12 7s8.66 1.77 11.71 4.67c.39.39.39 1.02 0 1.41l-2.48 2.48a1 1 0 0 1-1.4.02 11.3 11.3 0 0 0-2.67-1.85 1 1 0 0 1-.56-.9v-3.1C15.15 9.25 13.6 9 12 9z"/></svg></div>Rad etish</button>
+    <button class="b" id="accept"><div class="c green"><svg viewBox="0 0 24 24"><path d="M6.6 10.8a15.1 15.1 0 0 0 6.6 6.6l2.2-2.2a1 1 0 0 1 1-.25c1.1.37 2.3.57 3.6.57a1 1 0 0 1 1 1V20a1 1 0 0 1-1 1A17 17 0 0 1 3 4a1 1 0 0 1 1-1h3.5a1 1 0 0 1 1 1c0 1.25.2 2.45.57 3.57a1 1 0 0 1-.25 1z"/></svg></div>Javob berish</button>
+  </div>
+</div>
+
+<div class="v" id="call">
+  <div class="av" style="width:96px;height:96px;font-size:36px">iB</div>
+  <div class="name">iBek</div>
+  <div class="sub" id="timer">ulanmoqda…</div>
+  <div class="wave" id="wave"><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>
+  <div class="spacer"></div>
+  <div class="btns"><button class="b" id="hang"><div class="c red"><svg viewBox="0 0 24 24"><path d="M12 9c-1.6 0-3.15.25-4.6.72v3.1c0 .39-.23.74-.56.9-.98.49-1.87 1.12-2.66 1.85a1 1 0 0 1-1.4-.02L.29 13.08a1 1 0 0 1 0-1.41C3.34 8.77 7.46 7 12 7s8.66 1.77 11.71 4.67c.39.39.39 1.02 0 1.41l-2.48 2.48a1 1 0 0 1-1.4.02 11.3 11.3 0 0 0-2.67-1.85 1 1 0 0 1-.56-.9v-3.1C15.15 9.25 13.6 9 12 9z"/></svg></div>Tugatish</button></div>
+</div>
+
+<script type="module">
+const $ = s => document.querySelector(s);
+const K = new URLSearchParams(location.search).get('k') || '';
+const show = id => document.querySelectorAll('.v').forEach(v => v.classList.toggle('on', v.id === id));
+let ctx = null, ringNode = null, lastRing = 0, conv = null, t0 = 0, tick = null, wakeLock = null, ClientMod = null;
+
+// preload the ElevenLabs client
+const SRC = ['https://esm.sh/@elevenlabs/client', 'https://cdn.jsdelivr.net/npm/@elevenlabs/client/+esm'];
+async function loadClient() { for (const u of SRC) { try { return await import(u); } catch (e) { console.warn('client load failed', u); } } throw new Error('no client'); }
+loadClient().then(m => ClientMod = m).catch(() => {});
+
+async function arm() {
+  try { ctx = new (window.AudioContext || window.webkitAudioContext)(); await ctx.resume(); } catch {}
+  try { const st = await navigator.mediaDevices.getUserMedia({ audio: true }); st.getTracks().forEach(t => t.stop()); } catch { $('#msg').textContent = 'Mikrofonga ruxsat bering'; return; }
+  try { wakeLock = await navigator.wakeLock?.request('screen'); } catch {}
+  $('#idle').classList.add('armed'); $('#msg').textContent = '';
+  poll();
+}
+$('#arm').onclick = arm;
+
+function ringtone(on) {
+  if (!ctx) return;
+  if (!on) { if (ringNode) { ringNode.stop(); ringNode = null; } return; }
+  if (ringNode) return;
+  // classic double-ring pattern
+  const osc1 = ctx.createOscillator(), osc2 = ctx.createOscillator(), g = ctx.createGain();
+  osc1.frequency.value = 440; osc2.frequency.value = 480; osc1.connect(g); osc2.connect(g); g.connect(ctx.destination);
+  g.gain.value = 0; const now = ctx.currentTime;
+  for (let i = 0; i < 20; i++) { const b = now + i * 3; g.gain.setValueAtTime(.25, b); g.gain.setValueAtTime(0, b + .4); g.gain.setValueAtTime(.25, b + .6); g.gain.setValueAtTime(0, b + 1.0); }
+  osc1.start(); osc2.start();
+  ringNode = { stop: () => { try { osc1.stop(); osc2.stop(); } catch {} } };
+  if (navigator.vibrate) navigator.vibrate([400, 200, 400, 2000, 400, 200, 400, 2000, 400, 200, 400]);
+}
+
+async function poll() {
+  for (;;) {
+    if (!conv) {
+      try {
+        const j = await (await fetch('/api/live-ring?k=' + encodeURIComponent(K), { cache: 'no-store' })).json();
+        if (j.ring && j.ring !== lastRing && !document.querySelector('#ring.on')) { lastRing = j.ring; show('ring'); ringtone(true); }
+        if (!j.ring && document.querySelector('#ring.on')) { ringtone(false); show('idle'); }
+      } catch {}
+    }
+    await new Promise(r => setTimeout(r, 900));
+  }
+}
+
+$('#decline').onclick = () => { ringtone(false); navigator.vibrate?.(0); show('idle'); };
+$('#accept').onclick = async () => {
+  ringtone(false); navigator.vibrate?.(0); show('call'); $('#timer').textContent = 'ulanmoqda…';
+  try {
+    const { signedUrl } = await (await fetch('/api/live-token?k=' + encodeURIComponent(K))).json();
+    if (!ClientMod) ClientMod = await loadClient();
+    conv = await ClientMod.Conversation.startSession({
+      signedUrl,
+      onConnect: () => { t0 = Date.now(); tick = setInterval(() => { const s = Math.floor((Date.now() - t0) / 1000); $('#timer').textContent = String(Math.floor(s / 60)).padStart(2, '0') + ':' + String(s % 60).padStart(2, '0'); }, 500); },
+      onDisconnect: () => end(),
+      onError: (e) => { console.error(e); },
+      onModeChange: ({ mode }) => { document.querySelectorAll('#wave i').forEach(i => i.dataset.on = mode === 'speaking' ? '1' : ''); },
+    });
+    animate();
+  } catch (e) { console.error(e); $('#timer').textContent = 'Ulanib bo\'lmadi'; setTimeout(end, 2000); }
+};
+function animate() {
+  const bars = [...document.querySelectorAll('#wave i')];
+  const step = () => { if (!conv) return; bars.forEach(b => b.style.height = (b.dataset.on ? 8 + Math.random() * 32 : 8) + 'px'); setTimeout(step, 120); };
+  step();
+}
+async function end() {
+  clearInterval(tick); const c = conv; conv = null;
+  try { await c?.endSession(); } catch {}
+  $('#timer').textContent = 'Qo\'ng\'iroq tugadi';
+  setTimeout(() => show('idle'), 1500);
+}
+$('#hang').onclick = end;
+</script>
+</body>
+</html>

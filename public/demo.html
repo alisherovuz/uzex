@@ -30,6 +30,7 @@ small{color:#9aa1ab}
   <div class="row"><input id="pin" type="password" inputmode="numeric" placeholder="PIN" autocomplete="off"></div>
   <div class="row"><input id="to" type="tel" inputmode="tel" placeholder="Number (empty = presenter)" autocomplete="off"></div>
   <button id="go"><div><svg viewBox="0 0 24 24" fill="currentColor"><path d="M6.6 10.8a15.1 15.1 0 0 0 6.6 6.6l2.2-2.2a1 1 0 0 1 1-.25c1.1.37 2.3.57 3.6.57a1 1 0 0 1 1 1V20a1 1 0 0 1-1 1A17 17 0 0 1 3 4a1 1 0 0 1 1-1h3.5a1 1 0 0 1 1 1c0 1.25.2 2.45.57 3.57a1 1 0 0 1-.25 1z"/></svg><div>CALL</div></div></button>
+  <button id="app" style="height:52px;padding:0 26px;border-radius:999px;border:1.5px solid #111418;background:#fff;font:600 16px inherit;font-family:inherit;cursor:pointer">📱 App call (backup)</button>
   <div id="st"></div>
   <div id="log"></div>
   <small>Tap once. If nothing rings in ~10 s, tap again.</small>
@@ -61,6 +62,16 @@ $('#go').onclick = async () => {
     if (j.ok) { $('#st').className = 'ok'; $('#st').textContent = 'Calling now…'; if (j.conversation) status(j.conversation, pin); setTimeout(() => $('#go').disabled = false, 8000); }
     else { $('#st').className = 'err'; $('#st').textContent = j.reason || 'Failed'; $('#go').disabled = false; }
   } catch (e) { $('#st').className = 'err'; $('#st').textContent = 'Network error, tap again'; $('#go').disabled = false; }
+};
+
+$('#app').onclick = async () => {
+  const pin = $('#pin').value.trim(); try { localStorage.setItem('ibek-pin', pin); } catch {}
+  $('#st').className = ''; $('#st').textContent = 'Ringing the app…';
+  try {
+    const j = await (await fetch('/api/live-ring', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ pin }) })).json();
+    if (j.ok) { $('#st').className = 'ok'; $('#st').textContent = 'App is ringing (opens on ibek.space/live)'; }
+    else { $('#st').className = 'err'; $('#st').textContent = j.reason || 'Failed'; }
+  } catch { $('#st').className = 'err'; $('#st').textContent = 'Network error'; }
 };
 </script>
 </body>
