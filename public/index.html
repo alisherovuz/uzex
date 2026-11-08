@@ -350,12 +350,15 @@ async function ask(text, spoken = false) {
   card._thinking = true; $('#t').appendChild(card); scroll();
   history.push({ role: 'user', content: text });
   const t0 = performance.now(); let full = '';
+  const holder = document.createElement('button'); // temporary button target until actions exist
+  const sp = startSpeaker(holder);
   try {
     const r = await fetch('/api/chat', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ messages: history, lang: L }) });
     if (!r.ok) { const j = await r.json().catch(() => ({})); throw new Error(j.error || t('failed')); }
     const rd = r.body.getReader(), dec = new TextDecoder();
-    for (;;) { const { done, value } = await rd.read(); if (done) break; full += dec.decode(value, { stream: true }); render(card, full, false); }
+    for (;;) { const { done, value } = await rd.read(); if (done) break; full += dec.decode(value, { stream: true }); render(card, full, false); if (sp) sp.feed(plain(full)); }
     render(card, full, true);
+    if (sp) sp.feed(plain(full), true);
     if (!full.trim()) throw new Error(t('failed'));
     history.push({ role: 'assistant', content: full });
     const say = plain(full);
@@ -364,35 +367,66 @@ async function ask(text, spoken = false) {
     card.appendChild(acts);
     const lbtn = acts.querySelector('[data-a="listen"]');
     lbtn.onclick = () => play(say, lbtn);
+    if (sp && !sp.stopped && current === sp) { sp.btn = lbtn; playing = lbtn; setBtn(lbtn, sp.busy ? 'play' : 'loading'); if (!sp.busy && sp.idx >= sp.q.length) sp.finish(); }
     acts.querySelector('[data-a="copy"]').onclick = async e => { try { await navigator.clipboard.writeText(say); toast(t('copied')); } catch {} };
     scroll();
-    if (say && spoken) play(say, lbtn);
   } catch (err) {
-    history.pop(); card.classList.add('err'); card.querySelector('.ab').textContent = err.message;
+    if (sp) sp.stop(); history.pop(); card.classList.add('err'); card.querySelector('.ab').textContent = err.message;
   } finally { busy = false; sync(); }
 }
 
-// ---------- voice out (ElevenLabs only) ----------
-let audio = null, playing = null;
+// ---------- voice out (ElevenLabs, streamed sentence by sentence) ----------
+let current = null, playing = null;
 function setBtn(b, state) {
   if (!b) return;
   b.classList.toggle('on', state !== 'idle');
   b.innerHTML = state === 'idle' ? `${svgI(IC.speaker)}<span>${t('listen')}</span>` : state === 'loading' ? `<span class="dots"><i></i><i></i><i></i></span><span>${t('loading')}</span>` : `${svgI(IC.stopI)}<span>${t('stop')}</span>`;
 }
-function stopAudio() { if (audio) { audio.pause(); audio = null; } if (playing) { setBtn(playing, 'idle'); playing = null; } }
-async function play(text, btn) {
+function splitSentences(txt, final) {
+  // returns [complete sentences, rest]
+  const out = []; let rest = txt;
+  const re = /^([\s\S]*?[.!?…:;])(\s+|$)/;
+  for (;;) {
+    const m = rest.match(re);
+    if (!m || (!m[2] && !final)) break;
+    out.push(m[1]); rest = rest.slice(m[0].length);
+  }
+  return [out, rest];
+}
+class Speaker {
+  constructor(btn) { this.btn = btn; this.q = []; this.audios = []; this.idx = 0; this.said = 0; this.buf = ''; this.stopped = false; this.busy = false; this.done = false; setBtn(btn, 'loading'); }
+  feed(textSoFar, final = false) {
+    if (this.stopped) return;
+    const fresh = textSoFar.slice(this.said);
+    const [sents, rest] = splitSentences(this.buf + fresh, final);
+    this.said = textSoFar.length; this.buf = rest;
+    // merge very short sentences so each request has enough text
+    let pend = this._pend || '';
+    for (const x of sents) { pend = (pend ? pend + ' ' : '') + x.trim(); if (pend.length >= 40) { this.push(pend); pend = ''; } }
+    this._pend = pend;
+    if (final) { const tail = (pend + ' ' + rest).trim(); if (tail) this.push(tail); this._pend = ''; this.buf = ''; this.done = true; if (!this.q.length) this.finish(); }
+  }
+  push(text) { this.q.push(text); this.prefetch(); if (!this.busy) this.next(); }
+  prefetch() { for (let i = this.idx; i < Math.min(this.q.length, this.idx + 2); i++) if (!this.audios[i]) { const a = new Audio(`/api/tts?l=${L}&t=${encodeURIComponent(this.q[i])}`); a.preload = 'auto'; this.audios[i] = a; } }
+  next() {
+    if (this.stopped) return;
+    if (this.idx >= this.q.length) { this.busy = false; if (this.done) this.finish(); return; }
+    this.busy = true; this.prefetch();
+    const a = this.audios[this.idx];
+    a.onended = () => { this.idx++; this.next(); };
+    a.onerror = () => { if (this.idx === 0) toast(t('voiceOff')); this.idx++; this.next(); };
+    a.onplaying = () => setBtn(this.btn, 'play');
+    a.play().catch(() => { this.idx++; this.next(); });
+  }
+  finish() { if (playing === this.btn) { setBtn(this.btn, 'idle'); playing = null; } if (current === this) current = null; }
+  stop() { this.stopped = true; this.audios.forEach(a => { try { a.pause(); a.src = ''; } catch {} }); this.finish(); setBtn(this.btn, 'idle'); }
+}
+function stopAudio() { if (current) current.stop(); current = null; if (playing) { setBtn(playing, 'idle'); playing = null; } }
+function startSpeaker(btn) { stopAudio(); if (!tts) return null; current = new Speaker(btn); playing = btn; return current; }
+function play(text, btn) {
   const same = playing === btn; stopAudio(); if (same || !text) return;
   if (!tts) { toast(t('voiceOff')); return; }
-  playing = btn; setBtn(btn, 'loading');
-  try {
-    const r = await fetch('/api/tts', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ text }) });
-    if (!r.ok) throw 0;
-    const url = URL.createObjectURL(await r.blob());
-    if (playing !== btn) return;
-    audio = new Audio(url);
-    audio.onended = audio.onerror = () => { if (playing === btn) { setBtn(btn, 'idle'); playing = null; } };
-    setBtn(btn, 'play'); await audio.play();
-  } catch { if (playing === btn) { setBtn(btn, 'idle'); playing = null; toast(t('voiceOff')); } }
+  const sp = startSpeaker(btn); sp.feed(text, true);
 }
 
 // ---------- voice in ----------

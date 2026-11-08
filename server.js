@@ -43,11 +43,11 @@ const TYPES = { '.html': 'text/html; charset=utf-8', '.js': 'text/javascript; ch
 
 // simple per-IP rate limit: 30 questions / 10 min
 const hits = new Map();
-function limited(ip) {
+function limited(ip, max = 30) {
   const t = Date.now(), w = 10 * 60_000;
   const arr = (hits.get(ip) || []).filter((x) => t - x < w);
   arr.push(t); hits.set(ip, arr);
-  return arr.length > 30;
+  return arr.length > max;
 }
 
 async function readBody(req, max = 64_000) {
@@ -56,23 +56,28 @@ async function readBody(req, max = 64_000) {
   return s ? JSON.parse(s) : {};
 }
 
-async function tts(req, res) {
+async function tts(req, res, url) {
   const ip = (req.headers['x-forwarded-for'] || req.socket.remoteAddress || '').toString().split(',')[0].trim();
   if (!ttsReady()) { res.writeHead(503); return res.end(); }
-  if (limited('tts:' + ip)) { res.writeHead(429); return res.end(); }
-  let body;
-  try { body = await readBody(req); } catch { res.writeHead(400); return res.end(); }
-  const text = String(body.text || '').slice(0, 2500).trim();
+  if (limited('tts:' + ip, 200)) { res.writeHead(429); return res.end(); }
+  let text = '', lang = '';
+  if (req.method === 'GET') { text = url.searchParams.get('t') || ''; lang = url.searchParams.get('l') || ''; }
+  else { try { const b = await readBody(req); text = String(b.text || ''); lang = String(b.lang || ''); } catch { res.writeHead(400); return res.end(); } }
+  text = text.slice(0, 1200).trim();
   if (!text) { res.writeHead(400); return res.end(); }
-  const r = await fetch(`https://api.elevenlabs.io/v1/text-to-speech/${encodeURIComponent(EL.voice)}?output_format=mp3_44100_128`, {
+  // Uzbek needs eleven_v3; Russian/English use the much faster flash model
+  const isUz = lang === 'uz' || (!/[а-яё]/i.test(text) && /(o['‘’]|g['‘’]|\b(va|uchun|bilan|bu|narx|tonna|qiladi|emas)\b)/i.test(text));
+  const model = isUz ? EL.model : (process.env.ELEVENLABS_FAST_MODEL || 'eleven_flash_v2_5');
+  const r = await fetch(`https://api.elevenlabs.io/v1/text-to-speech/${encodeURIComponent(EL.voice)}/stream?output_format=mp3_44100_64`, {
     method: 'POST',
     headers: { 'xi-api-key': EL.key, 'content-type': 'application/json', accept: 'audio/mpeg' },
-    body: JSON.stringify({ text, model_id: EL.model }),
+    body: JSON.stringify({ text, model_id: model }),
   }).catch((e) => ({ ok: false, status: 502, text: async () => e.message }));
-  if (!r.ok) { console.error('tts error', r.status, (await r.text()).slice(0, 300)); res.writeHead(502); return res.end(); }
-  const buf = Buffer.from(await r.arrayBuffer());
-  res.writeHead(200, { 'content-type': 'audio/mpeg', 'content-length': buf.length, 'cache-control': 'no-store' });
-  res.end(buf);
+  if (!r.ok) { console.error('tts error', r.status, model, (await r.text()).slice(0, 300)); res.writeHead(502); return res.end(); }
+  res.writeHead(200, { 'content-type': 'audio/mpeg', 'cache-control': 'no-store', 'x-accel-buffering': 'no' });
+  const rd = r.body.getReader();
+  try { for (;;) { const { done, value } = await rd.read(); if (done) break; res.write(Buffer.from(value)); } } catch (e) { console.error('tts stream', e.message); }
+  res.end();
 }
 
 async function chat(req, res) {
@@ -127,7 +132,7 @@ http.createServer(async (req, res) => {
   const url = new URL(req.url, 'http://x');
   try {
     if (url.pathname === '/api/chat' && req.method === 'POST') return await chat(req, res);
-    if (url.pathname === '/api/tts' && req.method === 'POST') return await tts(req, res);
+    if (url.pathname === '/api/tts') return await tts(req, res, url);
     if (url.pathname === '/api/config') { res.writeHead(200, { 'content-type': 'application/json' }); return res.end(JSON.stringify({ phone: PHONE, ready: !!process.env.ANTHROPIC_API_KEY, tts: ttsReady() })); }
     if (url.pathname === '/health') { res.writeHead(200); return res.end('ok'); }
     let p = normalize(decodeURIComponent(url.pathname)).replace(/^(\.\.[/\\])+/, '');
