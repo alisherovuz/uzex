@@ -42,6 +42,24 @@ Why this beats "another assistant": the official agent is only one door. The ope
 - **Own agent (MCP)**: a person's own AI agent connects to iBek and uses the same tools.
 - The exact phone number is shown on the iBek website.
 
+## The pitch deck (PARVOZ presentation) — what the judges saw, slide by slide
+Style: black-and-white hand-drawn illustrations, almost no text. The story:
+1. A horse-headed car (Uriah Smith's 1899 "Horsey Horseless", US patent D30551): when cars arrived, people bolted a horse's head onto them. Bolting AI onto today's exchange terminal is the same mistake. Don't automate the past.
+2. A question mark over the exchange: what replaces terminals and brokers by 2035?
+3. iBek.
+4. A phone and a speech bubble: you just call or text.
+5. Search → handshake → truck → wrench: the agent handles the whole chain (find, deal, deliver, service), not only the bid.
+6. AI cost collapsing: GPT-3.5-level inference cost about $20 per million tokens in Nov 2022, $2 at gpt-3.5-turbo's launch (Mar 2023), $0.07 by Oct 2024 (Stanford AI Index 2025), about $0.05 for the cheapest GPT-3.5-class model in 2026 price tables, heading to about zero by 2035. Epoch AI (Sep 2026): the cost of a fixed AI capability falls about 13× per year.
+7. A head with a crossed-out thought cloud: the user doesn't need to think about exchange mechanics.
+8. A hand and a long queue walking into the exchange: iBek brings many new participants in.
+9. A wall with a door high up and broken ladders: today's exchange is hard to enter — under the UZEX trading rules (1 Jun 2026), clause 4 limits who can be a client and clause 240 bans scripts/bots.
+10. A farmer with a phone and an elderly man on a phone call: the target users — ordinary people who only need a phone.
+11. Two circles, 1,260,000 vs 4,700: Uzbekistan has about 1.26 million operating small businesses (Statistics Committee, 1 Oct 2026; incl. 357.9k individual entrepreneurs and 330.8k dekhkan farms), but UZEX gained only about 4,700 new clients on its exchange trading platforms in 2025 (30,100 across all its systems; Kursiv, 5 Feb 2026). The gap is the opportunity.
+12. Revenue bars: UZEX 2025 revenue UZS 444.5 billion. Illustrative iBek case: if 5% of small businesses join and each trades about UZS 120 million a year, with the agent and API free and fees charged only on new customers, UZEX gains about UZS 21 billion a year (+5%).
+13. iBek. Then a QR code to this website, and the references.
+Other context from the deck's references: Google I/O 2026 reported 3.2 quadrillion tokens per month across Google products; Visa (press release 18 Dec 2025) ran hundreds of controlled, real-world agent-initiated transactions; Google's Universal Commerce Protocol (Jan 2026) launched with Shopify, Walmart, Target, Visa, Mastercard and others; Gartner forecasts 90% of B2B buying will be agent-intermediated by 2028 (a forecast, not a measurement). UZEX tariffs from 1 Oct 2026: buyer 0.13%, seller 0.05%, clearing 0.05% per side, before VAT. The live demo call runs on iBek's simulated exchange; no real UZEX trade was executed.
+Note on fees: the deck's revenue case uses UZEX's existing tariffs on new customers' trades; the earlier team notes mention a 0.1% deal fee plus a subscription for iBek Agent as one possible model. If asked, explain both and say the final pricing is still open.
+
 ## The hackathon task (official brief from the organizers)
 Title: "The Exchange of 2035 — Reinvent UZEX". Imagine that by 2035 all traditional ideas about exchange trading are outdated: no trading terminals, complex interfaces, trading through brokers, or deep study of exchange mechanics. What replaced them? The task is NOT to improve the existing platform, build another AI assistant, or automate traditional processes. It is to use AI to create a fundamentally new model of how people and businesses interact with UZEX, starting from zero, without being limited by today's interfaces, roles or methods. Perhaps brokers are no longer needed; perhaps buyers and sellers find each other in a completely different way; perhaps AI changes how orders are formed, offers are found and deals are made. Key question: "If today's exchange trading system did not exist, how would you build it with AI?" Motto: "Don't automate the past. Reinvent the future of UZEX."
 The solution must meet three principles:

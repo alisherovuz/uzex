@@ -4,16 +4,17 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, interactive-widget=resizes-content">
 <meta name="theme-color" content="#ffffff">
+<link rel="preload" as="image" href="/logo.png">
 <title>iBek agent · UZEX</title>
 <meta name="description" content="iBek buys commodities on UZEX for you. Ask anything — by text or voice.">
-<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Cdefs%3E%3ClinearGradient id='g' x1='0' y1='0' x2='1' y2='1'%3E%3Cstop offset='0' stop-color='%2339b36b'/%3E%3Cstop offset='1' stop-color='%23198a4c'/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect width='64' height='64' rx='16' fill='url(%23g)'/%3E%3Ctext x='32' y='43' font-family='Helvetica,Arial' font-size='28' font-weight='700' text-anchor='middle' fill='%23fff'%3EiB%3C/text%3E%3C/svg%3E">
+<link rel="icon" href="/logo.png">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <style>
 :root{
-  --bg:#f7f8f8; --card:#fff; --text:#111418; --sub:#6b7280; --faint:#9aa1ab; --line:#eceef0; --soft:#f3f4f5;
-  --g:#1f8f52; --g2:#167a44; --gs:#e8f5ee; --gt:#1c7a47; --ink:#111418; --red:#d93025;
-  --shadow:0 1px 2px rgba(16,24,40,.04),0 8px 28px -6px rgba(16,24,40,.08);
+  --bg:#ffffff; --card:#fff; --text:#111418; --sub:#6b7280; --faint:#9aa1ab; --line:#eceef0; --soft:#f3f4f5;
+  --g:#111418; --g2:#000; --gs:#f3f4f5; --gt:#111418; --ink:#111418; --red:#d93025;
+  --shadow:0 1px 2px rgba(16,24,40,.03),0 10px 30px -12px rgba(16,24,40,.10);
   --font:"Inter",-apple-system,BlinkMacSystemFont,"Segoe UI",Helvetica,Arial,sans-serif;
 }
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
@@ -24,41 +25,34 @@ a{color:inherit;text-decoration:none}
 svg.i{width:18px;height:18px;flex:none}
 
 /* header */
-header{flex:none;height:72px;background:rgba(255,255,255,.9);backdrop-filter:saturate(180%) blur(16px);-webkit-backdrop-filter:saturate(180%) blur(16px);border-bottom:1px solid var(--line);display:grid;grid-template-columns:1fr auto 1fr;align-items:center;padding:0 24px;padding-top:env(safe-area-inset-top);position:relative;z-index:5}
-.brand{display:flex;align-items:center;gap:10px;font-size:23px;letter-spacing:-.03em}
+header{flex:none;height:64px;background:rgba(255,255,255,.92);backdrop-filter:saturate(180%) blur(16px);-webkit-backdrop-filter:saturate(180%) blur(16px);border-bottom:1px solid transparent;display:grid;grid-template-columns:1fr auto;align-items:center;padding:0 24px;padding-top:env(safe-area-inset-top);position:relative;z-index:5}
+.brand{display:flex;align-items:center}.lg{height:30px;width:auto;display:block}
 .logo{width:36px;height:36px;border-radius:10px;background:linear-gradient(135deg,#39b36b,#198a4c);display:grid;place-items:center;color:#fff;font-weight:700;font-size:15px;letter-spacing:-.02em;box-shadow:0 2px 6px -2px rgba(25,138,76,.5)}
-.brand b{font-weight:700}.brand span{color:var(--faint);font-weight:500}
+.brand b{font-weight:700}.brand span{display:none}
 .tag{font-size:11.5px;font-weight:600;letter-spacing:.06em;color:var(--sub);border:1px solid var(--line);border-radius:999px;padding:3px 9px;margin-left:4px}
 .seg{display:flex;background:var(--soft);border-radius:999px;padding:4px}
 .seg button{padding:8px 20px;border-radius:999px;font-weight:600;font-size:15px;color:var(--sub);transition:all .15s}
 .seg button.on{background:#fff;color:var(--text);box-shadow:0 1px 3px rgba(16,24,40,.1)}
 .right{display:flex;justify-content:flex-end;align-items:center;gap:10px}
-.round{width:42px;height:42px;border-radius:50%;display:grid;place-items:center;border:1px solid var(--line);background:#fff;color:var(--sub);transition:all .15s}
-.round.on{background:var(--gs);border-color:#cfe9da;color:var(--g)}
-.lang{height:42px;border:1px solid var(--line);border-radius:999px;background:#fff;padding:0 34px 0 16px;font-weight:600;font-size:14px;appearance:none;-webkit-appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%236b7280' stroke-width='2.5'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 13px center}
-@media(max-width:760px){header{grid-template-columns:auto 1fr;grid-template-areas:'b r' 's s';height:auto;row-gap:10px;padding:10px 14px 10px;padding-top:calc(10px + env(safe-area-inset-top))}.brand{grid-area:b;font-size:20px}.right{grid-area:r}.seg{grid-area:s;justify-self:stretch}.seg button{flex:1;padding:7px 10px;font-size:14px}.tag{display:none}.brand span{display:none}.round,.lang{height:38px}.round{width:38px}textarea{font-size:16px}}
+.round{width:40px;height:40px;border-radius:50%;display:grid;place-items:center;border:1px solid var(--line);background:#fff;color:var(--sub);transition:all .15s}
+.round.on{background:var(--gs);border-color:#111418;color:#111418}
+.lang{height:40px;border:1px solid var(--line);border-radius:999px;background:#fff;padding:0 34px 0 16px;font-weight:600;font-size:14px;appearance:none;-webkit-appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%236b7280' stroke-width='2.5'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 13px center}
+@media(max-width:760px){header{padding:0 14px;padding-top:env(safe-area-inset-top)}.brand{font-size:20px}textarea{font-size:16px}}
 
 main{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch}
 .col{max-width:720px;margin:0 auto;padding:28px 20px 28px}
 .view[hidden]{display:none}
 
 /* home */
-.home{padding-top:6vh;text-align:center}
-.home h1{font-size:clamp(30px,4.6vw,44px);line-height:1.1;letter-spacing:-.035em;font-weight:700;margin:0}
-.home p.lead{color:var(--sub);font-size:17px;margin:12px 0 0}
-.cards{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:36px;text-align:left}
-.sc{text-align:left;background:var(--card);border:1px solid var(--line);border-radius:18px;padding:16px 18px;display:flex;gap:14px;align-items:flex-start;transition:all .15s;box-shadow:0 1px 2px rgba(16,24,40,.03)}
-.sc:hover{border-color:#cfe9da;box-shadow:var(--shadow);transform:translateY(-1px)}
-.sc .ic{width:34px;height:34px;border-radius:10px;background:var(--gs);color:var(--g);display:grid;place-items:center;flex:none}
-.sc b{display:block;font-weight:600;font-size:15px;line-height:1.35}
-.sc small{display:block;color:var(--sub);font-size:13px;margin-top:2px}
-.reach{margin-top:14px;display:flex;align-items:center;justify-content:space-between;gap:12px;background:var(--card);border:1px solid var(--line);border-radius:18px;padding:14px 18px;text-align:left}
-.reach small{display:block;color:var(--sub);font-size:13px}
-.reach strong{font-size:17px;font-weight:600;letter-spacing:.01em}
-.reach .acts{display:flex;gap:8px}
-.pill{display:inline-flex;align-items:center;gap:7px;height:38px;padding:0 15px;border-radius:999px;font-weight:600;font-size:14px;border:1px solid var(--line);background:#fff}
-.pill.g{background:var(--g);border-color:var(--g);color:#fff}
-@media(max-width:600px){.cards{grid-template-columns:1fr}.reach{flex-direction:column;align-items:flex-start}}
+.home{padding-top:16vh;text-align:center}
+.hero-logo{height:92px;width:auto;display:block;margin:0 auto}
+.home h1{font-size:clamp(36px,6vw,56px);line-height:1.1;letter-spacing:-.035em;font-weight:700;margin:0}
+.home p.lead{color:var(--sub);font-size:17px;margin:18px 0 0}
+.sugg{display:flex;flex-wrap:wrap;justify-content:center;gap:10px;margin-top:34px}
+.sugg button{background:#fff;border:1px solid var(--line);border-radius:999px;padding:11px 18px;font-size:15px;font-weight:500;color:var(--text);transition:all .15s;box-shadow:0 1px 2px rgba(16,24,40,.03)}
+.sugg button:hover{border-color:#111418}
+.reach{margin-top:40px;color:var(--sub);font-size:15px}.reach .cs{height:46px;width:auto;opacity:.9}.reach p{margin:8px 0 0}
+.reach a{color:var(--text);font-weight:600;border-bottom:1px solid #c9ccd1}
 
 /* thread */
 .bar{display:flex;justify-content:space-between;align-items:center;margin-bottom:18px}
@@ -68,14 +62,14 @@ main{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch}
 .u div{background:var(--ink);color:#fff;border-radius:22px;padding:11px 20px;max-width:80%;font-size:16px;white-space:pre-wrap;word-wrap:break-word}
 .ans{background:var(--card);border:1px solid var(--line);border-radius:24px;box-shadow:var(--shadow);overflow:hidden;animation:rise .3s ease-out both}
 @keyframes rise{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
-.ab{padding:26px 28px 18px}
+.ab{padding:24px 28px 12px}
 .stat{margin-bottom:14px}
 .stat .v{font-size:52px;line-height:1;font-weight:800;letter-spacing:-.04em}
 .stat .l{color:var(--sub);font-size:15px;margin-top:8px}
 .txt{font-size:16.5px;line-height:1.65}
 .txt p{margin:0}.txt p+p,.txt p+ul,.txt ul+p{margin-top:10px}
 .txt ul,.txt ol{margin:8px 0 0;padding-left:22px}.txt li{margin:4px 0}
-.txt strong{color:var(--gt);font-weight:600}
+.txt strong{color:var(--text);font-weight:700}
 .pic{margin:16px 0 4px;border:1px solid var(--line);border-radius:16px;overflow:hidden;background:#fff;cursor:zoom-in}
 .pic img{display:block;width:100%;height:auto}
 .pic.loading{height:180px;display:grid;place-items:center;background:var(--soft);cursor:default;border:0}
@@ -83,13 +77,13 @@ main{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch}
 .chip{display:inline-flex;align-items:center;gap:6px;height:32px;padding:0 12px;border-radius:999px;font-size:13.5px;font-weight:600;background:var(--gs);color:var(--gt)}
 .chip.n{background:var(--soft);color:#3f4650}
 .chip svg{width:15px;height:15px}
-.acts2{display:flex;gap:6px;padding:10px 18px;border-top:1px solid var(--line)}
-.acts2 button{display:inline-flex;align-items:center;gap:8px;height:38px;padding:0 12px;border-radius:10px;font-weight:600;font-size:14.5px;color:#3f4650}
+.acts2{display:flex;gap:4px;padding:0 18px 14px}
+.acts2 button{display:inline-flex;align-items:center;gap:7px;height:34px;padding:0 10px;border-radius:10px;font-weight:500;font-size:14px;color:var(--sub)}
 .acts2 button:hover{background:var(--soft)}
 .acts2 button.on{color:var(--g)}
 .err .ab{color:var(--red)}
 .think{display:flex;align-items:center;gap:10px;color:var(--sub);font-size:15px}
-.dots{display:inline-flex;gap:4px}.dots i{width:7px;height:7px;border-radius:50%;background:var(--g);opacity:.35;animation:d 1.2s infinite}
+.dots{display:inline-flex;gap:4px}.dots i{width:7px;height:7px;border-radius:50%;background:#111418;opacity:.35;animation:d 1.2s infinite}
 .dots i:nth-child(2){animation-delay:.2s}.dots i:nth-child(3){animation-delay:.4s}
 @keyframes d{0%,60%,100%{opacity:.25}30%{opacity:1}}
 
@@ -113,7 +107,7 @@ main{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch}
 @media(max-width:600px){.tri,.split{grid-template-columns:1fr}}
 
 /* composer */
-footer{flex:none;padding:10px 16px calc(14px + env(safe-area-inset-bottom));background:linear-gradient(to top,var(--bg) 70%,rgba(247,248,248,0))}
+footer{flex:none;padding:10px 16px calc(14px + env(safe-area-inset-bottom));background:linear-gradient(to top,#fff 70%,rgba(255,255,255,0))}
 form{max-width:720px;margin:0 auto;display:flex;align-items:flex-end;gap:10px;background:#fff;border:1px solid var(--line);border-radius:30px;padding:9px 9px 9px 22px;box-shadow:0 2px 4px rgba(16,24,40,.03),0 14px 34px -10px rgba(16,24,40,.14)}
 textarea{flex:1;border:0;outline:0;resize:none;background:transparent;color:var(--text);font:17px/1.4 var(--font);padding:11px 0;max-height:150px}
 textarea::placeholder{color:var(--faint)}
@@ -123,7 +117,7 @@ textarea::placeholder{color:var(--faint)}
 .mic.on{background:#fde8e7;color:var(--red);animation:pulse 1.3s infinite}
 @keyframes pulse{0%{box-shadow:0 0 0 0 rgba(217,48,37,.35)}100%{box-shadow:0 0 0 12px rgba(217,48,37,0)}}
 .send{background:var(--g);color:#fff}
-.send:disabled{background:#cfe0d6;cursor:default}
+.send:disabled{background:#d6d9dd;cursor:default}
 .note{max-width:720px;margin:7px auto 0;text-align:center;color:var(--faint);font-size:12.5px;min-height:16px}
 
 .lb{position:fixed;inset:0;background:rgba(10,12,14,.9);z-index:50;display:none;align-items:center;justify-content:center;padding:24px;cursor:zoom-out}
@@ -135,14 +129,10 @@ textarea::placeholder{color:var(--faint)}
 <body>
 
 <header>
-  <a class="brand" href="#" id="home-link"><div class="logo">iB</div><b>iBek</b><span>agent</span><em class="tag">UZEX · 2035</em></a>
-  <nav class="seg" role="tablist">
-    <button class="on" data-tab="ask" data-t="tabAsk">Ask</button>
-    <button data-tab="how" data-t="tabHow">How it works</button>
-  </nav>
+  <a class="brand" href="#" id="home-link"><img src="/logo.png" alt="iBek" class="lg"></a>
   <div class="right">
-    <button class="round" id="auto" title="Read answers aloud" aria-label="Read answers aloud"><svg class="i" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 5 6 9H2v6h4l5 4zM15.5 8.5a5 5 0 0 1 0 7M19 5a10 10 0 0 1 0 14"/></svg></button>
-    <select class="lang" id="lang" aria-label="Language"><option value="uz">O'zbek</option><option value="en">English</option><option value="ru">Русский</option></select>
+    <button class="round" id="new" hidden aria-label="New chat"><svg class="i" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg></button>
+    <select class="lang" id="lang" aria-label="Language"><option value="uz">UZ</option><option value="en">EN</option><option value="ru">RU</option></select>
   </div>
 </header>
 
@@ -150,28 +140,14 @@ textarea::placeholder{color:var(--faint)}
   <!-- ASK -->
   <div class="col view" id="v-ask">
     <section class="home" id="home">
-      <h1 data-t="hello">What would you like to know about iBek?</h1>
-      <p class="lead" data-t="helloSub">Type or speak. Answers come in your language.</p>
-      <div class="cards" id="cards"></div>
-      <div class="reach">
-        <div><small data-t="reachLbl">Text or call iBek</small><strong data-phone data-t="noPhone">Number coming soon</strong></div>
-        <div class="acts" id="reach-acts" hidden>
-          <a class="pill" data-sms href="#"><svg class="i" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12a8 8 0 0 1-11.6 7.1L4 20l1-4.6A8 8 0 1 1 21 12z"/></svg>SMS</a>
-          <a class="pill g" data-tel href="#"><svg class="i" viewBox="0 0 24 24" fill="currentColor"><path d="M6.6 10.8a15.1 15.1 0 0 0 6.6 6.6l2.2-2.2a1 1 0 0 1 1-.25c1.1.37 2.3.57 3.6.57a1 1 0 0 1 1 1V20a1 1 0 0 1-1 1A17 17 0 0 1 3 4a1 1 0 0 1 1-1h3.5a1 1 0 0 1 1 1c0 1.25.2 2.45.57 3.57a1 1 0 0 1-.25 1z"/></svg><span data-t="call">Call</span></a>
-        </div>
-      </div>
+      <img src="/logo.png" alt="iBek" class="hero-logo">
+      <p class="lead" data-t="helloSub">Type or speak.</p>
+      <div class="sugg" id="cards"></div>
+      <div class="reach" id="reach" hidden><img src="/callsms.png" alt="" class="cs"><p><span data-t="reachLbl">Text or call</span> <a data-tel href="#" data-phone></a></p></div>
     </section>
-    <section id="thread" hidden>
-      <div class="bar">
-        <button id="back"><svg class="i" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="m15 18-6-6 6-6"/></svg><span data-t="home">Home</span></button>
-        <button class="new" id="new"><svg class="i" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg><span data-t="newChat">New chat</span></button>
-      </div>
-      <div id="t"></div>
-    </section>
+    <section id="thread" hidden><div id="t"></div></section>
   </div>
 
-  <!-- HOW -->
-  <div class="col view how" id="v-how" hidden></div>
 </main>
 
 <footer id="composer">
@@ -192,35 +168,12 @@ const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
 
 // ---------- i18n ----------
 const T = {
-  en: { tabAsk:'Ask', tabHow:'How it works', hello:'What would you like to know about iBek?', helloSub:'Type or speak. Answers come in your language.', ph:'Ask anything about iBek', reachLbl:'Text or call iBek', noPhone:'Number coming soon', call:'Call', home:'Home', newChat:'New chat', thinking:'Thinking', listen:'Listen', stop:'Stop', loading:'Preparing voice…', copy:'Copy', copied:'Copied', kb:'iBek knowledge base', listening:'Listening…', micOff:'Microphone access is off.', noSpeech:'Nothing heard. Try again.', voiceOff:'Voice is unavailable right now.', failed:'Not delivered. Try again.', picFail:'The picture could not be drawn. Ask again.', autoOn:'Answers will be read aloud', autoOff:'Read-aloud off', noMic:'Voice input works in Chrome, Edge and Safari.',
-    cards:[['Isn\'t this just another AI assistant?','What makes iBek different'],['Show the auction example as a picture','100 tonnes, four buyers, one price'],['What stops an agent from overspending?','Limits, reserves, confirmation'],['How does UZEX make money?','Fees and subscriptions']] },
-  uz: { tabAsk:'So\'rash', tabHow:'Qanday ishlaydi', hello:'iBek haqida nimani bilmoqchisiz?', helloSub:'Yozing yoki gapiring. Javob sizning tilingizda.', ph:'iBek haqida istalgan savol', reachLbl:'iBek\'ga SMS yozing yoki qo\'ng\'iroq qiling', noPhone:'Raqam tez orada', call:'Qo\'ng\'iroq', home:'Bosh sahifa', newChat:'Yangi suhbat', thinking:'O\'ylayapman', listen:'Tinglash', stop:'To\'xtatish', loading:'Ovoz tayyorlanmoqda…', copy:'Nusxa', copied:'Nusxalandi', kb:'iBek bilimlar bazasi', listening:'Tinglayapman…', micOff:'Mikrofonga ruxsat berilmagan.', noSpeech:'Hech narsa eshitilmadi. Qayta urinib ko\'ring.', voiceOff:'Ovoz hozircha mavjud emas.', failed:'Yuborilmadi. Qayta urinib ko\'ring.', picFail:'Rasm chizilmadi. Qayta so\'rang.', autoOn:'Javoblar ovozda o\'qiladi', autoOff:'Ovozli o\'qish o\'chirildi', noMic:'Ovozli kiritish Chrome, Edge va Safari\'da ishlaydi.',
-    cards:[['Bu oddiy AI yordamchi emasmi?','iBek nimasi bilan farq qiladi'],['Auksion misolini rasmda ko\'rsating','100 tonna, to\'rt xaridor, bitta narx'],['Agent ortiqcha pul sarflamasligini nima kafolatlaydi?','Limit, zaxira, tasdiqlash'],['UZEX bundan qanday daromad oladi?','Komissiya va obuna']] },
-  ru: { tabAsk:'Спросить', tabHow:'Как это работает', hello:'Что вы хотите узнать об iBek?', helloSub:'Пишите или говорите. Ответ — на вашем языке.', ph:'Спросите что угодно об iBek', reachLbl:'Напишите или позвоните iBek', noPhone:'Номер скоро появится', call:'Позвонить', home:'Главная', newChat:'Новый чат', thinking:'Думаю', listen:'Слушать', stop:'Стоп', loading:'Готовлю голос…', copy:'Копировать', copied:'Скопировано', kb:'База знаний iBek', listening:'Слушаю…', micOff:'Нет доступа к микрофону.', noSpeech:'Ничего не слышно. Попробуйте ещё раз.', voiceOff:'Голос сейчас недоступен.', failed:'Не доставлено. Попробуйте ещё раз.', picFail:'Не удалось нарисовать. Спросите ещё раз.', autoOn:'Ответы будут озвучены', autoOff:'Озвучка выключена', noMic:'Голосовой ввод работает в Chrome, Edge и Safari.',
-    cards:[['Это не просто ещё один AI-ассистент?','Чем iBek отличается'],['Покажите пример аукциона картинкой','100 тонн, четыре покупателя, одна цена'],['Что мешает агенту потратить лишнее?','Лимиты, резерв, подтверждение'],['Как UZEX на этом зарабатывает?','Комиссии и подписка']] },
-};
-const HOW = {
-  en: { k:'How it works', h:'iBek buys commodities on UZEX for you.', lead:'No terminal, no broker, no order book to watch. Say what you need — iBek does the rest.',
-    s1:'Say what you need', s1d:'By SMS, phone call or your own AI agent: "20 tonnes of cement, at most 980,000 so\'m a tonne."',
-    s2:'iBek places a sealed bid', s2d:'Money is reserved first. Nobody sees other bids. Arrival time doesn\'t matter.',
-    s3:'One price for every winner', s3d:'The round clears at once. Everyone who bid at least that price gets goods and pays the same.',
-    exK:'Worked example', exV:'$105', exL:'per tonne, for every winner', ex:[['40 t','Ali · bid $110'],['30 t','Bek · bid $105'],['30 t','Davron · bid $105']], exN:'Elena bid $100 — below the price, so her money is released.',
-    pK:'Built on three principles', p:[['Accessible','Talk or text in Uzbek, Russian or English. No training, no app.'],['Transparent','One rule anyone can say. Every round can be re-checked with Verify.'],['Safe','The engine, not the AI, enforces your limit. You confirm before a bid.']],
-    dK:'Two doors, one market', d:[['iBek Agent','For people without an agent — phone, SMS, Telegram.'],['iBek MCP','For people whose own agent (Claude, ChatGPT) already works for them.']], foot:'Prototype designed for 2035. Rounds and bidders are simulated; prices come from 500,000 real UZEX deals.' },
-  uz: { k:'Qanday ishlaydi', h:'iBek siz uchun UZEX\'da tovar sotib oladi.', lead:'Terminal ham, broker ham, kuzatib turish ham shart emas. Nima kerakligini ayting — qolganini iBek bajaradi.',
-    s1:'Nima kerakligini ayting', s1d:'SMS, qo\'ng\'iroq yoki o\'z AI agentingiz orqali: "20 tonna sement, tonnasi 980 ming so\'mdan oshmasin."',
-    s2:'iBek yopiq buyurtma beradi', s2d:'Avval pul zaxiraga olinadi. Boshqalarning buyurtmasi ko\'rinmaydi. Kim birinchi bo\'lgani ahamiyatsiz.',
-    s3:'Barcha g\'oliblar uchun bitta narx', s3d:'Raund bir vaqtda yopiladi. Shu narxdan kam bermagan har bir xaridor tovar oladi va bir xil to\'laydi.',
-    exK:'Misol', exV:'$105', exL:'tonnasi uchun, har bir g\'olibga', ex:[['40 t','Ali · taklif $110'],['30 t','Bek · taklif $105'],['30 t','Davron · taklif $105']], exN:'Elena $100 taklif qildi — narxdan past, puli qaytariladi.',
-    pK:'Uchta tamoyil asosida', p:[['Qulay','O\'zbek, rus yoki ingliz tilida gapiring yoki yozing. O\'rganish shart emas.'],['Shaffof','Hamma tushunadigan bitta qoida. Har bir raundni Verify bilan tekshirish mumkin.'],['Xavfsiz','Limitni AI emas, dvigatel tekshiradi. Buyurtmadan oldin siz tasdiqlaysiz.']],
-    dK:'Ikki eshik, bitta bozor', d:[['iBek Agent','Agenti yo\'qlar uchun — telefon, SMS, Telegram.'],['iBek MCP','O\'z agenti (Claude, ChatGPT) bor odamlar uchun.']], foot:'2035-yil uchun mo\'ljallangan prototip. Raundlar va xaridorlar simulyatsiya; narxlar 500 000 ta haqiqiy UZEX bitimidan.' },
-  ru: { k:'Как это работает', h:'iBek покупает товары на UZEX за вас.', lead:'Без терминала, брокера и наблюдения за стаканом. Скажите, что нужно, — остальное сделает iBek.',
-    s1:'Скажите, что нужно', s1d:'По SMS, звонком или через своего AI-агента: «20 тонн цемента, не дороже 980 000 сум за тонну».',
-    s2:'iBek подаёт закрытую заявку', s2d:'Сначала резервируются деньги. Чужие заявки не видны. Время подачи не важно.',
-    s3:'Одна цена для всех победителей', s3d:'Раунд закрывается разом. Все, кто предложил не меньше этой цены, получают товар и платят одинаково.',
-    exK:'Пример', exV:'$105', exL:'за тонну, для каждого победителя', ex:[['40 т','Али · ставка $110'],['30 т','Бек · ставка $105'],['30 т','Даврон · ставка $105']], exN:'Елена предложила $100 — ниже цены, её деньги возвращены.',
-    pK:'Три принципа', p:[['Доступно','Говорите или пишите на узбекском, русском или английском. Без обучения.'],['Прозрачно','Одно правило, понятное всем. Любой раунд можно перепроверить.'],['Безопасно','Лимит проверяет движок, а не AI. Вы подтверждаете заявку.']],
-    dK:'Две двери, один рынок', d:[['iBek Agent','Для тех, у кого нет агента — телефон, SMS, Telegram.'],['iBek MCP','Для тех, чей агент (Claude, ChatGPT) уже работает на них.']], foot:'Прототип, спроектированный для 2035 года. Раунды и участники симулированы; цены — из 500 000 реальных сделок UZEX.' },
+  en: { tabAsk:'Ask', tabHow:'How it works', hello:'Ask iBek.', helloSub:'Ask anything. Type or speak.', ph:'Ask anything about iBek', reachLbl:'Text or call', noPhone:'Number coming soon', call:'Call', home:'Home', newChat:'New chat', thinking:'Thinking', listen:'Listen', stop:'Stop', loading:'Preparing voice…', copy:'Copy', copied:'Copied', kb:'iBek knowledge base', listening:'Listening…', micOff:'Microphone access is off.', noSpeech:'Nothing heard. Try again.', voiceOff:'Voice is unavailable right now.', failed:'Not delivered. Try again.', picFail:'The picture could not be drawn. Ask again.', autoOn:'Answers will be read aloud', autoOff:'Read-aloud off', noMic:'Voice input works in Chrome, Edge and Safari.',
+    cards:['What is iBek?','Show how the price is set','Is it safe?'] },
+  uz: { tabAsk:'So\'rash', tabHow:'Qanday ishlaydi', hello:'iBek\'dan so\'rang.', helloSub:'Istalgan savol bering. Yozing yoki gapiring.', ph:'iBek haqida istalgan savol', reachLbl:'SMS yoki qo\'ng\'iroq:', noPhone:'Raqam tez orada', call:'Qo\'ng\'iroq', home:'Bosh sahifa', newChat:'Yangi suhbat', thinking:'O\'ylayapman', listen:'Tinglash', stop:'To\'xtatish', loading:'Ovoz tayyorlanmoqda…', copy:'Nusxa', copied:'Nusxalandi', kb:'iBek bilimlar bazasi', listening:'Tinglayapman…', micOff:'Mikrofonga ruxsat berilmagan.', noSpeech:'Hech narsa eshitilmadi. Qayta urinib ko\'ring.', voiceOff:'Ovoz hozircha mavjud emas.', failed:'Yuborilmadi. Qayta urinib ko\'ring.', picFail:'Rasm chizilmadi. Qayta so\'rang.', autoOn:'Javoblar ovozda o\'qiladi', autoOff:'Ovozli o\'qish o\'chirildi', noMic:'Ovozli kiritish Chrome, Edge va Safari\'da ishlaydi.',
+    cards:['iBek nima?','Narx qanday belgilanadi? Rasmda','Bu xavfsizmi?'] },
+  ru: { tabAsk:'Спросить', tabHow:'Как это работает', hello:'Спросите iBek.', helloSub:'Спросите что угодно. Пишите или говорите.', ph:'Спросите что угодно об iBek', reachLbl:'SMS или звонок:', noPhone:'Номер скоро появится', call:'Позвонить', home:'Главная', newChat:'Новый чат', thinking:'Думаю', listen:'Слушать', stop:'Стоп', loading:'Готовлю голос…', copy:'Копировать', copied:'Скопировано', kb:'База знаний iBek', listening:'Слушаю…', micOff:'Нет доступа к микрофону.', noSpeech:'Ничего не слышно. Попробуйте ещё раз.', voiceOff:'Голос сейчас недоступен.', failed:'Не доставлено. Попробуйте ещё раз.', picFail:'Не удалось нарисовать. Спросите ещё раз.', autoOn:'Ответы будут озвучены', autoOff:'Озвучка выключена', noMic:'Голосовой ввод работает в Chrome, Edge и Safari.',
+    cards:['Что такое iBek?','Покажите, как формируется цена','Это безопасно?'] },
 };
 let L = 'uz';
 try { L = localStorage.getItem('ibek-ui') || ((navigator.language || '').toLowerCase().startsWith('ru') ? 'ru' : (navigator.language || '').toLowerCase().startsWith('en') ? 'en' : 'uz'); } catch {}
@@ -235,35 +188,15 @@ function applyLang() {
   document.documentElement.lang = L; $('#lang').value = L;
   $$('[data-t]').forEach(e => { if (e.hasAttribute('data-phone') && phone) return; e.textContent = t(e.dataset.t); });
   $('#q').placeholder = t('ph');
-  $('#cards').innerHTML = T[L].cards.map((c, i) => `<button class="sc" data-ask="${esc(c[0])}"><div class="ic"><svg class="i" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">${ICONS[i]}</svg></div><div><b>${esc(c[0])}</b><small>${esc(c[1])}</small></div></button>`).join('');
-  renderHow();
+  $('#cards').innerHTML = T[L].cards.map(c => `<button data-ask="${esc(c)}">${esc(c)}</button>`).join('');
   $$('.acts2 [data-a="listen"]').forEach(b => { if (!b.classList.contains('on')) b.querySelector('span').textContent = t('listen'); });
   $$('.acts2 [data-a="copy"] span').forEach(s => s.textContent = t('copy'));
 }
-function renderHow() {
-  const h = HOW[L];
-  $('#v-how').innerHTML = `
-    <p class="kicker">${h.k}</p><h2>${h.h}</h2><p class="lead">${h.lead}</p>
-    <div class="box"><div class="steps">${[[h.s1,h.s1d],[h.s2,h.s2d],[h.s3,h.s3d]].map((s,i)=>`<div class="step"><div class="n">${i+1}</div><div><b>${s[0]}</b><span>${s[1]}</span></div></div>`).join('')}</div></div>
-    <div class="box"><p class="kicker">${h.exK}</p><div class="big"><div class="v">${h.exV}</div><div class="l">${h.exL}</div></div>
-      <div class="split">${h.ex.map(e=>`<div><b>${e[0]}</b><small>${e[1]}</small></div>`).join('')}</div>
-      <p style="color:var(--sub);font-size:14.5px;margin:14px 0 0">${h.exN}</p></div>
-    <div class="box"><p class="kicker">${h.pK}</p><div class="tri">${h.p.map((p,i)=>`<div><div class="sc" style="padding:0;border:0;box-shadow:none"><div class="ic"><svg class="i" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">${[ICONS[0],'<circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/>',ICONS[2]][i]}</svg></div></div><b>${p[0]}</b><span>${p[1]}</span></div>`).join('')}</div></div>
-    <div class="box"><p class="kicker">${h.dK}</p><div class="steps">${h.d.map((d,i)=>`<div class="step"><div class="n">${i+1}</div><div><b>${d[0]}</b><span>${d[1]}</span></div></div>`).join('')}</div></div>
-    <p style="color:var(--faint);font-size:13px;text-align:center;margin:18px 0 6px">${h.foot}</p>`;
-}
 $('#lang').onchange = e => { L = e.target.value; try { localStorage.setItem('ibek-ui', L); } catch {} applyLang(); };
 
-// ---------- tabs / views ----------
-function tab(name) {
-  $$('.seg button').forEach(b => b.classList.toggle('on', b.dataset.tab === name));
-  $('#v-ask').hidden = name !== 'ask'; $('#v-how').hidden = name !== 'how';
-  $('#main').scrollTop = 0;
-}
-$$('.seg button').forEach(b => b.onclick = () => tab(b.dataset.tab));
-const showThread = on => { $('#home').hidden = on; $('#thread').hidden = !on; };
-function resetChat() { stopAudio(); history.length = 0; $('#t').innerHTML = ''; showThread(false); tab('ask'); }
-$('#back').onclick = () => { showThread(false); $('#main').scrollTop = 0; };
+// ---------- views ----------
+const showThread = on => { $('#home').hidden = on; $('#thread').hidden = !on; $('#new').hidden = !on; };
+function resetChat() { stopAudio(); history.length = 0; $('#t').innerHTML = ''; showThread(false); $('#main').scrollTop = 0; }
 $('#new').onclick = resetChat;
 $('#home-link').onclick = e => { e.preventDefault(); resetChat(); };
 document.addEventListener('click', e => { const b = e.target.closest('[data-ask]'); if (b) ask(b.dataset.ask); });
@@ -275,8 +208,8 @@ fetch('/api/config').then(r => r.json()).then(c => {
   if (phone) {
     const d = phone.replace(/[^\d+]/g, '');
     $$('[data-phone]').forEach(e => e.textContent = phone);
-    $$('[data-sms]').forEach(a => a.href = 'sms:' + d); $$('[data-tel]').forEach(a => a.href = 'tel:' + d);
-    $('#reach-acts').hidden = false;
+    $$('[data-tel]').forEach(a => a.href = 'tel:' + d);
+    $('#reach').hidden = false;
   }
 }).catch(() => {});
 
@@ -321,7 +254,8 @@ const plain = full => parse(full).filter(s => s.k === 'text').map(s => s.v.repla
 const svgUrl = svg => 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(svg);
 function nfmt(v) { const a = Math.abs(v); if (a >= 1e12) return +(v / 1e12).toFixed(1) + 'T'; if (a >= 1e9) return +(v / 1e9).toFixed(1) + 'B'; if (a >= 1e6) return +(v / 1e6).toFixed(a >= 1e7 ? 1 : 2) + 'M'; if (a >= 1e4) return +(v / 1e3).toFixed(0) + 'k'; return +(+v).toFixed(2) + ''; }
 function niceMax(v) { if (v <= 0) return 1; const p = Math.pow(10, Math.floor(Math.log10(v))); for (const m of [1, 1.2, 1.5, 2, 2.5, 3, 4, 5, 6, 8, 10]) if (m * p >= v) return m * p; return 10 * p; }
-const PAL = ['#1f8f52', '#111418', '#9aa1ab', '#7cc59a'];
+const PAL = ['url(#h0)', '#111418', 'url(#h1)', '#ffffff'];
+const HATCH = '<defs><pattern id="h0" width="7" height="7" patternUnits="userSpaceOnUse" patternTransform="rotate(45)"><rect width="7" height="7" fill="#fff"/><line x1="0" y1="0" x2="0" y2="7" stroke="#111418" stroke-width="1.4"/></pattern><pattern id="h1" width="6" height="6" patternUnits="userSpaceOnUse"><rect width="6" height="6" fill="#fff"/><circle cx="3" cy="3" r="1" fill="#111418"/></pattern></defs>';
 const FONT = 'Inter, -apple-system, Helvetica, Arial, sans-serif';
 function chartSvg(c) {
   const labels = (c.labels || []).map(String), series = (c.series || []).filter(s => Array.isArray(s.values));
@@ -338,26 +272,26 @@ function chartSvg(c) {
       const gh = multi ? series.length * 16 + 10 : 24, bh = multi ? 12 : 22;
       body += `<text x="${x0 - 12}" y="${y + gh / 2 + 5}" text-anchor="end" font-size="14" fill="#111418">${esc(l)}</text>`;
       series.forEach((s, j) => { const v = +s.values[i] || 0, w = Math.max(2, (x1 - x0) * v / max), by = y + (multi ? 5 + j * 16 : 1);
-        body += `<rect x="${x0}" y="${by}" width="${w}" height="${bh}" rx="${bh / 2.5}" fill="${PAL[j % 4]}"/><text x="${x0 + w + 8}" y="${by + bh / 2 + 4.5}" font-size="${multi ? 11.5 : 13}" fill="#3f4650">${nfmt(v)}</text>`; });
+        body += `<rect x="${x0}" y="${by}" width="${w}" height="${bh}" rx="3" fill="${PAL[j % 4]}" stroke="#111418" stroke-width="1.6"/><text x="${x0 + w + 8}" y="${by + bh / 2 + 4.5}" font-size="${multi ? 11.5 : 13}" fill="#3f4650">${nfmt(v)}</text>`; });
       y += multi ? gh + 12 : 38;
     });
     H = y + noteH + 12;
   } else {
     H = 400 + legendH;
     const x0 = 64, x1 = W - 24, y0 = top + legendH + 10, y1 = H - 48 - noteH;
-    for (let k = 0; k <= 4; k++) { const v = max * k / 4, y = y1 - (y1 - y0) * k / 4; body += `<line x1="${x0}" x2="${x1}" y1="${y}" y2="${y}" stroke="#eceef0"/><text x="${x0 - 10}" y="${y + 4}" text-anchor="end" font-size="12" fill="#9aa1ab">${nfmt(v)}</text>`; }
+    for (let k = 0; k <= 4; k++) { const v = max * k / 4, y = y1 - (y1 - y0) * k / 4; body += `${k === 0 ? `<line x1="${x0 - 4}" x2="${x1}" y1="${y}" y2="${y}" stroke="#111418" stroke-width="1.6"/>` : `<line x1="${x0}" x2="${x1}" y1="${y}" y2="${y}" stroke="#eceef0"/>`}<text x="${x0 - 10}" y="${y + 4}" text-anchor="end" font-size="12" fill="#9aa1ab">${nfmt(v)}</text>`; }
     const n = labels.length, step = (x1 - x0) / n;
     labels.forEach((l, i) => body += `<text x="${x0 + step * (i + .5)}" y="${y1 + 22}" text-anchor="middle" font-size="${n > 8 ? 11 : 13}" fill="#3f4650">${esc(l.length > 14 ? l.slice(0, 13) + '…' : l)}</text>`);
     if (type === 'line') series.forEach((s, j) => { const pts = s.values.map((v, i) => [x0 + step * (i + .5), y1 - (y1 - y0) * (+v || 0) / max]);
-      body += `<polyline fill="none" stroke="${PAL[j % 4]}" stroke-width="3" stroke-linejoin="round" stroke-linecap="round" points="${pts.map(p => p.join(',')).join(' ')}"/>`;
-      pts.forEach((p, i) => body += `<circle cx="${p[0]}" cy="${p[1]}" r="4.5" fill="#fff" stroke="${PAL[j % 4]}" stroke-width="2.5"/>` + (multi ? '' : `<text x="${p[0]}" y="${p[1] - 12}" text-anchor="middle" font-size="12" fill="#111418">${nfmt(+s.values[i] || 0)}</text>`)); });
+      body += `<polyline fill="none" stroke="${['#111418','#111418','#6b7280','#9aa1ab'][j % 4]}" stroke-dasharray="${j ? '6 5' : 'none'}" stroke-width="3" stroke-linejoin="round" stroke-linecap="round" points="${pts.map(p => p.join(',')).join(' ')}"/>`;
+      pts.forEach((p, i) => body += `<circle cx="${p[0]}" cy="${p[1]}" r="4.5" fill="#fff" stroke="#111418" stroke-width="2"/>` + (multi ? '' : `<text x="${p[0]}" y="${p[1] - 12}" text-anchor="middle" font-size="12" fill="#111418">${nfmt(+s.values[i] || 0)}</text>`)); });
     else { const gw = step * .66, bw = gw / series.length;
       labels.forEach((l, i) => series.forEach((s, j) => { const v = +s.values[i] || 0, h = (y1 - y0) * v / max, x = x0 + step * i + (step - gw) / 2 + j * bw;
-        body += `<rect x="${x + 2}" y="${y1 - h}" width="${bw - 4}" height="${h}" rx="5" fill="${PAL[j % 4]}"/>`;
+        body += `<rect x="${x + 2}" y="${y1 - h}" width="${bw - 4}" height="${h}" rx="2" fill="${PAL[j % 4]}" stroke="#111418" stroke-width="1.8"/>`;
         if (series.length <= 2) body += `<text x="${x + bw / 2}" y="${y1 - h - 7}" text-anchor="middle" font-size="12" fill="#111418">${nfmt(v)}</text>`; })); }
   }
-  let legend = ''; if (multi) { let lx = 24; series.forEach((s, j) => { legend += `<rect x="${lx}" y="${top - 4}" width="10" height="10" rx="5" fill="${PAL[j % 4]}"/><text x="${lx + 16}" y="${top + 5}" font-size="13" fill="#3f4650">${esc(s.name)}</text>`; lx += 34 + String(s.name || '').length * 7.5; }); }
-  return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${W} ${H}" width="${W}" height="${H}" font-family="${FONT}"><rect width="100%" height="100%" fill="#fff"/><text x="24" y="34" font-size="18" font-weight="600" fill="#111418">${esc(c.title || '')}</text>`
+  let legend = ''; if (multi) { let lx = 24; series.forEach((s, j) => { legend += `<rect x="${lx}" y="${top - 5}" width="12" height="12" rx="2" fill="${PAL[j % 4]}" stroke="#111418" stroke-width="1.2"/><text x="${lx + 16}" y="${top + 5}" font-size="13" fill="#3f4650">${esc(s.name)}</text>`; lx += 34 + String(s.name || '').length * 7.5; }); }
+  return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${W} ${H}" width="${W}" height="${H}" font-family="${FONT}">${HATCH}<rect width="100%" height="100%" fill="#fff"/><text x="24" y="34" font-size="18" font-weight="600" fill="#111418">${esc(c.title || '')}</text>`
     + (c.unit ? `<text x="${W - 24}" y="34" text-anchor="end" font-size="12" fill="#9aa1ab">${esc(c.unit)}</text>` : '') + legend + body
     + noteLines.map((l, k) => `<text x="24" y="${H - 14 - (noteLines.length - 1 - k) * 15}" font-size="11" fill="#9aa1ab">${esc(l)}</text>`).join('') + '</svg>';
 }
@@ -408,7 +342,7 @@ function render(card, full, final) {
 
 async function ask(text, spoken = false) {
   if (busy) return;
-  busy = true; tab('ask'); showThread(true); stopAudio();
+  busy = true; showThread(true); stopAudio();
   q.value = ''; sync();
   const u = document.createElement('div'); u.className = 'u'; u.innerHTML = `<div>${esc(text)}</div>`; $('#t').appendChild(u);
   const card = document.createElement('div'); card.className = 'ans';
@@ -424,10 +358,6 @@ async function ask(text, spoken = false) {
     render(card, full, true);
     if (!full.trim()) throw new Error(t('failed'));
     history.push({ role: 'assistant', content: full });
-    const secs = ((performance.now() - t0) / 1000).toFixed(1).replace('.', L === 'en' ? '.' : ',');
-    const chips = document.createElement('div'); chips.className = 'chips';
-    chips.innerHTML = `<span class="chip">${svgI(IC.check, 2.6)}${t('kb')}</span><span class="chip n">${svgI(IC.clock)}${secs} s</span>`;
-    card.querySelector('.ab').appendChild(chips);
     const say = plain(full);
     const acts = document.createElement('div'); acts.className = 'acts2';
     acts.innerHTML = `<button data-a="listen">${svgI(IC.speaker)}<span>${t('listen')}</span></button><button data-a="copy">${svgI(IC.copy)}<span>${t('copy')}</span></button>`;
@@ -436,17 +366,14 @@ async function ask(text, spoken = false) {
     lbtn.onclick = () => play(say, lbtn);
     acts.querySelector('[data-a="copy"]').onclick = async e => { try { await navigator.clipboard.writeText(say); toast(t('copied')); } catch {} };
     scroll();
-    if (say && (spoken || autoRead)) play(say, lbtn);
+    if (say && spoken) play(say, lbtn);
   } catch (err) {
     history.pop(); card.classList.add('err'); card.querySelector('.ab').textContent = err.message;
   } finally { busy = false; sync(); }
 }
 
 // ---------- voice out (ElevenLabs only) ----------
-let audio = null, playing = null, autoRead = false;
-try { autoRead = localStorage.getItem('ibek-auto') === '1'; } catch {}
-const autoBtn = $('#auto'); autoBtn.classList.toggle('on', autoRead);
-autoBtn.onclick = () => { autoRead = !autoRead; autoBtn.classList.toggle('on', autoRead); try { localStorage.setItem('ibek-auto', autoRead ? '1' : '0'); } catch {} toast(t(autoRead ? 'autoOn' : 'autoOff')); };
+let audio = null, playing = null;
 function setBtn(b, state) {
   if (!b) return;
   b.classList.toggle('on', state !== 'idle');
