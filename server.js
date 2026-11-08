@@ -8,6 +8,8 @@ const ROOT = new URL('./public/', import.meta.url).pathname;
 const KNOWLEDGE = readFileSync(new URL('./knowledge.md', import.meta.url), 'utf8');
 const MODEL = process.env.CLAUDE_MODEL || 'claude-sonnet-5-5';
 const PHONE = process.env.IBEK_PHONE || '';
+const EL = { key: process.env.ELEVENLABS_API_KEY, voice: process.env.ELEVENLABS_VOICE_ID, model: process.env.ELEVENLABS_MODEL || 'eleven_v3' };
+const ttsReady = () => !!(EL.key && EL.voice);
 
 const SYSTEM = `You are the iBek assistant on the iBek website. Hackathon judges and visitors use you to ask the questions they could not ask during the team's 3-minute pitch.
 
@@ -18,6 +20,14 @@ Answer from the knowledge base below. Rules:
 - Use numbers and the worked example when they help.
 - Be honest: iBek is a prototype designed for 2035. If something is planned, an estimate, or still an open question, say so. If the knowledge base does not cover something, say you don't know and suggest asking the team; never invent facts, figures, partners or prices.
 - Always call the project iBek (never "Aniq").
+- You can show visuals. You are not limited to text. When a chart or diagram would make the answer clearer, or the user asks for a picture, graph, infographic or diagram, include ONE visual block after a short text answer (1-2 sentences). Never say you cannot show pictures.
+  Chart: a fenced block with language "chart" containing JSON only:
+  \`\`\`chart
+  {"type":"bar|hbar|line","title":"short title","unit":"unit label","labels":["A","B"],"series":[{"name":"series","values":[1,2]}],"note":"source or caption"}
+  \`\`\`
+  Use hbar for long category names, line for change over time, bar for comparisons. Numbers must come from the knowledge base or simple arithmetic on it; never invent data.
+  Diagram or infographic: a fenced block with language "svg" containing one complete <svg> with xmlns="http://www.w3.org/2000/svg", viewBox="0 0 640 400" (height can vary up to 640), a white background rect, font-family="-apple-system, Helvetica, Arial, sans-serif", generous spacing, at most 3 colors (#007aff blue, #1c1c1e near-black, #8e8e93 gray, plus #34c759 green or #ff3b30 red only to mean good/bad). No scripts, no external images or fonts. Keep the SVG compact (under about 60 elements) so it finishes quickly. Keep text short (labels, not paragraphs) and make sure no text overlaps or overflows its box. Good uses: the auction worked example, the two doors flow, the round lifecycle (open → sealed bids → clear at one price → verify), how limits protect the user.
+  Write the text part in the user's language; labels inside visuals may use the same language.
 - The iBek phone number for SMS and calls: ${PHONE || 'shown on this website'}.
 
 <knowledge_base>
@@ -41,6 +51,25 @@ async function readBody(req, max = 64_000) {
   return s ? JSON.parse(s) : {};
 }
 
+async function tts(req, res) {
+  const ip = (req.headers['x-forwarded-for'] || req.socket.remoteAddress || '').toString().split(',')[0].trim();
+  if (!ttsReady()) { res.writeHead(503); return res.end(); }
+  if (limited('tts:' + ip)) { res.writeHead(429); return res.end(); }
+  let body;
+  try { body = await readBody(req); } catch { res.writeHead(400); return res.end(); }
+  const text = String(body.text || '').slice(0, 2500).trim();
+  if (!text) { res.writeHead(400); return res.end(); }
+  const r = await fetch(`https://api.elevenlabs.io/v1/text-to-speech/${encodeURIComponent(EL.voice)}?output_format=mp3_44100_128`, {
+    method: 'POST',
+    headers: { 'xi-api-key': EL.key, 'content-type': 'application/json', accept: 'audio/mpeg' },
+    body: JSON.stringify({ text, model_id: EL.model }),
+  }).catch((e) => ({ ok: false, status: 502, text: async () => e.message }));
+  if (!r.ok) { console.error('tts error', r.status, (await r.text()).slice(0, 300)); res.writeHead(502); return res.end(); }
+  const buf = Buffer.from(await r.arrayBuffer());
+  res.writeHead(200, { 'content-type': 'audio/mpeg', 'content-length': buf.length, 'cache-control': 'no-store' });
+  res.end(buf);
+}
+
 async function chat(req, res) {
   const ip = (req.headers['x-forwarded-for'] || req.socket.remoteAddress || '').toString().split(',')[0].trim();
   if (limited(ip)) { res.writeHead(429, { 'content-type': 'application/json' }); return res.end(JSON.stringify({ error: 'Too many questions — please wait a few minutes.' })); }
@@ -55,7 +84,7 @@ async function chat(req, res) {
   const upstream = await fetch('https://api.anthropic.com/v1/messages', {
     method: 'POST',
     headers: { 'content-type': 'application/json', 'x-api-key': process.env.ANTHROPIC_API_KEY, 'anthropic-version': '2023-06-01' },
-    body: JSON.stringify({ model: MODEL, max_tokens: 1024, stream: true, system: [{ type: 'text', text: SYSTEM, cache_control: { type: 'ephemeral' } }], messages }),
+    body: JSON.stringify({ model: MODEL, max_tokens: 6000, stream: true, system: [{ type: 'text', text: SYSTEM, cache_control: { type: 'ephemeral' } }], messages }),
   }).catch((e) => ({ ok: false, status: 502, text: async () => e.message }));
 
   if (!upstream.ok) {
@@ -92,7 +121,8 @@ http.createServer(async (req, res) => {
   const url = new URL(req.url, 'http://x');
   try {
     if (url.pathname === '/api/chat' && req.method === 'POST') return await chat(req, res);
-    if (url.pathname === '/api/config') { res.writeHead(200, { 'content-type': 'application/json' }); return res.end(JSON.stringify({ phone: PHONE, ready: !!process.env.ANTHROPIC_API_KEY })); }
+    if (url.pathname === '/api/tts' && req.method === 'POST') return await tts(req, res);
+    if (url.pathname === '/api/config') { res.writeHead(200, { 'content-type': 'application/json' }); return res.end(JSON.stringify({ phone: PHONE, ready: !!process.env.ANTHROPIC_API_KEY, tts: ttsReady() })); }
     if (url.pathname === '/health') { res.writeHead(200); return res.end('ok'); }
     let p = normalize(decodeURIComponent(url.pathname)).replace(/^(\.\.[/\\])+/, '');
     if (p.endsWith('/')) p += 'index.html';

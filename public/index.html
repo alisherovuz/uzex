@@ -51,7 +51,15 @@ main{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch}
 .b.tail.me::after{content:"";position:absolute;right:-10px;bottom:0;width:10px;height:14px;background:var(--bg);border-bottom-left-radius:8px}
 .b.err{background:transparent;color:#ff3b30;border:1px solid rgba(255,59,48,.35)}
 .b.err::before,.b.err::after{display:none}
-.meta{align-self:flex-end;color:var(--sub);font-size:11px;margin:3px 4px 0}
+.meta{align-self:flex-start;color:var(--sub);font-size:11px;margin:3px 0 0 6px}
+.meta button{color:var(--sub);font-size:11px}
+.meta button.on{color:var(--me)}
+.pic{align-self:flex-start;margin-top:4px;max-width:min(76%,520px);border-radius:18px;overflow:hidden;background:#fff;border:.5px solid var(--line);cursor:zoom-in;animation:in .22s ease-out both}
+.pic img{display:block;width:100%;height:auto}
+.pic.loading{width:220px;height:140px;display:grid;place-items:center;background:var(--them);border:0;cursor:default}
+.lb{position:fixed;inset:0;background:rgba(0,0,0,.92);z-index:50;display:none;align-items:center;justify-content:center;padding:24px;cursor:zoom-out}
+.lb.open{display:flex}
+.lb img{max-width:100%;max-height:100%;background:#fff;border-radius:12px}
 @keyframes in{from{opacity:0;transform:translateY(4px) scale(.98)}to{opacity:1;transform:none}}
 
 .dots{display:inline-flex;gap:4px;padding:5px 2px}
@@ -104,6 +112,7 @@ textarea::placeholder{color:var(--sub)}
   </form>
   <div class="note" id="note"></div>
 </footer>
+<div class="lb" id="lb"><img alt=""></div>
 
 <script>
 const $ = s => document.querySelector(s);
@@ -169,6 +178,128 @@ q.addEventListener('input', sync);
 q.addEventListener('keydown', e => { if (e.key === 'Enter' && !e.shiftKey && !e.isComposing) { e.preventDefault(); $('#f').requestSubmit(); } });
 $('#f').addEventListener('submit', e => { e.preventDefault(); const v = q.value.trim(); if (v) ask(v); });
 
+// ---------- answers: text + visuals ----------
+function parse(full) {
+  // split into text and ```chart / ```svg blocks; an unclosed block is "pending"
+  const out = []; const re = /```(chart|svg)\s*\n?([\s\S]*?)(```|$)/g; let i = 0, m;
+  while ((m = re.exec(full))) {
+    if (m.index > i) out.push({ k: 'text', v: full.slice(i, m.index) });
+    out.push({ k: m[1], v: m[2], done: m[3] === '```' });
+    i = re.lastIndex;
+  }
+  if (i < full.length) out.push({ k: 'text', v: full.slice(i) });
+  return out.map(x => x.k === 'text' ? { ...x, v: clean(x.v).replace(/```\w*$/, '').trim() } : x).filter(x => x.k !== 'text' || x.v);
+}
+const svgUrl = svg => 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(svg);
+const xesc = s => String(s ?? '').replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+function nfmt(v) {
+  const a = Math.abs(v);
+  if (a >= 1e12) return +(v / 1e12).toFixed(1) + 'T';
+  if (a >= 1e9) return +(v / 1e9).toFixed(1) + 'B';
+  if (a >= 1e6) return +(v / 1e6).toFixed(a >= 1e7 ? 1 : 2) + 'M';
+  if (a >= 1e4) return +(v / 1e3).toFixed(0) + 'k';
+  return +(+v).toFixed(2) + '';
+}
+function niceMax(v) { if (v <= 0) return 1; const p = Math.pow(10, Math.floor(Math.log10(v))); for (const m of [1, 1.2, 1.5, 2, 2.5, 3, 4, 5, 6, 8, 10]) if (m * p >= v) return m * p; return 10 * p; }
+const PAL = ['#007aff', '#1c1c1e', '#8e8e93', '#34c759'];
+const FONT = '-apple-system, BlinkMacSystemFont, Helvetica, Arial, sans-serif';
+function chartSvg(c) {
+  const labels = (c.labels || []).map(String), series = (c.series || []).filter(s => Array.isArray(s.values));
+  if (!labels.length || !series.length) throw new Error('empty chart');
+  const type = c.type || 'bar', W = 640, top = 64, multi = series.length > 1;
+  const noteLines = []; if (c.note) { let cur = ''; for (const w of String(c.note).split(/\s+/)) { if ((cur + ' ' + w).trim().length > 98) { noteLines.push(cur); cur = w; } else cur = (cur + ' ' + w).trim(); } if (cur) noteLines.push(cur); }
+  const legendH = multi ? 26 : 0, noteH = noteLines.length ? 12 + noteLines.length * 15 : 0;
+  let body = '', H;
+  const max = niceMax(Math.max(...series.flatMap(s => s.values.map(Number).filter(isFinite)), 0));
+  if (type === 'hbar') {
+    const rowH = 38, lw = Math.min(220, 12 + Math.max(...labels.map(l => l.length)) * 7.4), x0 = 24 + lw, x1 = W - 70;
+    H = top + legendH + labels.length * rowH * (multi ? series.length * .6 + .4 : 1) + noteH + 20;
+    let y = top + legendH;
+    labels.forEach((l, i) => {
+      const gh = multi ? series.length * 16 + 10 : 24, bh = multi ? 12 : 22;
+      body += `<text x="${x0 - 12}" y="${y + gh / 2 + 5}" text-anchor="end" font-size="14" fill="#1c1c1e">${xesc(l)}</text>`;
+      series.forEach((s, j) => {
+        const v = +s.values[i] || 0, w = Math.max(2, (x1 - x0) * v / max), by = y + (multi ? 5 + j * 16 : 1);
+        body += `<rect x="${x0}" y="${by}" width="${w}" height="${bh}" rx="${bh / 2.5}" fill="${PAL[j % 4]}"/>`;
+        body += `<text x="${x0 + w + 8}" y="${by + bh / 2 + 4.5}" font-size="${multi ? 11.5 : 13}" fill="#3a3a3c">${nfmt(v)}</text>`;
+      });
+      y += multi ? gh + 12 : rowH;
+    });
+    H = y + noteH + 12;
+  } else {
+    H = 400 + legendH;
+    const x0 = 64, x1 = W - 24, y0 = top + legendH + 10, y1 = H - 48 - noteH;
+    for (let k = 0; k <= 4; k++) {
+      const v = max * k / 4, y = y1 - (y1 - y0) * k / 4;
+      body += `<line x1="${x0}" x2="${x1}" y1="${y}" y2="${y}" stroke="#e5e5ea"/><text x="${x0 - 10}" y="${y + 4}" text-anchor="end" font-size="12" fill="#8e8e93">${nfmt(v)}</text>`;
+    }
+    const n = labels.length, step = (x1 - x0) / n;
+    labels.forEach((l, i) => body += `<text x="${x0 + step * (i + .5)}" y="${y1 + 22}" text-anchor="middle" font-size="${n > 8 ? 11 : 13}" fill="#3a3a3c">${xesc(l.length > 14 ? l.slice(0, 13) + '…' : l)}</text>`);
+    if (type === 'line') {
+      series.forEach((s, j) => {
+        const pts = s.values.map((v, i) => [x0 + step * (i + .5), y1 - (y1 - y0) * (+v || 0) / max]);
+        body += `<polyline fill="none" stroke="${PAL[j % 4]}" stroke-width="3" stroke-linejoin="round" stroke-linecap="round" points="${pts.map(p => p.join(',')).join(' ')}"/>`;
+        pts.forEach((p, i) => body += `<circle cx="${p[0]}" cy="${p[1]}" r="4.5" fill="#fff" stroke="${PAL[j % 4]}" stroke-width="2.5"/>` + (multi ? '' : `<text x="${p[0]}" y="${p[1] - 12}" text-anchor="middle" font-size="12" fill="#1c1c1e">${nfmt(+s.values[i] || 0)}</text>`));
+      });
+    } else {
+      const gw = step * .66, bw = gw / series.length;
+      labels.forEach((l, i) => series.forEach((s, j) => {
+        const v = +s.values[i] || 0, h = (y1 - y0) * v / max, x = x0 + step * i + (step - gw) / 2 + j * bw;
+        body += `<rect x="${x + 2}" y="${y1 - h}" width="${bw - 4}" height="${h}" rx="5" fill="${PAL[j % 4]}"/>`;
+        if (!multi || series.length <= 2) body += `<text x="${x + bw / 2}" y="${y1 - h - 7}" text-anchor="middle" font-size="12" fill="#1c1c1e">${nfmt(v)}</text>`;
+      }));
+    }
+  }
+  let legend = '';
+  if (multi) { let lx = 24; series.forEach((s, j) => { legend += `<rect x="${lx}" y="${top - 4}" width="10" height="10" rx="5" fill="${PAL[j % 4]}"/><text x="${lx + 16}" y="${top + 5}" font-size="13" fill="#3a3a3c">${xesc(s.name)}</text>`; lx += 34 + String(s.name || '').length * 7.5; }); }
+  return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${W} ${H}" width="${W}" height="${H}" font-family="${FONT}"><rect width="100%" height="100%" fill="#fff"/>`
+    + `<text x="24" y="34" font-size="18" font-weight="600" fill="#1c1c1e">${xesc(c.title || '')}</text>`
+    + (c.unit ? `<text x="${W - 24}" y="34" text-anchor="end" font-size="12" fill="#8e8e93">${xesc(c.unit)}</text>` : '')
+    + legend + body
+    + noteLines.map((l, k) => `<text x="24" y="${H - 14 - (noteLines.length - 1 - k) * 15}" font-size="11" fill="#8e8e93">${xesc(l)}</text>`).join('') + '</svg>';
+}
+function visualUrl(seg) {
+  if (seg.k === 'chart') return svgUrl(chartSvg(JSON.parse(seg.v)));
+  let svg = seg.v.trim();
+  if (!/^<svg[\s>]/i.test(svg)) throw new Error('bad svg');
+  if (!/xmlns=/.test(svg)) svg = svg.replace(/^<svg/i, '<svg xmlns="http://www.w3.org/2000/svg"');
+  return svgUrl(svg);
+}
+const lb = $('#lb');
+lb.onclick = () => lb.classList.remove('open');
+
+function renderAnswer(group, full, final = false) {
+  // group: {els: []}; re-render all parts of this answer
+  const segs = parse(full).map(x => final && x.k !== 'text' ? { ...x, done: true } : x);
+  segs.forEach((seg, idx) => {
+    let el = group.els[idx];
+    const isPic = seg.k !== 'text';
+    if (el && (el.dataset.kind === 'pic') !== isPic) { el.remove(); el = null; }
+    if (!el) {
+      if (isPic) { el = document.createElement('div'); el.className = 'pic loading'; el.dataset.kind = 'pic'; el.innerHTML = '<span class="dots"><i></i><i></i><i></i></span>'; }
+      else { el = document.createElement('div'); el.className = 'b them'; el.dataset.kind = 'text'; }
+      if (idx === 0) el.style.marginTop = '12px';
+      const anchor = group.els[idx - 1] || group.start;
+      anchor.after(el); group.els[idx] = el;
+    }
+    if (!isPic) el.textContent = seg.v;
+    else if (seg.done && !el.dataset.ok) {
+      try {
+        const url = visualUrl(seg), img = new Image(); img.alt = 'Chart'; img.src = url;
+        img.onerror = () => { el.className = 'b them'; el.dataset.kind = 'text'; el.onclick = null; el.textContent = '(The picture could not be drawn. Ask again.)'; };
+        el.className = 'pic'; el.innerHTML = ''; el.appendChild(img); el.dataset.ok = '1';
+        el.onclick = () => { lb.querySelector('img').src = url; lb.classList.add('open'); };
+      } catch { el.className = 'b them'; el.dataset.kind = 'text'; el.textContent = '(The picture could not be drawn. Ask again.)'; el.dataset.ok = '1'; }
+    }
+  });
+  // tails: last text bubble only
+  group.els.forEach(e => e.classList?.remove('tail'));
+  const lastText = [...group.els].reverse().find(e => e.dataset.kind === 'text');
+  if (lastText && group.els[group.els.length - 1] === lastText) lastText.classList.add('tail');
+  scroll();
+}
+const speakable = full => parse(full).filter(s => s.k === 'text').map(s => s.v).join(' ').trim();
+
 async function ask(text, spoken = false) {
   if (busy) return;
   busy = true;
@@ -176,23 +307,43 @@ async function ask(text, spoken = false) {
   q.value = ''; sync();
   add('me', text);
   history.push({ role: 'user', content: text });
-  const el = add('them', '<span class="dots"><i></i><i></i><i></i></span>', { html: true });
+  const typing = add('them', '<span class="dots"><i></i><i></i><i></i></span>', { html: true });
+  const group = { start: typing, els: [] };
   let full = '';
   try {
     const r = await fetch('/api/chat', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ messages: history }) });
     if (!r.ok) { const j = await r.json().catch(() => ({})); throw new Error(j.error || 'Not delivered. Try again.'); }
     const rd = r.body.getReader(), dec = new TextDecoder();
+    let first = true;
     for (;;) {
       const { done, value } = await rd.read(); if (done) break;
       full += dec.decode(value, { stream: true });
-      el.textContent = clean(full); scroll();
+      if (first && parse(full).length) {
+        first = false;
+        const marker = document.createElement('span'); marker.style.display = 'none';
+        typing.replaceWith(marker); group.start = marker;
+      }
+      if (!first) renderAnswer(group, full);
     }
+    if (!first) renderAnswer(group, full, true);
     if (!full.trim()) throw new Error('Not delivered. Try again.');
     history.push({ role: 'assistant', content: full });
-    if (spoken) speak(clean(full));
+    lastSide = 'them'; lastEl = group.els[group.els.length - 1];
+    const say = speakable(full);
+    if (say) {
+      const meta = document.createElement('div'); meta.className = 'meta';
+      const b = document.createElement('button'); b.type = 'button'; b.textContent = 'Play';
+      b.onclick = () => play(say, b);
+      meta.appendChild(b); (lastEl || group.start).after(meta); lastEl = meta; scroll();
+      if (spoken) play(say, b);
+    }
   } catch (err) {
     history.pop();
-    el.classList.add('err'); el.textContent = err.message;
+    const el = group.els[0] || typing;
+    if (!el.isConnected) group.start.after(el);
+    el.classList?.add('err'); el.className = 'b them err'; el.textContent = err.message;
+    group.els.slice(1).forEach(e => e.remove());
+    lastSide = 'them'; lastEl = el;
   } finally {
     busy = false;
   }
@@ -212,7 +363,7 @@ if (!SR) { mic.hidden = true; langBtn.hidden = true; }
 
 mic.onclick = () => {
   if (on) { rec.stop(); return; }
-  if ('speechSynthesis' in window) speechSynthesis.cancel();
+  stopAudio();
   rec = new SR(); rec.lang = LANGS[li][1]; rec.interimResults = true; rec.continuous = false;
   rec.onstart = () => { on = true; mic.classList.add('on'); note.textContent = 'Listening…'; };
   rec.onresult = e => { let s = ''; for (const r of e.results) s += r[0].transcript; q.value = s; q.style.height = 'auto'; q.style.height = Math.min(q.scrollHeight, 132) + 'px'; };
@@ -225,12 +376,38 @@ mic.onclick = () => {
   try { rec.start(); } catch {}
 };
 
-function speak(text) {
-  if (!('speechSynthesis' in window)) return;
+let tts = false, audio = null, playingBtn = null;
+fetch('/api/config').then(r => r.json()).then(c => tts = !!c.tts).catch(() => {});
+function stopAudio() {
+  if (audio) { audio.pause(); audio = null; }
+  if ('speechSynthesis' in window) speechSynthesis.cancel();
+  if (playingBtn) { playingBtn.textContent = 'Play'; playingBtn.classList.remove('on'); playingBtn = null; }
+}
+async function play(text, btn) {
+  const was = playingBtn === btn;
+  stopAudio();
+  if (was) return;
+  playingBtn = btn; btn.classList.add('on'); btn.textContent = 'Loading…';
+  const done = () => { if (playingBtn === btn) { btn.textContent = 'Play'; btn.classList.remove('on'); playingBtn = null; } };
+  if (tts) {
+    try {
+      const r = await fetch('/api/tts', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ text }) });
+      if (!r.ok) throw 0;
+      const url = URL.createObjectURL(await r.blob());
+      if (playingBtn !== btn) return;
+      audio = new Audio(url); audio.onended = done; audio.onerror = done;
+      btn.textContent = 'Stop';
+      await audio.play();
+      return;
+    } catch { if (playingBtn !== btn) return; }
+  }
+  if (!('speechSynthesis' in window)) return done();
   const u = new SpeechSynthesisUtterance(text);
   u.lang = /[а-яё]/i.test(text) ? 'ru-RU' : LANGS[li][1];
   const v = speechSynthesis.getVoices().find(v => v.lang.toLowerCase().startsWith(u.lang.slice(0, 2)));
   if (v) u.voice = v;
+  u.onend = done; u.onerror = done;
+  btn.textContent = 'Stop';
   speechSynthesis.speak(u);
 }
 </script>
