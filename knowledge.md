@@ -40,7 +40,8 @@ Why this beats "another assistant": the official agent is only one door. The ope
 - **SMS**: the person texts the same number in plain words (Uzbek, Russian or English), e.g. "I need 20 tonnes of cement, at most 980,000 so'm per tonne." The agent replies, confirms, places the bid and texts back the result.
 - iBek can also call the user (outbound) — for example to take an order or report a result.
 - **Own agent (MCP)**: a person's own AI agent connects to iBek and uses the same tools.
-- The exact phone number is shown on the iBek website.
+- The iBek phone number is +998 50 783 56 82 (calls in Uzbek; the voice is the founder Nurbek's cloned voice).
+- On the website, a judge can type their own number and press "Call me": iBek's voice agent phones them within seconds, lists the open lots, takes an order by voice, and calls back with the result when the round clears. This is live in the MVP (ElevenLabs voice agent over a Zadarma SIP line, connected to the auction engine).
 
 ## The pitch deck (PARVOZ presentation) — what the judges saw, slide by slide
 Style: black-and-white hand-drawn illustrations, almost no text. The story:

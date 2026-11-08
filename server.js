@@ -80,6 +80,29 @@ async function tts(req, res, url) {
   res.end();
 }
 
+function normPhone(p) {
+  const d = String(p || '').replace(/\D/g, '');
+  if (/^998\d{9}$/.test(d)) return '+' + d;
+  if (/^\d{9}$/.test(d)) return '+998' + d;
+  if (/^\d{10,15}$/.test(d) && String(p).trim().startsWith('+')) return '+' + d;
+  return null;
+}
+async function call(req, res) {
+  const ip = (req.headers['x-forwarded-for'] || req.socket.remoteAddress || '').toString().split(',')[0].trim();
+  const send = (code, o) => { res.writeHead(code, { 'content-type': 'application/json' }); res.end(JSON.stringify(o)); };
+  if (limited('call:' + ip, 4)) return send(429, { ok: false, reason: 'rate' });
+  let b; try { b = await readBody(req); } catch { return send(400, { ok: false }); }
+  const phone = normPhone(b.phone);
+  if (!phone) return send(200, { ok: false, reason: 'phone' });
+  const base = process.env.AUCTION_URL || 'https://aniq-auksion.livops.app';
+  try {
+    const r = await fetch(base + '/api/voice/call', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ phone, buyer: 'web:' + phone.slice(1), name: 'iBek web' }) });
+    const j = await r.json().catch(() => ({}));
+    console.log('call', phone.slice(0, 7) + '…', j.ok ? 'ok' : 'fail', j.reason || '');
+    return send(200, { ok: !!j.ok, reason: j.ok ? undefined : 'upstream', detail: j.reason });
+  } catch (e) { console.error('call error', e.message); return send(200, { ok: false, reason: 'upstream' }); }
+}
+
 async function chat(req, res) {
   const ip = (req.headers['x-forwarded-for'] || req.socket.remoteAddress || '').toString().split(',')[0].trim();
   if (limited(ip)) { res.writeHead(429, { 'content-type': 'application/json' }); return res.end(JSON.stringify({ error: 'Too many questions — please wait a few minutes.' })); }
@@ -133,6 +156,7 @@ http.createServer(async (req, res) => {
   try {
     if (url.pathname === '/api/chat' && req.method === 'POST') return await chat(req, res);
     if (url.pathname === '/api/tts') return await tts(req, res, url);
+    if (url.pathname === '/api/call' && req.method === 'POST') return await call(req, res);
     if (url.pathname === '/api/config') { res.writeHead(200, { 'content-type': 'application/json' }); return res.end(JSON.stringify({ phone: PHONE, ready: !!process.env.ANTHROPIC_API_KEY, tts: ttsReady() })); }
     if (url.pathname === '/health') { res.writeHead(200); return res.end('ok'); }
     let p = normalize(decodeURIComponent(url.pathname)).replace(/^(\.\.[/\\])+/, '');

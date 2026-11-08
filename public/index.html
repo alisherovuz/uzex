@@ -37,21 +37,30 @@ header{flex:none;height:64px;background:rgba(255,255,255,.92);backdrop-filter:sa
 .round{width:40px;height:40px;border-radius:50%;display:grid;place-items:center;border:1px solid var(--line);background:#fff;color:var(--sub);transition:all .15s}
 .round.on{background:var(--gs);border-color:#111418;color:#111418}
 .lang{height:40px;border:1px solid var(--line);border-radius:999px;background:#fff;padding:0 34px 0 16px;font-weight:600;font-size:14px;appearance:none;-webkit-appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%236b7280' stroke-width='2.5'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 13px center}
-@media(max-width:760px){header{padding:0 14px;padding-top:env(safe-area-inset-top)}.brand{font-size:20px}textarea{font-size:16px}}
+@media(max-width:760px){.home{padding-top:12vh}.callbox button{padding:0 16px;font-size:15px}.callbox input{font-size:17px}header{padding:0 14px;padding-top:env(safe-area-inset-top)}.brand{font-size:20px}textarea{font-size:16px}}
 
 main{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch}
 .col{max-width:720px;margin:0 auto;padding:28px 20px 28px}
 .view[hidden]{display:none}
 
 /* home */
-.home{padding-top:16vh;text-align:center}
-.hero-logo{height:92px;width:auto;display:block;margin:0 auto}
+.home{padding-top:22vh;text-align:center}
+
+.callbox{display:flex;align-items:center;gap:8px;max-width:480px;margin:0 auto;background:#fff;border:1.5px solid #111418;border-radius:999px;padding:6px 6px 6px 8px;box-shadow:0 10px 30px -14px rgba(16,24,40,.25)}
+.cb-ic{width:42px;height:42px;border-radius:50%;background:#111418;color:#fff;display:grid;place-items:center;flex:none}.cb-ic svg{width:20px;height:20px}
+.callbox input{flex:1;min-width:0;border:0;outline:0;font:600 19px var(--font);letter-spacing:.02em;color:var(--text);background:transparent;padding:8px 4px}
+.callbox input::placeholder{color:#b9bdc4;font-weight:500}
+.callbox button{height:46px;padding:0 22px;border-radius:999px;background:#111418;color:#fff;font-weight:600;font-size:16px;white-space:nowrap}
+.callbox button:disabled{opacity:.5}
+.callbox.ok{border-color:#111418;background:#f3f4f5}
+.callnote{color:var(--sub);font-size:15px;margin:14px 0 0;min-height:22px}
+.callnote.err{color:var(--red)}
 .home h1{font-size:clamp(36px,6vw,56px);line-height:1.1;letter-spacing:-.035em;font-weight:700;margin:0}
 .home p.lead{color:var(--sub);font-size:17px;margin:18px 0 0}
-.sugg{display:flex;flex-wrap:wrap;justify-content:center;gap:10px;margin-top:34px}
+.sugg{display:flex;flex-wrap:wrap;justify-content:center;gap:10px;margin-top:40px}
 .sugg button{background:#fff;border:1px solid var(--line);border-radius:999px;padding:11px 18px;font-size:15px;font-weight:500;color:var(--text);transition:all .15s;box-shadow:0 1px 2px rgba(16,24,40,.03)}
 .sugg button:hover{border-color:#111418}
-.reach{margin-top:40px;color:var(--sub);font-size:15px}.reach .cs{height:46px;width:auto;opacity:.9}.reach p{margin:8px 0 0}
+.reach{margin-top:34px;color:var(--sub);font-size:15px}
 .reach a{color:var(--text);font-weight:600;border-bottom:1px solid #c9ccd1}
 
 /* thread */
@@ -140,10 +149,14 @@ textarea::placeholder{color:var(--faint)}
   <!-- ASK -->
   <div class="col view" id="v-ask">
     <section class="home" id="home">
-      <img src="/logo.png" alt="iBek" class="hero-logo">
-      <p class="lead" data-t="helloSub">Type or speak.</p>
+      <form class="callbox" id="callf" autocomplete="off">
+        <div class="cb-ic"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M6.6 10.8a15.1 15.1 0 0 0 6.6 6.6l2.2-2.2a1 1 0 0 1 1-.25c1.1.37 2.3.57 3.6.57a1 1 0 0 1 1 1V20a1 1 0 0 1-1 1A17 17 0 0 1 3 4a1 1 0 0 1 1-1h3.5a1 1 0 0 1 1 1c0 1.25.2 2.45.57 3.57a1 1 0 0 1-.25 1z"/></svg></div>
+        <input id="cphone" type="tel" inputmode="tel" placeholder="+998 __ ___ __ __" aria-label="Phone">
+        <button type="submit" id="cbtn" data-t="callMe">Call me</button>
+      </form>
+      <p class="callnote" id="callnote" data-t="callNote">iBek will call you and take your order by voice.</p>
       <div class="sugg" id="cards"></div>
-      <div class="reach" id="reach" hidden><img src="/callsms.png" alt="" class="cs"><p><span data-t="reachLbl">Text or call</span> <a data-tel href="#" data-phone></a></p></div>
+      <p class="reach" id="reach" hidden><span data-t="reachLbl">Text or call</span> <a data-tel href="#" data-phone></a></p>
     </section>
     <section id="thread" hidden><div id="t"></div></section>
   </div>
@@ -168,11 +181,11 @@ const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
 
 // ---------- i18n ----------
 const T = {
-  en: { tabAsk:'Ask', tabHow:'How it works', hello:'Ask iBek.', helloSub:'Ask anything. Type or speak.', ph:'Ask anything about iBek', reachLbl:'Text or call', noPhone:'Number coming soon', call:'Call', home:'Home', newChat:'New chat', thinking:'Thinking', listen:'Listen', stop:'Stop', loading:'Preparing voice…', copy:'Copy', copied:'Copied', kb:'iBek knowledge base', listening:'Listening…', micOff:'Microphone access is off.', noSpeech:'Nothing heard. Try again.', voiceOff:'Voice is unavailable right now.', failed:'Not delivered. Try again.', picFail:'The picture could not be drawn. Ask again.', autoOn:'Answers will be read aloud', autoOff:'Read-aloud off', noMic:'Voice input works in Chrome, Edge and Safari.',
+  en: { tabAsk:'Ask', callMe:'Call me', callNote:'iBek will call you and take your order by voice.', calling:'Calling you now. Pick up!', callBad:'Enter a number like +998 90 123 45 67', callFail:'The call could not start. Try again in a minute.', tabHow:'How it works', hello:'Ask iBek.', helloSub:'Ask anything. Type or speak.', ph:'Ask anything', reachLbl:'Or text / call iBek:', noPhone:'Number coming soon', call:'Call', home:'Home', newChat:'New chat', thinking:'Thinking', listen:'Listen', stop:'Stop', loading:'Preparing voice…', copy:'Copy', copied:'Copied', kb:'iBek knowledge base', listening:'Listening…', micOff:'Microphone access is off.', noSpeech:'Nothing heard. Try again.', voiceOff:'Voice is unavailable right now.', failed:'Not delivered. Try again.', picFail:'The picture could not be drawn. Ask again.', autoOn:'Answers will be read aloud', autoOff:'Read-aloud off', noMic:'Voice input works in Chrome, Edge and Safari.',
     cards:['What is iBek?','Show how the price is set','Is it safe?'] },
-  uz: { tabAsk:'So\'rash', tabHow:'Qanday ishlaydi', hello:'iBek\'dan so\'rang.', helloSub:'Istalgan savol bering. Yozing yoki gapiring.', ph:'iBek haqida istalgan savol', reachLbl:'SMS yoki qo\'ng\'iroq:', noPhone:'Raqam tez orada', call:'Qo\'ng\'iroq', home:'Bosh sahifa', newChat:'Yangi suhbat', thinking:'O\'ylayapman', listen:'Tinglash', stop:'To\'xtatish', loading:'Ovoz tayyorlanmoqda…', copy:'Nusxa', copied:'Nusxalandi', kb:'iBek bilimlar bazasi', listening:'Tinglayapman…', micOff:'Mikrofonga ruxsat berilmagan.', noSpeech:'Hech narsa eshitilmadi. Qayta urinib ko\'ring.', voiceOff:'Ovoz hozircha mavjud emas.', failed:'Yuborilmadi. Qayta urinib ko\'ring.', picFail:'Rasm chizilmadi. Qayta so\'rang.', autoOn:'Javoblar ovozda o\'qiladi', autoOff:'Ovozli o\'qish o\'chirildi', noMic:'Ovozli kiritish Chrome, Edge va Safari\'da ishlaydi.',
+  uz: { tabAsk:'So\'rash', callMe:'Qo\'ng\'iroq', callNote:'iBek sizga qo\'ng\'iroq qiladi va buyurtmani ovozda qabul qiladi.', calling:'Hozir qo\'ng\'iroq qilyapmiz. Telefonni oling!', callBad:'Raqamni +998 90 123 45 67 ko\'rinishida yozing', callFail:'Qo\'ng\'iroq boshlanmadi. Bir daqiqadan keyin qayta urinib ko\'ring.', tabHow:'Qanday ishlaydi', hello:'iBek\'dan so\'rang.', helloSub:'Istalgan savol bering. Yozing yoki gapiring.', ph:'Savol bering', reachLbl:'Yoki o\'zingiz yozing / qo\'ng\'iroq qiling:', noPhone:'Raqam tez orada', call:'Qo\'ng\'iroq', home:'Bosh sahifa', newChat:'Yangi suhbat', thinking:'O\'ylayapman', listen:'Tinglash', stop:'To\'xtatish', loading:'Ovoz tayyorlanmoqda…', copy:'Nusxa', copied:'Nusxalandi', kb:'iBek bilimlar bazasi', listening:'Tinglayapman…', micOff:'Mikrofonga ruxsat berilmagan.', noSpeech:'Hech narsa eshitilmadi. Qayta urinib ko\'ring.', voiceOff:'Ovoz hozircha mavjud emas.', failed:'Yuborilmadi. Qayta urinib ko\'ring.', picFail:'Rasm chizilmadi. Qayta so\'rang.', autoOn:'Javoblar ovozda o\'qiladi', autoOff:'Ovozli o\'qish o\'chirildi', noMic:'Ovozli kiritish Chrome, Edge va Safari\'da ishlaydi.',
     cards:['iBek nima?','Narx qanday belgilanadi? Rasmda','Bu xavfsizmi?'] },
-  ru: { tabAsk:'Спросить', tabHow:'Как это работает', hello:'Спросите iBek.', helloSub:'Спросите что угодно. Пишите или говорите.', ph:'Спросите что угодно об iBek', reachLbl:'SMS или звонок:', noPhone:'Номер скоро появится', call:'Позвонить', home:'Главная', newChat:'Новый чат', thinking:'Думаю', listen:'Слушать', stop:'Стоп', loading:'Готовлю голос…', copy:'Копировать', copied:'Скопировано', kb:'База знаний iBek', listening:'Слушаю…', micOff:'Нет доступа к микрофону.', noSpeech:'Ничего не слышно. Попробуйте ещё раз.', voiceOff:'Голос сейчас недоступен.', failed:'Не доставлено. Попробуйте ещё раз.', picFail:'Не удалось нарисовать. Спросите ещё раз.', autoOn:'Ответы будут озвучены', autoOff:'Озвучка выключена', noMic:'Голосовой ввод работает в Chrome, Edge и Safari.',
+  ru: { tabAsk:'Спросить', callMe:'Позвонить', callNote:'iBek позвонит и примет заказ голосом.', calling:'Звоним вам. Возьмите трубку!', callBad:'Введите номер вида +998 90 123 45 67', callFail:'Звонок не начался. Попробуйте через минуту.', tabHow:'Как это работает', hello:'Спросите iBek.', helloSub:'Спросите что угодно. Пишите или говорите.', ph:'Задайте вопрос', reachLbl:'Или напишите / позвоните сами:', noPhone:'Номер скоро появится', call:'Позвонить', home:'Главная', newChat:'Новый чат', thinking:'Думаю', listen:'Слушать', stop:'Стоп', loading:'Готовлю голос…', copy:'Копировать', copied:'Скопировано', kb:'База знаний iBek', listening:'Слушаю…', micOff:'Нет доступа к микрофону.', noSpeech:'Ничего не слышно. Попробуйте ещё раз.', voiceOff:'Голос сейчас недоступен.', failed:'Не доставлено. Попробуйте ещё раз.', picFail:'Не удалось нарисовать. Спросите ещё раз.', autoOn:'Ответы будут озвучены', autoOff:'Озвучка выключена', noMic:'Голосовой ввод работает в Chrome, Edge и Safari.',
     cards:['Что такое iBek?','Покажите, как формируется цена','Это безопасно?'] },
 };
 let L = 'uz';
@@ -212,6 +225,22 @@ fetch('/api/config').then(r => r.json()).then(c => {
     $('#reach').hidden = false;
   }
 }).catch(() => {});
+
+// ---------- call me ----------
+$('#callf').addEventListener('submit', async e => {
+  e.preventDefault();
+  const v = $('#cphone').value.trim(), note = $('#callnote'), btn = $('#cbtn');
+  const d = v.replace(/\D/g, '');
+  if (!(d.length === 9 || (d.length === 12 && d.startsWith('998')) || (v.startsWith('+') && d.length >= 10))) { note.className = 'callnote err'; note.textContent = t('callBad'); return; }
+  btn.disabled = true; note.className = 'callnote'; note.innerHTML = '<span class="dots"><i></i><i></i><i></i></span>';
+  try {
+    const r = await fetch('/api/call', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ phone: v }) });
+    const j = await r.json();
+    if (j.ok) { note.textContent = t('calling'); $('#callf').classList.add('ok'); }
+    else { note.className = 'callnote err'; note.textContent = j.reason === 'phone' ? t('callBad') : t('callFail'); }
+  } catch { note.className = 'callnote err'; note.textContent = t('callFail'); }
+  setTimeout(() => { btn.disabled = false; }, 20000);
+});
 
 // ---------- composer ----------
 const q = $('#q'), send = $('#send'), mic = $('#mic'), note = $('#note'), main = $('#main');
