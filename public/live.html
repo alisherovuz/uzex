@@ -13,10 +13,11 @@
 html,body{height:100%;margin:0;background:#000;color:#fff;font-family:-apple-system,BlinkMacSystemFont,"SF Pro Display",Helvetica,Arial,sans-serif;overflow:hidden}
 .v{position:fixed;inset:0;display:none;flex-direction:column;align-items:center;padding:calc(70px + env(safe-area-inset-top)) 24px calc(60px + env(safe-area-inset-bottom))}
 .v.on{display:flex}
-#idle{justify-content:center;gap:18px;color:#555;font-size:15px;text-align:center}
-#idle button{background:#1c1c1e;color:#8e8e93;border:0;border-radius:14px;padding:16px 26px;font-size:17px}
-#idle.armed{color:#222}
+#idle{justify-content:center;gap:18px;color:#aeaeb2;font-size:16px;text-align:center}
+#idle button{background:#34c759;color:#fff;border:0;border-radius:18px;padding:20px 44px;font-size:22px;font-weight:600}
+#idle .hint{max-width:280px;line-height:1.4}
 #idle.armed button{display:none}
+#idle.armed .hint{color:#3a3a3c;font-size:14px}
 .av{width:118px;height:118px;border-radius:50%;background:linear-gradient(180deg,#a1a1a6,#636366);display:grid;place-items:center;font-size:44px;font-weight:600;margin-top:40px}
 .name{font-size:34px;font-weight:500;margin-top:20px;letter-spacing:-.01em}
 .sub{font-size:17px;color:#aeaeb2;margin-top:6px}
@@ -34,7 +35,7 @@ html,body{height:100%;margin:0;background:#000;color:#fff;font-family:-apple-sys
 </style>
 </head>
 <body>
-<div class="v on" id="idle"><button id="arm">Tayyor</button><div id="msg"></div></div>
+<div class="v on" id="idle"><button id="arm">Tayyor</button><div class="hint" id="hint">Bosing va mikrofonga ruxsat bering. Keyin ekran qorayadi va qo'ng'iroqni kutadi.</div><div id="msg" style="color:#ff453a"></div></div>
 
 <div class="v" id="ring">
   <div class="sub">mobile</div>
@@ -72,7 +73,7 @@ async function arm() {
   try { ctx = new (window.AudioContext || window.webkitAudioContext)(); await ctx.resume(); } catch {}
   try { const st = await navigator.mediaDevices.getUserMedia({ audio: true }); st.getTracks().forEach(t => t.stop()); } catch { $('#msg').textContent = 'Mikrofonga ruxsat bering'; return; }
   try { wakeLock = await navigator.wakeLock?.request('screen'); } catch {}
-  $('#idle').classList.add('armed'); $('#msg').textContent = '';
+  $('#idle').classList.add('armed'); $('#msg').textContent = ''; $('#hint').textContent = '● kutilmoqda';
   poll();
 }
 $('#arm').onclick = arm;

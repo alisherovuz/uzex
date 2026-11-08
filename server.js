@@ -228,7 +228,7 @@ http.createServer(async (req, res) => {
     if (!file.startsWith(ROOT)) { res.writeHead(403); return res.end(); }
     const data = await readFile(file).catch(() => null);
     if (!data) { res.writeHead(404); return res.end('Not found'); }
-    res.writeHead(200, { 'content-type': TYPES[extname(file)] || 'application/octet-stream' });
+    res.writeHead(200, { 'content-type': TYPES[extname(file)] || 'application/octet-stream', ...(extname(file) === '.html' ? { 'cache-control': 'no-cache' } : {}) });
     res.end(data);
   } catch (e) {
     console.error(e);
