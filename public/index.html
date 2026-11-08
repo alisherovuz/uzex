@@ -1,415 +1,489 @@
 <!doctype html>
-<html lang="en">
+<html lang="uz">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, interactive-widget=resizes-content">
-<meta name="theme-color" content="#ffffff" media="(prefers-color-scheme: light)">
-<meta name="theme-color" content="#000000" media="(prefers-color-scheme: dark)">
-<title>iBek</title>
-<meta name="description" content="iBek buys commodities on UZEX for you. Text, call, or ask.">
-<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Ccircle cx='32' cy='32' r='32' fill='%23111'/%3E%3Ctext x='32' y='41' font-family='-apple-system,Helvetica' font-size='24' font-weight='600' text-anchor='middle' fill='%23fff'%3EiB%3C/text%3E%3C/svg%3E">
+<meta name="theme-color" content="#ffffff">
+<title>iBek agent · UZEX</title>
+<meta name="description" content="iBek buys commodities on UZEX for you. Ask anything — by text or voice.">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Cdefs%3E%3ClinearGradient id='g' x1='0' y1='0' x2='1' y2='1'%3E%3Cstop offset='0' stop-color='%2339b36b'/%3E%3Cstop offset='1' stop-color='%23198a4c'/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect width='64' height='64' rx='16' fill='url(%23g)'/%3E%3Ctext x='32' y='43' font-family='Helvetica,Arial' font-size='28' font-weight='700' text-anchor='middle' fill='%23fff'%3EiB%3C/text%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <style>
 :root{
-  --bg:#fff; --text:#000; --sub:#8e8e93; --line:rgba(60,60,67,.12);
-  --them:#e9e9eb; --themText:#000; --me:#007aff; --meText:#fff;
-  --field:#fff; --fieldLine:#c7c7cc; --bar:rgba(249,249,249,.94);
-}
-@media (prefers-color-scheme: dark){
-  :root{ --bg:#000; --text:#fff; --sub:#8e8e93; --line:rgba(84,84,88,.6);
-    --them:#26252a; --themText:#fff; --me:#0a84ff; --field:#000; --fieldLine:#3a3a3c; --bar:rgba(22,22,24,.94); }
+  --bg:#f7f8f8; --card:#fff; --text:#111418; --sub:#6b7280; --faint:#9aa1ab; --line:#eceef0; --soft:#f3f4f5;
+  --g:#1f8f52; --g2:#167a44; --gs:#e8f5ee; --gt:#1c7a47; --ink:#111418; --red:#d93025;
+  --shadow:0 1px 2px rgba(16,24,40,.04),0 8px 28px -6px rgba(16,24,40,.08);
+  --font:"Inter",-apple-system,BlinkMacSystemFont,"Segoe UI",Helvetica,Arial,sans-serif;
 }
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
 html,body{height:100%}
-body{margin:0;background:var(--bg);color:var(--text);font:17px/1.35 -apple-system,BlinkMacSystemFont,"SF Pro Text","Helvetica Neue",Helvetica,Arial,sans-serif;-webkit-font-smoothing:antialiased;display:flex;flex-direction:column;height:100dvh}
-button{font:inherit;color:inherit;background:none;border:0;padding:0;cursor:pointer}
+body{margin:0;background:var(--bg);color:var(--text);font:16px/1.55 var(--font);-webkit-font-smoothing:antialiased;display:flex;flex-direction:column;height:100dvh}
+button,select{font:inherit;color:inherit;background:none;border:0;padding:0;cursor:pointer}
 a{color:inherit;text-decoration:none}
+svg.i{width:18px;height:18px;flex:none}
 
-header{flex:none;background:var(--bar);backdrop-filter:saturate(180%) blur(20px);-webkit-backdrop-filter:saturate(180%) blur(20px);border-bottom:.5px solid var(--line);padding:calc(10px + env(safe-area-inset-top)) 16px 8px;position:relative;text-align:center}
-.av{width:44px;height:44px;border-radius:50%;margin:0 auto 4px;background:linear-gradient(180deg,#a1a1a6,#86868b);color:#fff;display:grid;place-items:center;font-weight:600;font-size:17px;letter-spacing:-.02em}
-.name{font-size:12px;font-weight:500;display:inline-flex;align-items:center;gap:2px}
-.name svg{width:9px;height:9px;opacity:.5}
-.call{position:absolute;right:16px;top:calc(22px + env(safe-area-inset-top));color:var(--me);width:36px;height:36px;display:grid;place-items:center}
-.call svg{width:22px;height:22px}
-.call[hidden]{display:none}
+/* header */
+header{flex:none;height:72px;background:rgba(255,255,255,.9);backdrop-filter:saturate(180%) blur(16px);-webkit-backdrop-filter:saturate(180%) blur(16px);border-bottom:1px solid var(--line);display:grid;grid-template-columns:1fr auto 1fr;align-items:center;padding:0 24px;padding-top:env(safe-area-inset-top);position:relative;z-index:5}
+.brand{display:flex;align-items:center;gap:10px;font-size:23px;letter-spacing:-.03em}
+.logo{width:36px;height:36px;border-radius:10px;background:linear-gradient(135deg,#39b36b,#198a4c);display:grid;place-items:center;color:#fff;font-weight:700;font-size:15px;letter-spacing:-.02em;box-shadow:0 2px 6px -2px rgba(25,138,76,.5)}
+.brand b{font-weight:700}.brand span{color:var(--faint);font-weight:500}
+.tag{font-size:11.5px;font-weight:600;letter-spacing:.06em;color:var(--sub);border:1px solid var(--line);border-radius:999px;padding:3px 9px;margin-left:4px}
+.seg{display:flex;background:var(--soft);border-radius:999px;padding:4px}
+.seg button{padding:8px 20px;border-radius:999px;font-weight:600;font-size:15px;color:var(--sub);transition:all .15s}
+.seg button.on{background:#fff;color:var(--text);box-shadow:0 1px 3px rgba(16,24,40,.1)}
+.right{display:flex;justify-content:flex-end;align-items:center;gap:10px}
+.round{width:42px;height:42px;border-radius:50%;display:grid;place-items:center;border:1px solid var(--line);background:#fff;color:var(--sub);transition:all .15s}
+.round.on{background:var(--gs);border-color:#cfe9da;color:var(--g)}
+.lang{height:42px;border:1px solid var(--line);border-radius:999px;background:#fff;padding:0 34px 0 16px;font-weight:600;font-size:14px;appearance:none;-webkit-appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%236b7280' stroke-width='2.5'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 13px center}
+@media(max-width:760px){header{grid-template-columns:auto 1fr;grid-template-areas:'b r' 's s';height:auto;row-gap:10px;padding:10px 14px 10px;padding-top:calc(10px + env(safe-area-inset-top))}.brand{grid-area:b;font-size:20px}.right{grid-area:r}.seg{grid-area:s;justify-self:stretch}.seg button{flex:1;padding:7px 10px;font-size:14px}.tag{display:none}.brand span{display:none}.round,.lang{height:38px}.round{width:38px}textarea{font-size:16px}}
 
 main{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch}
-.thread{max-width:720px;margin:0 auto;padding:14px 14px 20px;display:flex;flex-direction:column}
-.stamp{text-align:center;color:var(--sub);font-size:11px;margin:6px 0 10px}
-.stamp b{font-weight:600}
+.col{max-width:720px;margin:0 auto;padding:28px 20px 28px}
+.view[hidden]{display:none}
 
-.b{max-width:76%;padding:7px 12px 8px;border-radius:18px;margin-top:2px;position:relative;white-space:pre-wrap;word-wrap:break-word;font-size:17px;line-height:1.3;animation:in .22s ease-out both}
-.b.them{align-self:flex-start;background:var(--them);color:var(--themText)}
-.b.me{align-self:flex-end;background:var(--me);color:var(--meText)}
-.b.gap{margin-top:12px}
-.b a{text-decoration:underline}
-/* tail only on last bubble of a group */
-.b.tail.them{border-bottom-left-radius:4px}
-.b.tail.me{border-bottom-right-radius:4px}
-.b.tail.them::before{content:"";position:absolute;left:-6px;bottom:0;width:14px;height:14px;background:var(--them);border-bottom-right-radius:12px 10px}
-.b.tail.them::after{content:"";position:absolute;left:-10px;bottom:0;width:10px;height:14px;background:var(--bg);border-bottom-right-radius:8px}
-.b.tail.me::before{content:"";position:absolute;right:-6px;bottom:0;width:14px;height:14px;background:var(--me);border-bottom-left-radius:12px 10px}
-.b.tail.me::after{content:"";position:absolute;right:-10px;bottom:0;width:10px;height:14px;background:var(--bg);border-bottom-left-radius:8px}
-.b.err{background:transparent;color:#ff3b30;border:1px solid rgba(255,59,48,.35)}
-.b.err::before,.b.err::after{display:none}
-.meta{align-self:flex-start;color:var(--sub);font-size:11px;margin:3px 0 0 6px}
-.meta button{color:var(--sub);font-size:11px}
-.meta button.on{color:var(--me)}
-.pic{align-self:flex-start;margin-top:4px;max-width:min(76%,520px);border-radius:18px;overflow:hidden;background:#fff;border:.5px solid var(--line);cursor:zoom-in;animation:in .22s ease-out both}
+/* home */
+.home{padding-top:6vh;text-align:center}
+.home h1{font-size:clamp(30px,4.6vw,44px);line-height:1.1;letter-spacing:-.035em;font-weight:700;margin:0}
+.home p.lead{color:var(--sub);font-size:17px;margin:12px 0 0}
+.cards{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:36px;text-align:left}
+.sc{text-align:left;background:var(--card);border:1px solid var(--line);border-radius:18px;padding:16px 18px;display:flex;gap:14px;align-items:flex-start;transition:all .15s;box-shadow:0 1px 2px rgba(16,24,40,.03)}
+.sc:hover{border-color:#cfe9da;box-shadow:var(--shadow);transform:translateY(-1px)}
+.sc .ic{width:34px;height:34px;border-radius:10px;background:var(--gs);color:var(--g);display:grid;place-items:center;flex:none}
+.sc b{display:block;font-weight:600;font-size:15px;line-height:1.35}
+.sc small{display:block;color:var(--sub);font-size:13px;margin-top:2px}
+.reach{margin-top:14px;display:flex;align-items:center;justify-content:space-between;gap:12px;background:var(--card);border:1px solid var(--line);border-radius:18px;padding:14px 18px;text-align:left}
+.reach small{display:block;color:var(--sub);font-size:13px}
+.reach strong{font-size:17px;font-weight:600;letter-spacing:.01em}
+.reach .acts{display:flex;gap:8px}
+.pill{display:inline-flex;align-items:center;gap:7px;height:38px;padding:0 15px;border-radius:999px;font-weight:600;font-size:14px;border:1px solid var(--line);background:#fff}
+.pill.g{background:var(--g);border-color:var(--g);color:#fff}
+@media(max-width:600px){.cards{grid-template-columns:1fr}.reach{flex-direction:column;align-items:flex-start}}
+
+/* thread */
+.bar{display:flex;justify-content:space-between;align-items:center;margin-bottom:18px}
+.bar button{display:inline-flex;align-items:center;gap:6px;font-weight:600;font-size:15px}
+.bar .new{color:var(--g)}
+.u{display:flex;justify-content:flex-end;margin:22px 0 14px}
+.u div{background:var(--ink);color:#fff;border-radius:22px;padding:11px 20px;max-width:80%;font-size:16px;white-space:pre-wrap;word-wrap:break-word}
+.ans{background:var(--card);border:1px solid var(--line);border-radius:24px;box-shadow:var(--shadow);overflow:hidden;animation:rise .3s ease-out both}
+@keyframes rise{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+.ab{padding:26px 28px 18px}
+.stat{margin-bottom:14px}
+.stat .v{font-size:52px;line-height:1;font-weight:800;letter-spacing:-.04em}
+.stat .l{color:var(--sub);font-size:15px;margin-top:8px}
+.txt{font-size:16.5px;line-height:1.65}
+.txt p{margin:0}.txt p+p,.txt p+ul,.txt ul+p{margin-top:10px}
+.txt ul,.txt ol{margin:8px 0 0;padding-left:22px}.txt li{margin:4px 0}
+.txt strong{color:var(--gt);font-weight:600}
+.pic{margin:16px 0 4px;border:1px solid var(--line);border-radius:16px;overflow:hidden;background:#fff;cursor:zoom-in}
 .pic img{display:block;width:100%;height:auto}
-.pic.loading{width:220px;height:140px;display:grid;place-items:center;background:var(--them);border:0;cursor:default}
-.lb{position:fixed;inset:0;background:rgba(0,0,0,.92);z-index:50;display:none;align-items:center;justify-content:center;padding:24px;cursor:zoom-out}
-.lb.open{display:flex}
-.lb img{max-width:100%;max-height:100%;background:#fff;border-radius:12px}
-@keyframes in{from{opacity:0;transform:translateY(4px) scale(.98)}to{opacity:1;transform:none}}
-
-.dots{display:inline-flex;gap:4px;padding:5px 2px}
-.dots i{width:8px;height:8px;border-radius:50%;background:var(--sub);opacity:.4;animation:d 1.2s infinite}
+.pic.loading{height:180px;display:grid;place-items:center;background:var(--soft);cursor:default;border:0}
+.chips{display:flex;flex-wrap:wrap;gap:8px;margin-top:18px}
+.chip{display:inline-flex;align-items:center;gap:6px;height:32px;padding:0 12px;border-radius:999px;font-size:13.5px;font-weight:600;background:var(--gs);color:var(--gt)}
+.chip.n{background:var(--soft);color:#3f4650}
+.chip svg{width:15px;height:15px}
+.acts2{display:flex;gap:6px;padding:10px 18px;border-top:1px solid var(--line)}
+.acts2 button{display:inline-flex;align-items:center;gap:8px;height:38px;padding:0 12px;border-radius:10px;font-weight:600;font-size:14.5px;color:#3f4650}
+.acts2 button:hover{background:var(--soft)}
+.acts2 button.on{color:var(--g)}
+.err .ab{color:var(--red)}
+.think{display:flex;align-items:center;gap:10px;color:var(--sub);font-size:15px}
+.dots{display:inline-flex;gap:4px}.dots i{width:7px;height:7px;border-radius:50%;background:var(--g);opacity:.35;animation:d 1.2s infinite}
 .dots i:nth-child(2){animation-delay:.2s}.dots i:nth-child(3){animation-delay:.4s}
-@keyframes d{0%,60%,100%{opacity:.3}30%{opacity:.9}}
+@keyframes d{0%,60%,100%{opacity:.25}30%{opacity:1}}
 
-.sugg{display:flex;flex-wrap:wrap;gap:6px;justify-content:flex-end;margin-top:14px}
-.sugg button{border:1px solid var(--me);color:var(--me);border-radius:16px;padding:6px 12px;font-size:15px}
-.sugg button:active{background:var(--me);color:#fff}
+/* how it works */
+.how h2{font-size:clamp(28px,4vw,38px);letter-spacing:-.035em;line-height:1.12;margin:6px 0 10px;font-weight:700}
+.how .lead{color:var(--sub);font-size:17px;margin:0 0 26px}
+.box{background:var(--card);border:1px solid var(--line);border-radius:22px;box-shadow:0 1px 2px rgba(16,24,40,.03);padding:22px 24px;margin-bottom:14px}
+.kicker{font-size:12px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--faint);margin:0 0 14px}
+.steps{display:grid;gap:16px}
+.step{display:grid;grid-template-columns:30px 1fr;gap:14px}
+.step .n{width:30px;height:30px;border-radius:50%;border:1.5px solid #d6dadf;display:grid;place-items:center;font-size:13px;font-weight:700;color:#3f4650}
+.step b{display:block;font-weight:600}.step span{color:var(--sub);font-size:15px}
+.big{display:flex;align-items:baseline;gap:10px}
+.big .v{font-size:44px;font-weight:800;letter-spacing:-.04em;line-height:1}
+.big .l{color:var(--sub)}
+.split{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:16px}
+.split div{background:var(--soft);border-radius:14px;padding:12px 14px}
+.split b{display:block;font-size:20px;letter-spacing:-.02em}.split small{color:var(--sub);font-size:13px}
+.tri{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+.tri b{display:block;margin:8px 0 2px}.tri span{color:var(--sub);font-size:14.5px}
+@media(max-width:600px){.tri,.split{grid-template-columns:1fr}}
 
-footer{flex:none;background:var(--bar);backdrop-filter:saturate(180%) blur(20px);-webkit-backdrop-filter:saturate(180%) blur(20px);border-top:.5px solid var(--line);padding:8px 10px calc(8px + env(safe-area-inset-bottom))}
-form{max-width:720px;margin:0 auto;display:flex;align-items:flex-end;gap:8px}
-.field{flex:1;display:flex;align-items:flex-end;border:1px solid var(--fieldLine);border-radius:19px;background:var(--field);min-height:36px;padding:0 4px 0 12px}
-textarea{flex:1;border:0;outline:0;resize:none;background:transparent;color:var(--text);font:17px/1.3 inherit;font-family:inherit;padding:7px 0;max-height:132px}
-textarea::placeholder{color:var(--sub)}
-.ic{width:30px;height:30px;border-radius:50%;display:grid;place-items:center;flex:none;margin:2px 0}
-.ic svg{width:18px;height:18px}
-.mic{color:var(--sub)}
-.mic.on{color:#ff3b30}
-.send{background:var(--me);color:#fff}
-.send svg{width:16px;height:16px}
-.send[hidden],.mic[hidden]{display:none}
-.lang{color:var(--sub);font-size:12px;font-weight:600;width:28px;height:36px;flex:none}
-.note{max-width:720px;margin:6px auto 0;text-align:center;color:var(--sub);font-size:11px;min-height:14px}
+/* composer */
+footer{flex:none;padding:10px 16px calc(14px + env(safe-area-inset-bottom));background:linear-gradient(to top,var(--bg) 70%,rgba(247,248,248,0))}
+form{max-width:720px;margin:0 auto;display:flex;align-items:flex-end;gap:10px;background:#fff;border:1px solid var(--line);border-radius:30px;padding:9px 9px 9px 22px;box-shadow:0 2px 4px rgba(16,24,40,.03),0 14px 34px -10px rgba(16,24,40,.14)}
+textarea{flex:1;border:0;outline:0;resize:none;background:transparent;color:var(--text);font:17px/1.4 var(--font);padding:11px 0;max-height:150px}
+textarea::placeholder{color:var(--faint)}
+.cb{width:50px;height:50px;border-radius:50%;display:grid;place-items:center;flex:none;transition:all .15s}
+.cb svg{width:22px;height:22px}
+.mic{background:var(--soft);color:#3f4650}
+.mic.on{background:#fde8e7;color:var(--red);animation:pulse 1.3s infinite}
+@keyframes pulse{0%{box-shadow:0 0 0 0 rgba(217,48,37,.35)}100%{box-shadow:0 0 0 12px rgba(217,48,37,0)}}
+.send{background:var(--g);color:#fff}
+.send:disabled{background:#cfe0d6;cursor:default}
+.note{max-width:720px;margin:7px auto 0;text-align:center;color:var(--faint);font-size:12.5px;min-height:16px}
+
+.lb{position:fixed;inset:0;background:rgba(10,12,14,.9);z-index:50;display:none;align-items:center;justify-content:center;padding:24px;cursor:zoom-out}
+.lb.open{display:flex}.lb img{max-width:100%;max-height:100%;background:#fff;border-radius:14px}
+.toast{position:fixed;left:50%;bottom:110px;transform:translateX(-50%) translateY(10px);background:var(--ink);color:#fff;padding:10px 16px;border-radius:12px;font-size:14px;opacity:0;pointer-events:none;transition:all .2s;z-index:60}
+.toast.on{opacity:1;transform:translateX(-50%)}
 </style>
 </head>
 <body>
 
 <header>
-  <div class="av">iB</div>
-  <div class="name">iBek</div>
-  <a class="call" id="call" hidden aria-label="Call iBek"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M6.6 10.8a15.1 15.1 0 0 0 6.6 6.6l2.2-2.2a1 1 0 0 1 1-.25c1.1.37 2.3.57 3.6.57a1 1 0 0 1 1 1V20a1 1 0 0 1-1 1A17 17 0 0 1 3 4a1 1 0 0 1 1-1h3.5a1 1 0 0 1 1 1c0 1.25.2 2.45.57 3.57a1 1 0 0 1-.25 1z"/></svg></a>
+  <a class="brand" href="#" id="home-link"><div class="logo">iB</div><b>iBek</b><span>agent</span><em class="tag">UZEX · 2035</em></a>
+  <nav class="seg" role="tablist">
+    <button class="on" data-tab="ask" data-t="tabAsk">Ask</button>
+    <button data-tab="how" data-t="tabHow">How it works</button>
+  </nav>
+  <div class="right">
+    <button class="round" id="auto" title="Read answers aloud" aria-label="Read answers aloud"><svg class="i" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 5 6 9H2v6h4l5 4zM15.5 8.5a5 5 0 0 1 0 7M19 5a10 10 0 0 1 0 14"/></svg></button>
+    <select class="lang" id="lang" aria-label="Language"><option value="uz">O'zbek</option><option value="en">English</option><option value="ru">Русский</option></select>
+  </div>
 </header>
 
 <main id="main">
-  <div class="thread" id="t">
-    <div class="stamp"><b>iBek</b> · Commodity exchange agent<br>Today <span id="now"></span></div>
+  <!-- ASK -->
+  <div class="col view" id="v-ask">
+    <section class="home" id="home">
+      <h1 data-t="hello">What would you like to know about iBek?</h1>
+      <p class="lead" data-t="helloSub">Type or speak. Answers come in your language.</p>
+      <div class="cards" id="cards"></div>
+      <div class="reach">
+        <div><small data-t="reachLbl">Text or call iBek</small><strong data-phone data-t="noPhone">Number coming soon</strong></div>
+        <div class="acts" id="reach-acts" hidden>
+          <a class="pill" data-sms href="#"><svg class="i" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12a8 8 0 0 1-11.6 7.1L4 20l1-4.6A8 8 0 1 1 21 12z"/></svg>SMS</a>
+          <a class="pill g" data-tel href="#"><svg class="i" viewBox="0 0 24 24" fill="currentColor"><path d="M6.6 10.8a15.1 15.1 0 0 0 6.6 6.6l2.2-2.2a1 1 0 0 1 1-.25c1.1.37 2.3.57 3.6.57a1 1 0 0 1 1 1V20a1 1 0 0 1-1 1A17 17 0 0 1 3 4a1 1 0 0 1 1-1h3.5a1 1 0 0 1 1 1c0 1.25.2 2.45.57 3.57a1 1 0 0 1-.25 1z"/></svg><span data-t="call">Call</span></a>
+        </div>
+      </div>
+    </section>
+    <section id="thread" hidden>
+      <div class="bar">
+        <button id="back"><svg class="i" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="m15 18-6-6 6-6"/></svg><span data-t="home">Home</span></button>
+        <button class="new" id="new"><svg class="i" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg><span data-t="newChat">New chat</span></button>
+      </div>
+      <div id="t"></div>
+    </section>
   </div>
+
+  <!-- HOW -->
+  <div class="col view how" id="v-how" hidden></div>
 </main>
 
-<footer>
+<footer id="composer">
   <form id="f" autocomplete="off">
-    <button type="button" class="lang" id="lang" aria-label="Voice language">EN</button>
-    <div class="field">
-      <textarea id="q" rows="1" placeholder="Message" aria-label="Message"></textarea>
-      <button type="button" class="ic mic" id="mic" aria-label="Dictate"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 15a3.5 3.5 0 0 0 3.5-3.5v-6a3.5 3.5 0 1 0-7 0v6A3.5 3.5 0 0 0 12 15zm6-3.6a.9.9 0 1 0-1.8 0 4.2 4.2 0 0 1-8.4 0 .9.9 0 1 0-1.8 0 6 6 0 0 0 5.1 5.9V20H8.9a.9.9 0 1 0 0 1.8h6.2a.9.9 0 1 0 0-1.8h-2.2v-2.7a6 6 0 0 0 5.1-5.9z"/></svg></button>
-      <button type="submit" class="ic send" id="send" hidden aria-label="Send"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M12 19V5M5.5 11.5 12 5l6.5 6.5"/></svg></button>
-    </div>
+    <textarea id="q" rows="1" aria-label="Question"></textarea>
+    <button type="button" class="cb mic" id="mic" aria-label="Speak"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 15a3.5 3.5 0 0 0 3.5-3.5v-6a3.5 3.5 0 1 0-7 0v6A3.5 3.5 0 0 0 12 15zm6-3.6a.9.9 0 1 0-1.8 0 4.2 4.2 0 0 1-8.4 0 .9.9 0 1 0-1.8 0 6 6 0 0 0 5.1 5.9V20H8.9a.9.9 0 1 0 0 1.8h6.2a.9.9 0 1 0 0-1.8h-2.2v-2.7a6 6 0 0 0 5.1-5.9z"/></svg></button>
+    <button type="submit" class="cb send" id="send" disabled aria-label="Send"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M12 19V5M5.5 11.5 12 5l6.5 6.5"/></svg></button>
   </form>
   <div class="note" id="note"></div>
 </footer>
+
 <div class="lb" id="lb"><img alt=""></div>
+<div class="toast" id="toast"></div>
 
 <script>
-const $ = s => document.querySelector(s);
+const $ = s => document.querySelector(s), $$ = s => [...document.querySelectorAll(s)];
 const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
-const t = $('#t'), main = $('#main'), q = $('#q'), send = $('#send'), mic = $('#mic'), note = $('#note');
-const fmt = d => d.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-$('#now').textContent = fmt(new Date());
 
-let phone = '';
-const history = [];
-let busy = false, lastSide = null, lastEl = null;
-
-function add(side, text, opts = {}) {
-  if (lastEl && lastSide === side) lastEl.classList.remove('tail');
-  const el = document.createElement('div');
-  el.className = 'b ' + side + ' tail' + (lastSide && lastSide !== side ? ' gap' : '');
-  if (opts.html) el.innerHTML = text; else el.textContent = text;
-  t.appendChild(el);
-  lastSide = side; lastEl = el;
-  scroll();
-  return el;
+// ---------- i18n ----------
+const T = {
+  en: { tabAsk:'Ask', tabHow:'How it works', hello:'What would you like to know about iBek?', helloSub:'Type or speak. Answers come in your language.', ph:'Ask anything about iBek', reachLbl:'Text or call iBek', noPhone:'Number coming soon', call:'Call', home:'Home', newChat:'New chat', thinking:'Thinking', listen:'Listen', stop:'Stop', loading:'Preparing voice…', copy:'Copy', copied:'Copied', kb:'iBek knowledge base', listening:'Listening…', micOff:'Microphone access is off.', noSpeech:'Nothing heard. Try again.', voiceOff:'Voice is unavailable right now.', failed:'Not delivered. Try again.', picFail:'The picture could not be drawn. Ask again.', autoOn:'Answers will be read aloud', autoOff:'Read-aloud off', noMic:'Voice input works in Chrome, Edge and Safari.',
+    cards:[['Isn\'t this just another AI assistant?','What makes iBek different'],['Show the auction example as a picture','100 tonnes, four buyers, one price'],['What stops an agent from overspending?','Limits, reserves, confirmation'],['How does UZEX make money?','Fees and subscriptions']] },
+  uz: { tabAsk:'So\'rash', tabHow:'Qanday ishlaydi', hello:'iBek haqida nimani bilmoqchisiz?', helloSub:'Yozing yoki gapiring. Javob sizning tilingizda.', ph:'iBek haqida istalgan savol', reachLbl:'iBek\'ga SMS yozing yoki qo\'ng\'iroq qiling', noPhone:'Raqam tez orada', call:'Qo\'ng\'iroq', home:'Bosh sahifa', newChat:'Yangi suhbat', thinking:'O\'ylayapman', listen:'Tinglash', stop:'To\'xtatish', loading:'Ovoz tayyorlanmoqda…', copy:'Nusxa', copied:'Nusxalandi', kb:'iBek bilimlar bazasi', listening:'Tinglayapman…', micOff:'Mikrofonga ruxsat berilmagan.', noSpeech:'Hech narsa eshitilmadi. Qayta urinib ko\'ring.', voiceOff:'Ovoz hozircha mavjud emas.', failed:'Yuborilmadi. Qayta urinib ko\'ring.', picFail:'Rasm chizilmadi. Qayta so\'rang.', autoOn:'Javoblar ovozda o\'qiladi', autoOff:'Ovozli o\'qish o\'chirildi', noMic:'Ovozli kiritish Chrome, Edge va Safari\'da ishlaydi.',
+    cards:[['Bu oddiy AI yordamchi emasmi?','iBek nimasi bilan farq qiladi'],['Auksion misolini rasmda ko\'rsating','100 tonna, to\'rt xaridor, bitta narx'],['Agent ortiqcha pul sarflamasligini nima kafolatlaydi?','Limit, zaxira, tasdiqlash'],['UZEX bundan qanday daromad oladi?','Komissiya va obuna']] },
+  ru: { tabAsk:'Спросить', tabHow:'Как это работает', hello:'Что вы хотите узнать об iBek?', helloSub:'Пишите или говорите. Ответ — на вашем языке.', ph:'Спросите что угодно об iBek', reachLbl:'Напишите или позвоните iBek', noPhone:'Номер скоро появится', call:'Позвонить', home:'Главная', newChat:'Новый чат', thinking:'Думаю', listen:'Слушать', stop:'Стоп', loading:'Готовлю голос…', copy:'Копировать', copied:'Скопировано', kb:'База знаний iBek', listening:'Слушаю…', micOff:'Нет доступа к микрофону.', noSpeech:'Ничего не слышно. Попробуйте ещё раз.', voiceOff:'Голос сейчас недоступен.', failed:'Не доставлено. Попробуйте ещё раз.', picFail:'Не удалось нарисовать. Спросите ещё раз.', autoOn:'Ответы будут озвучены', autoOff:'Озвучка выключена', noMic:'Голосовой ввод работает в Chrome, Edge и Safari.',
+    cards:[['Это не просто ещё один AI-ассистент?','Чем iBek отличается'],['Покажите пример аукциона картинкой','100 тонн, четыре покупателя, одна цена'],['Что мешает агенту потратить лишнее?','Лимиты, резерв, подтверждение'],['Как UZEX на этом зарабатывает?','Комиссии и подписка']] },
+};
+const HOW = {
+  en: { k:'How it works', h:'iBek buys commodities on UZEX for you.', lead:'No terminal, no broker, no order book to watch. Say what you need — iBek does the rest.',
+    s1:'Say what you need', s1d:'By SMS, phone call or your own AI agent: "20 tonnes of cement, at most 980,000 so\'m a tonne."',
+    s2:'iBek places a sealed bid', s2d:'Money is reserved first. Nobody sees other bids. Arrival time doesn\'t matter.',
+    s3:'One price for every winner', s3d:'The round clears at once. Everyone who bid at least that price gets goods and pays the same.',
+    exK:'Worked example', exV:'$105', exL:'per tonne, for every winner', ex:[['40 t','Ali · bid $110'],['30 t','Bek · bid $105'],['30 t','Davron · bid $105']], exN:'Elena bid $100 — below the price, so her money is released.',
+    pK:'Built on three principles', p:[['Accessible','Talk or text in Uzbek, Russian or English. No training, no app.'],['Transparent','One rule anyone can say. Every round can be re-checked with Verify.'],['Safe','The engine, not the AI, enforces your limit. You confirm before a bid.']],
+    dK:'Two doors, one market', d:[['iBek Agent','For people without an agent — phone, SMS, Telegram.'],['iBek MCP','For people whose own agent (Claude, ChatGPT) already works for them.']], foot:'Prototype designed for 2035. Rounds and bidders are simulated; prices come from 500,000 real UZEX deals.' },
+  uz: { k:'Qanday ishlaydi', h:'iBek siz uchun UZEX\'da tovar sotib oladi.', lead:'Terminal ham, broker ham, kuzatib turish ham shart emas. Nima kerakligini ayting — qolganini iBek bajaradi.',
+    s1:'Nima kerakligini ayting', s1d:'SMS, qo\'ng\'iroq yoki o\'z AI agentingiz orqali: "20 tonna sement, tonnasi 980 ming so\'mdan oshmasin."',
+    s2:'iBek yopiq buyurtma beradi', s2d:'Avval pul zaxiraga olinadi. Boshqalarning buyurtmasi ko\'rinmaydi. Kim birinchi bo\'lgani ahamiyatsiz.',
+    s3:'Barcha g\'oliblar uchun bitta narx', s3d:'Raund bir vaqtda yopiladi. Shu narxdan kam bermagan har bir xaridor tovar oladi va bir xil to\'laydi.',
+    exK:'Misol', exV:'$105', exL:'tonnasi uchun, har bir g\'olibga', ex:[['40 t','Ali · taklif $110'],['30 t','Bek · taklif $105'],['30 t','Davron · taklif $105']], exN:'Elena $100 taklif qildi — narxdan past, puli qaytariladi.',
+    pK:'Uchta tamoyil asosida', p:[['Qulay','O\'zbek, rus yoki ingliz tilida gapiring yoki yozing. O\'rganish shart emas.'],['Shaffof','Hamma tushunadigan bitta qoida. Har bir raundni Verify bilan tekshirish mumkin.'],['Xavfsiz','Limitni AI emas, dvigatel tekshiradi. Buyurtmadan oldin siz tasdiqlaysiz.']],
+    dK:'Ikki eshik, bitta bozor', d:[['iBek Agent','Agenti yo\'qlar uchun — telefon, SMS, Telegram.'],['iBek MCP','O\'z agenti (Claude, ChatGPT) bor odamlar uchun.']], foot:'2035-yil uchun mo\'ljallangan prototip. Raundlar va xaridorlar simulyatsiya; narxlar 500 000 ta haqiqiy UZEX bitimidan.' },
+  ru: { k:'Как это работает', h:'iBek покупает товары на UZEX за вас.', lead:'Без терминала, брокера и наблюдения за стаканом. Скажите, что нужно, — остальное сделает iBek.',
+    s1:'Скажите, что нужно', s1d:'По SMS, звонком или через своего AI-агента: «20 тонн цемента, не дороже 980 000 сум за тонну».',
+    s2:'iBek подаёт закрытую заявку', s2d:'Сначала резервируются деньги. Чужие заявки не видны. Время подачи не важно.',
+    s3:'Одна цена для всех победителей', s3d:'Раунд закрывается разом. Все, кто предложил не меньше этой цены, получают товар и платят одинаково.',
+    exK:'Пример', exV:'$105', exL:'за тонну, для каждого победителя', ex:[['40 т','Али · ставка $110'],['30 т','Бек · ставка $105'],['30 т','Даврон · ставка $105']], exN:'Елена предложила $100 — ниже цены, её деньги возвращены.',
+    pK:'Три принципа', p:[['Доступно','Говорите или пишите на узбекском, русском или английском. Без обучения.'],['Прозрачно','Одно правило, понятное всем. Любой раунд можно перепроверить.'],['Безопасно','Лимит проверяет движок, а не AI. Вы подтверждаете заявку.']],
+    dK:'Две двери, один рынок', d:[['iBek Agent','Для тех, у кого нет агента — телефон, SMS, Telegram.'],['iBek MCP','Для тех, чей агент (Claude, ChatGPT) уже работает на них.']], foot:'Прототип, спроектированный для 2035 года. Раунды и участники симулированы; цены — из 500 000 реальных сделок UZEX.' },
+};
+let L = 'uz';
+try { L = localStorage.getItem('ibek-ui') || ((navigator.language || '').toLowerCase().startsWith('ru') ? 'ru' : (navigator.language || '').toLowerCase().startsWith('en') ? 'en' : 'uz'); } catch {}
+const t = k => T[L][k] ?? T.en[k];
+const ICONS = [
+  '<path d="M12 3l2.4 5.3L20 9l-4.2 3.8L17 18.5 12 15.6 7 18.5l1.2-5.7L4 9l5.6-.7z"/>',
+  '<rect x="3" y="12" width="4" height="8" rx="1"/><rect x="10" y="7" width="4" height="13" rx="1"/><rect x="17" y="3" width="4" height="17" rx="1"/>',
+  '<path d="M12 3 4 6v6c0 5 3.4 8.3 8 9 4.6-.7 8-4 8-9V6z"/><path d="m9 12 2 2 4-4"/>',
+  '<circle cx="12" cy="12" r="9"/><path d="M15 9.5c-.5-1-1.6-1.5-3-1.5-1.7 0-3 .8-3 2s1.3 1.7 3 2 3 .8 3 2-1.3 2-3 2c-1.4 0-2.5-.5-3-1.5M12 6v2M12 16v2"/>'
+];
+function applyLang() {
+  document.documentElement.lang = L; $('#lang').value = L;
+  $$('[data-t]').forEach(e => { if (e.hasAttribute('data-phone') && phone) return; e.textContent = t(e.dataset.t); });
+  $('#q').placeholder = t('ph');
+  $('#cards').innerHTML = T[L].cards.map((c, i) => `<button class="sc" data-ask="${esc(c[0])}"><div class="ic"><svg class="i" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">${ICONS[i]}</svg></div><div><b>${esc(c[0])}</b><small>${esc(c[1])}</small></div></button>`).join('');
+  renderHow();
+  $$('.acts2 [data-a="listen"]').forEach(b => { if (!b.classList.contains('on')) b.querySelector('span').textContent = t('listen'); });
+  $$('.acts2 [data-a="copy"] span').forEach(s => s.textContent = t('copy'));
 }
-const scroll = () => requestAnimationFrame(() => main.scrollTop = main.scrollHeight);
-const wait = ms => new Promise(r => setTimeout(r, ms));
-const clean = s => s.replace(/\*\*(.+?)\*\*/g, '$1').replace(/^#+\s*/gm, '').replace(/`/g, '');
-
-// ---------- opening thread ----------
-async function intro() {
-  const lines = [
-    "Hi. I'm iBek.",
-    "I buy commodities on the Uzbek exchange for you. Cement, fuel, grain, metal.",
-    "Tell me what you need and the most you'll pay. I place a sealed bid and report back.",
-    "Everyone who wins a round pays the same price. Speed doesn't matter, and your limit is never exceeded.",
-    () => phone ? `Text or call me at ${phone}.` : "Text or call me. My number will appear here.",
-    "Or ask me anything about how I work."
-  ];
-  for (const l of lines) {
-    const typing = add('them', '<span class="dots"><i></i><i></i><i></i></span>', { html: true });
-    await wait(450);
-    typing.textContent = typeof l === 'function' ? l() : l;
-    if (typing.textContent.includes(phone) && phone) typing.innerHTML = typing.textContent.replace(phone, `<a href="sms:${phone.replace(/[^\d+]/g, '')}">${phone}</a>`);
-    await wait(200);
-  }
-  const s = document.createElement('div'); s.className = 'sugg'; s.id = 'sugg';
-  ["How is this different from an AI assistant?", "Why is one price fairer?", "What if the agent makes a mistake?"].forEach(x => {
-    const b = document.createElement('button'); b.type = 'button'; b.textContent = x; b.onclick = () => ask(x); s.appendChild(b);
-  });
-  t.appendChild(s); scroll();
+function renderHow() {
+  const h = HOW[L];
+  $('#v-how').innerHTML = `
+    <p class="kicker">${h.k}</p><h2>${h.h}</h2><p class="lead">${h.lead}</p>
+    <div class="box"><div class="steps">${[[h.s1,h.s1d],[h.s2,h.s2d],[h.s3,h.s3d]].map((s,i)=>`<div class="step"><div class="n">${i+1}</div><div><b>${s[0]}</b><span>${s[1]}</span></div></div>`).join('')}</div></div>
+    <div class="box"><p class="kicker">${h.exK}</p><div class="big"><div class="v">${h.exV}</div><div class="l">${h.exL}</div></div>
+      <div class="split">${h.ex.map(e=>`<div><b>${e[0]}</b><small>${e[1]}</small></div>`).join('')}</div>
+      <p style="color:var(--sub);font-size:14.5px;margin:14px 0 0">${h.exN}</p></div>
+    <div class="box"><p class="kicker">${h.pK}</p><div class="tri">${h.p.map((p,i)=>`<div><div class="sc" style="padding:0;border:0;box-shadow:none"><div class="ic"><svg class="i" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">${[ICONS[0],'<circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/>',ICONS[2]][i]}</svg></div></div><b>${p[0]}</b><span>${p[1]}</span></div>`).join('')}</div></div>
+    <div class="box"><p class="kicker">${h.dK}</p><div class="steps">${h.d.map((d,i)=>`<div class="step"><div class="n">${i+1}</div><div><b>${d[0]}</b><span>${d[1]}</span></div></div>`).join('')}</div></div>
+    <p style="color:var(--faint);font-size:13px;text-align:center;margin:18px 0 6px">${h.foot}</p>`;
 }
+$('#lang').onchange = e => { L = e.target.value; try { localStorage.setItem('ibek-ui', L); } catch {} applyLang(); };
 
+// ---------- tabs / views ----------
+function tab(name) {
+  $$('.seg button').forEach(b => b.classList.toggle('on', b.dataset.tab === name));
+  $('#v-ask').hidden = name !== 'ask'; $('#v-how').hidden = name !== 'how';
+  $('#main').scrollTop = 0;
+}
+$$('.seg button').forEach(b => b.onclick = () => tab(b.dataset.tab));
+const showThread = on => { $('#home').hidden = on; $('#thread').hidden = !on; };
+function resetChat() { stopAudio(); history.length = 0; $('#t').innerHTML = ''; showThread(false); tab('ask'); }
+$('#back').onclick = () => { showThread(false); $('#main').scrollTop = 0; };
+$('#new').onclick = resetChat;
+$('#home-link').onclick = e => { e.preventDefault(); resetChat(); };
+document.addEventListener('click', e => { const b = e.target.closest('[data-ask]'); if (b) ask(b.dataset.ask); });
+
+// ---------- phone ----------
+let phone = '', tts = false;
 fetch('/api/config').then(r => r.json()).then(c => {
-  phone = c.phone || '';
-  if (phone) { const c2 = $('#call'); c2.href = 'tel:' + phone.replace(/[^\d+]/g, ''); c2.hidden = false; }
-}).catch(() => {}).finally(intro);
+  tts = !!c.tts; phone = c.phone || '';
+  if (phone) {
+    const d = phone.replace(/[^\d+]/g, '');
+    $$('[data-phone]').forEach(e => e.textContent = phone);
+    $$('[data-sms]').forEach(a => a.href = 'sms:' + d); $$('[data-tel]').forEach(a => a.href = 'tel:' + d);
+    $('#reach-acts').hidden = false;
+  }
+}).catch(() => {});
 
 // ---------- composer ----------
-function sync() {
-  const has = !!q.value.trim();
-  send.hidden = !has; mic.hidden = has || !SR;
-  q.style.height = 'auto'; q.style.height = Math.min(q.scrollHeight, 132) + 'px';
-}
+const q = $('#q'), send = $('#send'), mic = $('#mic'), note = $('#note'), main = $('#main');
+let busy = false;
+const history = [];
+function sync() { send.disabled = !q.value.trim() || busy; q.style.height = 'auto'; q.style.height = Math.min(q.scrollHeight, 150) + 'px'; }
 q.addEventListener('input', sync);
 q.addEventListener('keydown', e => { if (e.key === 'Enter' && !e.shiftKey && !e.isComposing) { e.preventDefault(); $('#f').requestSubmit(); } });
 $('#f').addEventListener('submit', e => { e.preventDefault(); const v = q.value.trim(); if (v) ask(v); });
+const scroll = () => requestAnimationFrame(() => main.scrollTop = main.scrollHeight);
+const esc = s => String(s ?? '').replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+function toast(msg) { const el = $('#toast'); el.textContent = msg; el.classList.add('on'); clearTimeout(toast.t); toast.t = setTimeout(() => el.classList.remove('on'), 2200); }
 
-// ---------- answers: text + visuals ----------
+// ---------- parsing ----------
 function parse(full) {
-  // split into text and ```chart / ```svg blocks; an unclosed block is "pending"
-  const out = []; const re = /```(chart|svg)\s*\n?([\s\S]*?)(```|$)/g; let i = 0, m;
+  const out = []; const re = /```(chart|svg|stat)\s*\n?([\s\S]*?)(```|$)/g; let i = 0, m;
   while ((m = re.exec(full))) {
     if (m.index > i) out.push({ k: 'text', v: full.slice(i, m.index) });
     out.push({ k: m[1], v: m[2], done: m[3] === '```' });
     i = re.lastIndex;
   }
   if (i < full.length) out.push({ k: 'text', v: full.slice(i) });
-  return out.map(x => x.k === 'text' ? { ...x, v: clean(x.v).replace(/```\w*$/, '').trim() } : x).filter(x => x.k !== 'text' || x.v);
+  return out.map(x => x.k === 'text' ? { ...x, v: x.v.replace(/```\w*$/, '').trim() } : x).filter(x => x.k !== 'text' || x.v);
 }
+function md(src) {
+  const inline = s => esc(s).replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>').replace(/`([^`]+)`/g, '$1');
+  let out = '', list = null;
+  for (const raw of src.split('\n')) {
+    const l = raw.trim().replace(/^#+\s*/, '');
+    const ul = l.match(/^[-*•]\s+(.*)/), ol = l.match(/^\d+[.)]\s+(.*)/);
+    if (ul || ol) { const tg = ul ? 'ul' : 'ol'; if (list !== tg) { if (list) out += `</${list}>`; out += `<${tg}>`; list = tg; } out += `<li>${inline((ul || ol)[1])}</li>`; continue; }
+    if (list) { out += `</${list}>`; list = null; }
+    if (l) out += `<p>${inline(l)}</p>`;
+  }
+  return out + (list ? `</${list}>` : '');
+}
+const plain = full => parse(full).filter(s => s.k === 'text').map(s => s.v.replace(/\*\*/g, '').replace(/^[-*•]\s+/gm, '')).join('\n').trim();
+
+// ---------- charts ----------
 const svgUrl = svg => 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(svg);
-const xesc = s => String(s ?? '').replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
-function nfmt(v) {
-  const a = Math.abs(v);
-  if (a >= 1e12) return +(v / 1e12).toFixed(1) + 'T';
-  if (a >= 1e9) return +(v / 1e9).toFixed(1) + 'B';
-  if (a >= 1e6) return +(v / 1e6).toFixed(a >= 1e7 ? 1 : 2) + 'M';
-  if (a >= 1e4) return +(v / 1e3).toFixed(0) + 'k';
-  return +(+v).toFixed(2) + '';
-}
+function nfmt(v) { const a = Math.abs(v); if (a >= 1e12) return +(v / 1e12).toFixed(1) + 'T'; if (a >= 1e9) return +(v / 1e9).toFixed(1) + 'B'; if (a >= 1e6) return +(v / 1e6).toFixed(a >= 1e7 ? 1 : 2) + 'M'; if (a >= 1e4) return +(v / 1e3).toFixed(0) + 'k'; return +(+v).toFixed(2) + ''; }
 function niceMax(v) { if (v <= 0) return 1; const p = Math.pow(10, Math.floor(Math.log10(v))); for (const m of [1, 1.2, 1.5, 2, 2.5, 3, 4, 5, 6, 8, 10]) if (m * p >= v) return m * p; return 10 * p; }
-const PAL = ['#007aff', '#1c1c1e', '#8e8e93', '#34c759'];
-const FONT = '-apple-system, BlinkMacSystemFont, Helvetica, Arial, sans-serif';
+const PAL = ['#1f8f52', '#111418', '#9aa1ab', '#7cc59a'];
+const FONT = 'Inter, -apple-system, Helvetica, Arial, sans-serif';
 function chartSvg(c) {
   const labels = (c.labels || []).map(String), series = (c.series || []).filter(s => Array.isArray(s.values));
-  if (!labels.length || !series.length) throw new Error('empty chart');
+  if (!labels.length || !series.length) throw new Error('empty');
   const type = c.type || 'bar', W = 640, top = 64, multi = series.length > 1;
   const noteLines = []; if (c.note) { let cur = ''; for (const w of String(c.note).split(/\s+/)) { if ((cur + ' ' + w).trim().length > 98) { noteLines.push(cur); cur = w; } else cur = (cur + ' ' + w).trim(); } if (cur) noteLines.push(cur); }
   const legendH = multi ? 26 : 0, noteH = noteLines.length ? 12 + noteLines.length * 15 : 0;
   let body = '', H;
   const max = niceMax(Math.max(...series.flatMap(s => s.values.map(Number).filter(isFinite)), 0));
   if (type === 'hbar') {
-    const rowH = 38, lw = Math.min(220, 12 + Math.max(...labels.map(l => l.length)) * 7.4), x0 = 24 + lw, x1 = W - 70;
-    H = top + legendH + labels.length * rowH * (multi ? series.length * .6 + .4 : 1) + noteH + 20;
+    const lw = Math.min(220, 12 + Math.max(...labels.map(l => l.length)) * 7.4), x0 = 24 + lw, x1 = W - 70;
     let y = top + legendH;
     labels.forEach((l, i) => {
       const gh = multi ? series.length * 16 + 10 : 24, bh = multi ? 12 : 22;
-      body += `<text x="${x0 - 12}" y="${y + gh / 2 + 5}" text-anchor="end" font-size="14" fill="#1c1c1e">${xesc(l)}</text>`;
-      series.forEach((s, j) => {
-        const v = +s.values[i] || 0, w = Math.max(2, (x1 - x0) * v / max), by = y + (multi ? 5 + j * 16 : 1);
-        body += `<rect x="${x0}" y="${by}" width="${w}" height="${bh}" rx="${bh / 2.5}" fill="${PAL[j % 4]}"/>`;
-        body += `<text x="${x0 + w + 8}" y="${by + bh / 2 + 4.5}" font-size="${multi ? 11.5 : 13}" fill="#3a3a3c">${nfmt(v)}</text>`;
-      });
-      y += multi ? gh + 12 : rowH;
+      body += `<text x="${x0 - 12}" y="${y + gh / 2 + 5}" text-anchor="end" font-size="14" fill="#111418">${esc(l)}</text>`;
+      series.forEach((s, j) => { const v = +s.values[i] || 0, w = Math.max(2, (x1 - x0) * v / max), by = y + (multi ? 5 + j * 16 : 1);
+        body += `<rect x="${x0}" y="${by}" width="${w}" height="${bh}" rx="${bh / 2.5}" fill="${PAL[j % 4]}"/><text x="${x0 + w + 8}" y="${by + bh / 2 + 4.5}" font-size="${multi ? 11.5 : 13}" fill="#3f4650">${nfmt(v)}</text>`; });
+      y += multi ? gh + 12 : 38;
     });
     H = y + noteH + 12;
   } else {
     H = 400 + legendH;
     const x0 = 64, x1 = W - 24, y0 = top + legendH + 10, y1 = H - 48 - noteH;
-    for (let k = 0; k <= 4; k++) {
-      const v = max * k / 4, y = y1 - (y1 - y0) * k / 4;
-      body += `<line x1="${x0}" x2="${x1}" y1="${y}" y2="${y}" stroke="#e5e5ea"/><text x="${x0 - 10}" y="${y + 4}" text-anchor="end" font-size="12" fill="#8e8e93">${nfmt(v)}</text>`;
-    }
+    for (let k = 0; k <= 4; k++) { const v = max * k / 4, y = y1 - (y1 - y0) * k / 4; body += `<line x1="${x0}" x2="${x1}" y1="${y}" y2="${y}" stroke="#eceef0"/><text x="${x0 - 10}" y="${y + 4}" text-anchor="end" font-size="12" fill="#9aa1ab">${nfmt(v)}</text>`; }
     const n = labels.length, step = (x1 - x0) / n;
-    labels.forEach((l, i) => body += `<text x="${x0 + step * (i + .5)}" y="${y1 + 22}" text-anchor="middle" font-size="${n > 8 ? 11 : 13}" fill="#3a3a3c">${xesc(l.length > 14 ? l.slice(0, 13) + '…' : l)}</text>`);
-    if (type === 'line') {
-      series.forEach((s, j) => {
-        const pts = s.values.map((v, i) => [x0 + step * (i + .5), y1 - (y1 - y0) * (+v || 0) / max]);
-        body += `<polyline fill="none" stroke="${PAL[j % 4]}" stroke-width="3" stroke-linejoin="round" stroke-linecap="round" points="${pts.map(p => p.join(',')).join(' ')}"/>`;
-        pts.forEach((p, i) => body += `<circle cx="${p[0]}" cy="${p[1]}" r="4.5" fill="#fff" stroke="${PAL[j % 4]}" stroke-width="2.5"/>` + (multi ? '' : `<text x="${p[0]}" y="${p[1] - 12}" text-anchor="middle" font-size="12" fill="#1c1c1e">${nfmt(+s.values[i] || 0)}</text>`));
-      });
-    } else {
-      const gw = step * .66, bw = gw / series.length;
-      labels.forEach((l, i) => series.forEach((s, j) => {
-        const v = +s.values[i] || 0, h = (y1 - y0) * v / max, x = x0 + step * i + (step - gw) / 2 + j * bw;
+    labels.forEach((l, i) => body += `<text x="${x0 + step * (i + .5)}" y="${y1 + 22}" text-anchor="middle" font-size="${n > 8 ? 11 : 13}" fill="#3f4650">${esc(l.length > 14 ? l.slice(0, 13) + '…' : l)}</text>`);
+    if (type === 'line') series.forEach((s, j) => { const pts = s.values.map((v, i) => [x0 + step * (i + .5), y1 - (y1 - y0) * (+v || 0) / max]);
+      body += `<polyline fill="none" stroke="${PAL[j % 4]}" stroke-width="3" stroke-linejoin="round" stroke-linecap="round" points="${pts.map(p => p.join(',')).join(' ')}"/>`;
+      pts.forEach((p, i) => body += `<circle cx="${p[0]}" cy="${p[1]}" r="4.5" fill="#fff" stroke="${PAL[j % 4]}" stroke-width="2.5"/>` + (multi ? '' : `<text x="${p[0]}" y="${p[1] - 12}" text-anchor="middle" font-size="12" fill="#111418">${nfmt(+s.values[i] || 0)}</text>`)); });
+    else { const gw = step * .66, bw = gw / series.length;
+      labels.forEach((l, i) => series.forEach((s, j) => { const v = +s.values[i] || 0, h = (y1 - y0) * v / max, x = x0 + step * i + (step - gw) / 2 + j * bw;
         body += `<rect x="${x + 2}" y="${y1 - h}" width="${bw - 4}" height="${h}" rx="5" fill="${PAL[j % 4]}"/>`;
-        if (!multi || series.length <= 2) body += `<text x="${x + bw / 2}" y="${y1 - h - 7}" text-anchor="middle" font-size="12" fill="#1c1c1e">${nfmt(v)}</text>`;
-      }));
-    }
+        if (series.length <= 2) body += `<text x="${x + bw / 2}" y="${y1 - h - 7}" text-anchor="middle" font-size="12" fill="#111418">${nfmt(v)}</text>`; })); }
   }
-  let legend = '';
-  if (multi) { let lx = 24; series.forEach((s, j) => { legend += `<rect x="${lx}" y="${top - 4}" width="10" height="10" rx="5" fill="${PAL[j % 4]}"/><text x="${lx + 16}" y="${top + 5}" font-size="13" fill="#3a3a3c">${xesc(s.name)}</text>`; lx += 34 + String(s.name || '').length * 7.5; }); }
-  return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${W} ${H}" width="${W}" height="${H}" font-family="${FONT}"><rect width="100%" height="100%" fill="#fff"/>`
-    + `<text x="24" y="34" font-size="18" font-weight="600" fill="#1c1c1e">${xesc(c.title || '')}</text>`
-    + (c.unit ? `<text x="${W - 24}" y="34" text-anchor="end" font-size="12" fill="#8e8e93">${xesc(c.unit)}</text>` : '')
-    + legend + body
-    + noteLines.map((l, k) => `<text x="24" y="${H - 14 - (noteLines.length - 1 - k) * 15}" font-size="11" fill="#8e8e93">${xesc(l)}</text>`).join('') + '</svg>';
+  let legend = ''; if (multi) { let lx = 24; series.forEach((s, j) => { legend += `<rect x="${lx}" y="${top - 4}" width="10" height="10" rx="5" fill="${PAL[j % 4]}"/><text x="${lx + 16}" y="${top + 5}" font-size="13" fill="#3f4650">${esc(s.name)}</text>`; lx += 34 + String(s.name || '').length * 7.5; }); }
+  return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${W} ${H}" width="${W}" height="${H}" font-family="${FONT}"><rect width="100%" height="100%" fill="#fff"/><text x="24" y="34" font-size="18" font-weight="600" fill="#111418">${esc(c.title || '')}</text>`
+    + (c.unit ? `<text x="${W - 24}" y="34" text-anchor="end" font-size="12" fill="#9aa1ab">${esc(c.unit)}</text>` : '') + legend + body
+    + noteLines.map((l, k) => `<text x="24" y="${H - 14 - (noteLines.length - 1 - k) * 15}" font-size="11" fill="#9aa1ab">${esc(l)}</text>`).join('') + '</svg>';
 }
 function visualUrl(seg) {
   if (seg.k === 'chart') return svgUrl(chartSvg(JSON.parse(seg.v)));
-  let svg = seg.v.trim();
-  if (!/^<svg[\s>]/i.test(svg)) throw new Error('bad svg');
+  let svg = seg.v.trim(); if (!/^<svg[\s>]/i.test(svg)) throw new Error('bad');
   if (!/xmlns=/.test(svg)) svg = svg.replace(/^<svg/i, '<svg xmlns="http://www.w3.org/2000/svg"');
   return svgUrl(svg);
 }
-const lb = $('#lb');
-lb.onclick = () => lb.classList.remove('open');
+const lb = $('#lb'); lb.onclick = () => lb.classList.remove('open');
 
-function renderAnswer(group, full, final = false) {
-  // group: {els: []}; re-render all parts of this answer
+// ---------- answer card ----------
+const IC = {
+  check: '<path d="M20 6 9 17l-5-5"/>', clock: '<circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/>',
+  speaker: '<path d="M11 5 6 9H2v6h4l5 4zM15.5 8.5a5 5 0 0 1 0 7M19 5a10 10 0 0 1 0 14"/>', stopI: '<rect x="6" y="6" width="12" height="12" rx="2"/>',
+  copy: '<rect x="9" y="9" width="12" height="12" rx="2"/><path d="M5 15H4a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1h10a1 1 0 0 1 1 1v1"/>'
+};
+const svgI = (p, sw = 2) => `<svg class="i" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="${sw}" stroke-linecap="round" stroke-linejoin="round">${p}</svg>`;
+
+function render(card, full, final) {
+  const body = card.querySelector('.ab'); const nodes = card._nodes || (card._nodes = []);
   const segs = parse(full).map(x => final && x.k !== 'text' ? { ...x, done: true } : x);
-  segs.forEach((seg, idx) => {
-    let el = group.els[idx];
-    const isPic = seg.k !== 'text';
-    if (el && (el.dataset.kind === 'pic') !== isPic) { el.remove(); el = null; }
+  if (segs.length && card._thinking) { body.innerHTML = ''; card._thinking = false; }
+  segs.forEach((seg, i) => {
+    let el = nodes[i];
+    const kind = seg.k === 'text' ? 'text' : seg.k === 'stat' ? 'stat' : 'pic';
+    if (el && el.dataset.kind !== kind) { el.remove(); el = null; }
     if (!el) {
-      if (isPic) { el = document.createElement('div'); el.className = 'pic loading'; el.dataset.kind = 'pic'; el.innerHTML = '<span class="dots"><i></i><i></i><i></i></span>'; }
-      else { el = document.createElement('div'); el.className = 'b them'; el.dataset.kind = 'text'; }
-      if (idx === 0) el.style.marginTop = '12px';
-      const anchor = group.els[idx - 1] || group.start;
-      anchor.after(el); group.els[idx] = el;
+      el = document.createElement('div'); el.dataset.kind = kind;
+      el.className = kind === 'text' ? 'txt' : kind === 'stat' ? 'stat' : 'pic loading';
+      if (kind === 'pic') el.innerHTML = '<span class="dots"><i></i><i></i><i></i></span>';
+      (nodes[i - 1] ? nodes[i - 1].after(el) : body.prepend(el)); nodes[i] = el;
     }
-    if (!isPic) el.textContent = seg.v;
+    if (kind === 'text') el.innerHTML = md(seg.v);
+    else if (kind === 'stat') { if (seg.done && !el.dataset.ok) { try { const s = JSON.parse(seg.v); el.innerHTML = `<div class="v">${esc(s.value)}</div><div class="l">${esc(s.label || '')}</div>`; el.dataset.ok = 1; } catch { el.remove(); nodes[i] = document.createElement('i'); nodes[i].dataset.kind = 'stat'; } } }
     else if (seg.done && !el.dataset.ok) {
+      el.dataset.ok = 1;
       try {
-        const url = visualUrl(seg), img = new Image(); img.alt = 'Chart'; img.src = url;
-        img.onerror = () => { el.className = 'b them'; el.dataset.kind = 'text'; el.onclick = null; el.textContent = '(The picture could not be drawn. Ask again.)'; };
-        el.className = 'pic'; el.innerHTML = ''; el.appendChild(img); el.dataset.ok = '1';
+        const url = visualUrl(seg), img = new Image(); img.alt = ''; img.src = url;
+        img.onerror = () => { el.className = 'txt'; el.style.color = 'var(--sub)'; el.textContent = t('picFail'); el.onclick = null; };
+        el.className = 'pic'; el.innerHTML = ''; el.appendChild(img);
         el.onclick = () => { lb.querySelector('img').src = url; lb.classList.add('open'); };
-      } catch { el.className = 'b them'; el.dataset.kind = 'text'; el.textContent = '(The picture could not be drawn. Ask again.)'; el.dataset.ok = '1'; }
+      } catch { el.className = 'txt'; el.style.color = 'var(--sub)'; el.textContent = t('picFail'); }
     }
   });
-  // tails: last text bubble only
-  group.els.forEach(e => e.classList?.remove('tail'));
-  const lastText = [...group.els].reverse().find(e => e.dataset.kind === 'text');
-  if (lastText && group.els[group.els.length - 1] === lastText) lastText.classList.add('tail');
   scroll();
 }
-const speakable = full => parse(full).filter(s => s.k === 'text').map(s => s.v).join(' ').trim();
 
 async function ask(text, spoken = false) {
   if (busy) return;
-  busy = true;
-  $('#sugg')?.remove();
+  busy = true; tab('ask'); showThread(true); stopAudio();
   q.value = ''; sync();
-  add('me', text);
+  const u = document.createElement('div'); u.className = 'u'; u.innerHTML = `<div>${esc(text)}</div>`; $('#t').appendChild(u);
+  const card = document.createElement('div'); card.className = 'ans';
+  card.innerHTML = `<div class="ab"><div class="think"><span class="dots"><i></i><i></i><i></i></span>${t('thinking')}</div></div>`;
+  card._thinking = true; $('#t').appendChild(card); scroll();
   history.push({ role: 'user', content: text });
-  const typing = add('them', '<span class="dots"><i></i><i></i><i></i></span>', { html: true });
-  const group = { start: typing, els: [] };
-  let full = '';
+  const t0 = performance.now(); let full = '';
   try {
-    const r = await fetch('/api/chat', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ messages: history }) });
-    if (!r.ok) { const j = await r.json().catch(() => ({})); throw new Error(j.error || 'Not delivered. Try again.'); }
+    const r = await fetch('/api/chat', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ messages: history, lang: L }) });
+    if (!r.ok) { const j = await r.json().catch(() => ({})); throw new Error(j.error || t('failed')); }
     const rd = r.body.getReader(), dec = new TextDecoder();
-    let first = true;
-    for (;;) {
-      const { done, value } = await rd.read(); if (done) break;
-      full += dec.decode(value, { stream: true });
-      if (first && parse(full).length) {
-        first = false;
-        const marker = document.createElement('span'); marker.style.display = 'none';
-        typing.replaceWith(marker); group.start = marker;
-      }
-      if (!first) renderAnswer(group, full);
-    }
-    if (!first) renderAnswer(group, full, true);
-    if (!full.trim()) throw new Error('Not delivered. Try again.');
+    for (;;) { const { done, value } = await rd.read(); if (done) break; full += dec.decode(value, { stream: true }); render(card, full, false); }
+    render(card, full, true);
+    if (!full.trim()) throw new Error(t('failed'));
     history.push({ role: 'assistant', content: full });
-    lastSide = 'them'; lastEl = group.els[group.els.length - 1];
-    const say = speakable(full);
-    if (say) {
-      const meta = document.createElement('div'); meta.className = 'meta';
-      const b = document.createElement('button'); b.type = 'button'; b.textContent = 'Play';
-      b.onclick = () => play(say, b);
-      meta.appendChild(b); (lastEl || group.start).after(meta); lastEl = meta; scroll();
-      if (spoken) play(say, b);
-    }
+    const secs = ((performance.now() - t0) / 1000).toFixed(1).replace('.', L === 'en' ? '.' : ',');
+    const chips = document.createElement('div'); chips.className = 'chips';
+    chips.innerHTML = `<span class="chip">${svgI(IC.check, 2.6)}${t('kb')}</span><span class="chip n">${svgI(IC.clock)}${secs} s</span>`;
+    card.querySelector('.ab').appendChild(chips);
+    const say = plain(full);
+    const acts = document.createElement('div'); acts.className = 'acts2';
+    acts.innerHTML = `<button data-a="listen">${svgI(IC.speaker)}<span>${t('listen')}</span></button><button data-a="copy">${svgI(IC.copy)}<span>${t('copy')}</span></button>`;
+    card.appendChild(acts);
+    const lbtn = acts.querySelector('[data-a="listen"]');
+    lbtn.onclick = () => play(say, lbtn);
+    acts.querySelector('[data-a="copy"]').onclick = async e => { try { await navigator.clipboard.writeText(say); toast(t('copied')); } catch {} };
+    scroll();
+    if (say && (spoken || autoRead)) play(say, lbtn);
   } catch (err) {
-    history.pop();
-    const el = group.els[0] || typing;
-    if (!el.isConnected) group.start.after(el);
-    el.classList?.add('err'); el.className = 'b them err'; el.textContent = err.message;
-    group.els.slice(1).forEach(e => e.remove());
-    lastSide = 'them'; lastEl = el;
-  } finally {
-    busy = false;
-  }
+    history.pop(); card.classList.add('err'); card.querySelector('.ab').textContent = err.message;
+  } finally { busy = false; sync(); }
 }
 
-// ---------- voice ----------
-const LANGS = [['EN', 'en-US'], ['UZ', 'uz-UZ'], ['RU', 'ru-RU']];
-let li = (() => { const n = (navigator.language || '').toLowerCase(); return n.startsWith('uz') ? 1 : n.startsWith('ru') ? 2 : 0; })();
-try { const s = localStorage.getItem('ibek-lang'); if (s !== null) li = +s; } catch {}
-const langBtn = $('#lang');
-const showLang = () => langBtn.textContent = LANGS[li][0];
-showLang();
-langBtn.onclick = () => { li = (li + 1) % LANGS.length; showLang(); try { localStorage.setItem('ibek-lang', li); } catch {} };
+// ---------- voice out (ElevenLabs only) ----------
+let audio = null, playing = null, autoRead = false;
+try { autoRead = localStorage.getItem('ibek-auto') === '1'; } catch {}
+const autoBtn = $('#auto'); autoBtn.classList.toggle('on', autoRead);
+autoBtn.onclick = () => { autoRead = !autoRead; autoBtn.classList.toggle('on', autoRead); try { localStorage.setItem('ibek-auto', autoRead ? '1' : '0'); } catch {} toast(t(autoRead ? 'autoOn' : 'autoOff')); };
+function setBtn(b, state) {
+  if (!b) return;
+  b.classList.toggle('on', state !== 'idle');
+  b.innerHTML = state === 'idle' ? `${svgI(IC.speaker)}<span>${t('listen')}</span>` : state === 'loading' ? `<span class="dots"><i></i><i></i><i></i></span><span>${t('loading')}</span>` : `${svgI(IC.stopI)}<span>${t('stop')}</span>`;
+}
+function stopAudio() { if (audio) { audio.pause(); audio = null; } if (playing) { setBtn(playing, 'idle'); playing = null; } }
+async function play(text, btn) {
+  const same = playing === btn; stopAudio(); if (same || !text) return;
+  if (!tts) { toast(t('voiceOff')); return; }
+  playing = btn; setBtn(btn, 'loading');
+  try {
+    const r = await fetch('/api/tts', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ text }) });
+    if (!r.ok) throw 0;
+    const url = URL.createObjectURL(await r.blob());
+    if (playing !== btn) return;
+    audio = new Audio(url);
+    audio.onended = audio.onerror = () => { if (playing === btn) { setBtn(btn, 'idle'); playing = null; } };
+    setBtn(btn, 'play'); await audio.play();
+  } catch { if (playing === btn) { setBtn(btn, 'idle'); playing = null; toast(t('voiceOff')); } }
+}
 
-let rec = null, on = false;
-if (!SR) { mic.hidden = true; langBtn.hidden = true; }
-
+// ---------- voice in ----------
+let rec = null, listening = false;
+const SRL = { uz: 'uz-UZ', en: 'en-US', ru: 'ru-RU' };
+if (!SR) mic.hidden = true;
 mic.onclick = () => {
-  if (on) { rec.stop(); return; }
+  if (listening) { rec.stop(); return; }
   stopAudio();
-  rec = new SR(); rec.lang = LANGS[li][1]; rec.interimResults = true; rec.continuous = false;
-  rec.onstart = () => { on = true; mic.classList.add('on'); note.textContent = 'Listening…'; };
-  rec.onresult = e => { let s = ''; for (const r of e.results) s += r[0].transcript; q.value = s; q.style.height = 'auto'; q.style.height = Math.min(q.scrollHeight, 132) + 'px'; };
-  rec.onerror = e => { note.textContent = e.error === 'not-allowed' ? 'Microphone access is off.' : e.error === 'no-speech' ? 'Nothing heard.' : ''; };
-  rec.onend = () => {
-    on = false; mic.classList.remove('on');
-    if (note.textContent === 'Listening…') note.textContent = '';
-    const v = q.value.trim(); if (v) ask(v, true); else sync();
-  };
+  rec = new SR(); rec.lang = SRL[L]; rec.interimResults = true; rec.continuous = false;
+  rec.onstart = () => { listening = true; mic.classList.add('on'); note.textContent = t('listening'); };
+  rec.onresult = e => { let s = ''; for (const r of e.results) s += r[0].transcript; q.value = s; sync(); };
+  rec.onerror = e => { note.textContent = e.error === 'not-allowed' ? t('micOff') : e.error === 'no-speech' ? t('noSpeech') : ''; };
+  rec.onend = () => { listening = false; mic.classList.remove('on'); if (note.textContent === t('listening')) note.textContent = ''; const v = q.value.trim(); if (v) ask(v, true); };
   try { rec.start(); } catch {}
 };
 
-let tts = false, audio = null, playingBtn = null;
-fetch('/api/config').then(r => r.json()).then(c => tts = !!c.tts).catch(() => {});
-function stopAudio() {
-  if (audio) { audio.pause(); audio = null; }
-  if ('speechSynthesis' in window) speechSynthesis.cancel();
-  if (playingBtn) { playingBtn.textContent = 'Play'; playingBtn.classList.remove('on'); playingBtn = null; }
-}
-async function play(text, btn) {
-  const was = playingBtn === btn;
-  stopAudio();
-  if (was) return;
-  playingBtn = btn; btn.classList.add('on'); btn.textContent = 'Loading…';
-  const done = () => { if (playingBtn === btn) { btn.textContent = 'Play'; btn.classList.remove('on'); playingBtn = null; } };
-  if (tts) {
-    try {
-      const r = await fetch('/api/tts', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ text }) });
-      if (!r.ok) throw 0;
-      const url = URL.createObjectURL(await r.blob());
-      if (playingBtn !== btn) return;
-      audio = new Audio(url); audio.onended = done; audio.onerror = done;
-      btn.textContent = 'Stop';
-      await audio.play();
-      return;
-    } catch { if (playingBtn !== btn) return; }
-  }
-  if (!('speechSynthesis' in window)) return done();
-  const u = new SpeechSynthesisUtterance(text);
-  u.lang = /[а-яё]/i.test(text) ? 'ru-RU' : LANGS[li][1];
-  const v = speechSynthesis.getVoices().find(v => v.lang.toLowerCase().startsWith(u.lang.slice(0, 2)));
-  if (v) u.voice = v;
-  u.onend = done; u.onerror = done;
-  btn.textContent = 'Stop';
-  speechSynthesis.speak(u);
-}
+applyLang();
 </script>
 </body>
 </html>

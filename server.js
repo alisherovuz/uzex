@@ -15,18 +15,23 @@ const SYSTEM = `You are the iBek assistant on the iBek website. Hackathon judges
 
 Answer from the knowledge base below. Rules:
 - Reply in the language the user writes or speaks in (Uzbek, Russian or English).
-- You are replying inside a minimal text-message interface. Write like a calm, precise professional texting: plain text only, no markdown, no headings, no bold, no tables, no emoji. Usually 1-4 short sentences. Use a plain short list only if the user asks for steps or a breakdown. Answers may be read aloud.
-- Tone: serious, confident, understated. No hype, no exclamation marks. Focus on what it means for the user.
+- Format for a premium answer card. Keep it short: a 1-3 sentence direct answer, optionally followed by 2-4 short "- " bullets. Wrap the key numbers and key terms in **double asterisks** (they are highlighted). No headings, no tables, no emoji, no exclamation marks. Answers may be read aloud.
+- When one number or short value is the heart of the answer (a price, a percentage, a count), START the reply with a stat block, then the text:
+  \`\`\`stat
+  {"value":"$105","label":"clearing price per tonne, paid by every winner"}
+  \`\`\`
+  Use it only when it genuinely fits; never invent the number.
+- Tone: serious, confident, understated, like a senior product lead. Focus on what it means for the user.
 - Use numbers and the worked example when they help.
 - Be honest: iBek is a prototype designed for 2035. If something is planned, an estimate, or still an open question, say so. If the knowledge base does not cover something, say you don't know and suggest asking the team; never invent facts, figures, partners or prices.
 - Always call the project iBek (never "Aniq").
-- You can show visuals. You are not limited to text. When a chart or diagram would make the answer clearer, or the user asks for a picture, graph, infographic or diagram, include ONE visual block after a short text answer (1-2 sentences). Never say you cannot show pictures.
+- You can show visuals. You are not limited to text. When a chart or diagram would make the answer clearer, or the user asks for a picture, graph, infographic or diagram, include ONE visual block after the short text answer. Never say you cannot show pictures.
   Chart: a fenced block with language "chart" containing JSON only:
   \`\`\`chart
   {"type":"bar|hbar|line","title":"short title","unit":"unit label","labels":["A","B"],"series":[{"name":"series","values":[1,2]}],"note":"source or caption"}
   \`\`\`
   Use hbar for long category names, line for change over time, bar for comparisons. Numbers must come from the knowledge base or simple arithmetic on it; never invent data.
-  Diagram or infographic: a fenced block with language "svg" containing one complete <svg> with xmlns="http://www.w3.org/2000/svg", viewBox="0 0 640 400" (height can vary up to 640), a white background rect, font-family="-apple-system, Helvetica, Arial, sans-serif", generous spacing, at most 3 colors (#007aff blue, #1c1c1e near-black, #8e8e93 gray, plus #34c759 green or #ff3b30 red only to mean good/bad). No scripts, no external images or fonts. Keep the SVG compact (under about 60 elements) so it finishes quickly. Keep text short (labels, not paragraphs) and make sure no text overlaps or overflows its box. Good uses: the auction worked example, the two doors flow, the round lifecycle (open → sealed bids → clear at one price → verify), how limits protect the user.
+  Diagram or infographic: a fenced block with language "svg" containing one complete <svg> with xmlns="http://www.w3.org/2000/svg", viewBox="0 0 640 400" (height can vary up to 640), a white background rect, generous spacing, font-family="Inter, -apple-system, Helvetica, Arial, sans-serif", the iBek palette only (#1f8f52 green as the main accent, #e8f5ee light green fills, #111418 near-black, #6b7280 gray, #eceef0 light lines, plus #d93025 red only to mean rejected/lost), rounded corners (rx 10-14). No scripts, no external images or fonts. Keep the SVG compact (under about 60 elements) so it finishes quickly. Keep text short (labels, not paragraphs) and make sure no text overlaps or overflows its box; keep every text element at least 24px inside the left and right edges (estimate ~7.5px per character at 13px). Good uses: the auction worked example, the two doors flow, the round lifecycle (open → sealed bids → clear at one price → verify), how limits protect the user.
   Write the text part in the user's language; labels inside visuals may use the same language.
 - The iBek phone number for SMS and calls: ${PHONE || 'shown on this website'}.
 
@@ -76,6 +81,7 @@ async function chat(req, res) {
   if (!process.env.ANTHROPIC_API_KEY) { res.writeHead(503, { 'content-type': 'application/json' }); return res.end(JSON.stringify({ error: 'The assistant is not configured yet (missing API key).' })); }
   let body;
   try { body = await readBody(req); } catch { res.writeHead(400); return res.end(); }
+  const uiLang = { uz: 'Uzbek (Latin script)', ru: 'Russian', en: 'English' }[body.lang] || '';
   const messages = (Array.isArray(body.messages) ? body.messages : [])
     .filter((m) => (m.role === 'user' || m.role === 'assistant') && typeof m.content === 'string' && m.content.trim())
     .slice(-16).map((m) => ({ role: m.role, content: m.content.slice(0, 4000) }));
@@ -84,7 +90,7 @@ async function chat(req, res) {
   const upstream = await fetch('https://api.anthropic.com/v1/messages', {
     method: 'POST',
     headers: { 'content-type': 'application/json', 'x-api-key': process.env.ANTHROPIC_API_KEY, 'anthropic-version': '2023-06-01' },
-    body: JSON.stringify({ model: MODEL, max_tokens: 6000, stream: true, system: [{ type: 'text', text: SYSTEM, cache_control: { type: 'ephemeral' } }], messages }),
+    body: JSON.stringify({ model: MODEL, max_tokens: 6000, stream: true, system: [{ type: 'text', text: SYSTEM, cache_control: { type: 'ephemeral' } }, ...(uiLang ? [{ type: 'text', text: `The site interface is set to ${uiLang}. Reply in the language of the user's message; if it is ambiguous (very short, a name, a number), reply in ${uiLang}.` }] : [])], messages }),
   }).catch((e) => ({ ok: false, status: 502, text: async () => e.message }));
 
   if (!upstream.ok) {
